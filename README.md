@@ -1,2 +1,7 @@
 # crayfish_leaf_decom
-Data and analysis for the Summer 2016 study on invasive crayfish effects on leaf litter decomposition
+
+This repository contains the data and analyses from the Summer 2014 experiment evaluating the effect of leaf litter on oxygen and nutrient flux in small pond sedments.
+
+All content in this repository is licenced CC-BY
+
+Author: Kenneth Fortino Assistant Professor of Biology Department of Biological and Environmental Science Longwood University Farmville, VA fortinok@longwood.edu
