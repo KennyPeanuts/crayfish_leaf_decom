@@ -29,8 +29,8 @@ These data were collected by weighting the dry mass and ash free dry mass for ea
 * BagTank = the the number of the tank from which the sample was taken
 
 * CrucNum = the number that was previously labeled on the crucible 
-	*NOTE: these numbers are in no particular order
+  *NOTE: these numbers are in no particular order
 
 * CrucLeafDM = the weight of the crucible and leaf dry mass  (g) 
 
-* CrucAFDM = the weight of the crucible and ash free dry mass (g)  
+* CrucAM = the weight of the crucible and ash mass (g)  

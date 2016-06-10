@@ -33,4 +33,4 @@ These data were collected by weighting the dry mass and ash free dry mass for ea
 
 * CrucLeafDM = the weight of the crucible and leaf dry mass  (g) 
 
-* CrucAFDM = the weight of the crucible and ash free dry mass (g)  
+* CrucAM = the weight of the crucible and ash mass (g)  
