@@ -41,3 +41,5 @@ These data were collected with a YSI EXO sonde with an optical DO meter as part 
 * percDO = the percent dissolved oxygen saturation
 
 * concDO = the dissolved oxygen concentration (mg/L)
+
+* pH = pH of the water sample

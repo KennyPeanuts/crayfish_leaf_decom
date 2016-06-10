@@ -20,4 +20,10 @@ The bottles were transported back to the lab in a dark backpack
 
 All of the water processing was completed with the lab lights off
 
-pH 
+pH: read unfiltered water with pH meter
+
+DOC: filtered 30 ml of water through GFF and added 500 ul 2N HCl
+
+Nutrients: filtered 30 ml of water through GFF and freezed 
+
+Chl: clogged GFF with sample water ad freezed
