@@ -39,4 +39,10 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
     plot(leaf.mass ~ days.elapsed) 
     
     mass.lost.T1 <- mean.initial.AFDM - T1AFDM
-    plot(mass.lost.T1 ~ as.numeric(treat$treatment))
+    par(las = 1)
+    plot(mass.lost.T1 ~ treat$treatment, ylab = "T0 - T1 Mass Loss (g)", xlab = "Treatment", col = 8)
+    abline(h = 0)
+    dev.copy(jpeg, "./output/plots/T0_T1_mass_loss.jpg")
+    dev.off()
+
+![Leaf Mass Loss From T0 to T1 by Treatment](../output/plots/T0_T1_mass_loss.jpg)
