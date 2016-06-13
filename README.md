@@ -1,6 +1,6 @@
 # crayfish_leaf_decom
 
-This repository contains the data and analyses from the Summer 2014 experiment evaluating the effect of leaf litter on oxygen and nutrient flux in small pond sedments.
+This repository contains the data and analyses from the Summer 2016 experiment on the impact of native and invasive crayfish on leaf litter decomposition and water chemistry.
 
 All content in this repository is licenced CC-BY
 
