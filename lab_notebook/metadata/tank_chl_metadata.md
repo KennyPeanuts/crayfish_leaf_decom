@@ -1,8 +1,8 @@
-# Metadata for the initial tank chlorophyll data from the crayfish leaf decomposition experiment
+# Metadata for the tank chlorophyll data from the crayfish leaf decomposition experiment
 
 ## File 
 
-`initial_tank_chl.csv`
+`tank_chl.csv`
 
 ## Metadata
 
