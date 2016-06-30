@@ -1,4 +1,4 @@
-# Field notes on the T1 leaf pack pull for the crayfish leaf decomposition experiment
+# Field notes on the T2 leaf pack pull for the crayfish leaf decomposition experiment
 
 ## Metadata
 
@@ -8,7 +8,7 @@ File created 15 June 2016 by KF
 
 Tanks sampled by KF and JH
 
-### 13 June 2016 Sample the first set of leaf packs (T2)
+### 13 June 2016 Sample the second set of leaf packs (T2)
 
 Beginning at tank 1 and moving systematically to tank 30, we haphazardly selected a leaf pack in the tank for removal.
 
@@ -16,7 +16,7 @@ A 250 um mesh sieve was lowered into the tank near the leaf pack and then the pa
 
 Once out of the water the leaf pack was gently examined for macroinvertebrates and crayfish and then placed into a pre-weighed paper bag. 
 
-### 6 June 2016 Tank observations 
+### 13 June 2016 Tank observations 
 
 No macroinvertebrates were seen in the packs
 
