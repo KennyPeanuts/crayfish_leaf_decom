@@ -87,5 +87,5 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
     dev.copy(jpeg, "./output/plots/T0_T3_mass_loss.jpg")
     dev.off()
 
-![Leaf Mass Loss From T0 to T2 by Treatment](../output/plots/T0_T2_mass_loss.jpg)
+![Leaf Mass Loss From T0 to T3 by Treatment](../output/plots/T0_T3_mass_loss.jpg)
 
