@@ -6,6 +6,8 @@
 
 * 22 june 2016 - KF - added T2 to the analysis
 
+* 5 July 2016 - KF - added T3 to the analysis
+
 ## Description
 
 This is the code to calculate the mass loss of the leaf packs in the experiment evaluating the impact of in invasive and native crayfish.
@@ -17,6 +19,7 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
     leaf.initial <- read.table("./data/initial_leaf_mass.csv", header = T, sep = ",")
     leaf.T1 <- read.table("./data/T1_leaf_mass.csv", header = T, sep = ",")
     leaf.T2 <- read.table("./data/T2_leaf_mass.csv", header = T, sep = ",")
+    leaf.T3 <- read.table("./data/T3_leaf_mass.csv", header = T, sep = ",")
     treat <- read.table("./data/tank_map.csv", header = T, sep = ",")
 
 ### Calculate variables
@@ -40,32 +43,23 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
     T2AFDM <- T2DM - T2AM
 
 
+#### T3 AFDM
+
+    T3DM <- leaf.T3$CrucLeafDM - leaf.T3$CrucMass
+    T3AM <- leaf.T3$CrucAM - leaf.T3$CrucMass
+    T3AFDM <- T3DM - T3AM
+
 ### Analyze Mass Lost
 
-    leaf.mass <- c(initialAFDM, T1AFDM, T2AFDM)
-    date <- c(as.Date(leaf.initial$Date), as.Date(leaf.T1$Date), as.Date(leaf.T2$Date)) 
-    time.step <- c(rep("T0", 11), rep("T1", 30), rep("T2", 30))
+    leaf.mass <- c(initialAFDM, T1AFDM, T2AFDM, T3AFDM)
+    date <- c(as.Date(leaf.initial$Date), as.Date(leaf.T1$Date), as.Date(leaf.T2$Date), as.Date(leaf.T3$Date)) 
+    time.step <- c(rep("T0", 11), rep("T1", 30), rep("T2", 30), rep("T3", 30))
     days.elapsed <- date - date[1]
-    plot(log(leaf.mass) ~ days.elapsed) 
+    plot((leaf.mass) ~ days.elapsed) 
     k <- lm(log(leaf.mass) ~ days.elapsed)
     abline(k)
     
 ~~~~~
-  Call:
-  lm(formula = log(leaf.mass) ~ days.elapsed)
-
-Residuals:
-  Min       1Q   Median       3Q      Max 
--1.10138 -0.05996  0.01447  0.09553  0.33428 
-
-Coefficients:
-  Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  -0.013507   0.037563  -0.360     0.72    
-days.elapsed -0.033670   0.005535  -6.083 5.83e-08 
-
-Residual standard error: 0.1859 on 69 degrees of freedom
-Multiple R-squared: 0.3491,  Adjusted R-squared: 0.3396 
-F-statistic:    37 on 1 and 69 DF,  p-value: 5.826e-08 
 
 ~~~~
 
@@ -80,7 +74,16 @@ F-statistic:    37 on 1 and 69 DF,  p-value: 5.826e-08
 
     mass.lost.T2 <- mean.initial.AFDM - T2AFDM
     par(las = 1)
-    plot(mass.lost.T2 ~ treat$treatment, ylim = c(0, 1), ylab = "T0 - T1 Mass Loss (g)", xlab = "Treatment", col = 8)
+    plot(mass.lost.T2 ~ treat$treatment, ylim = c(0, 1), ylab = "T0 - T2 Mass Loss (g)", xlab = "Treatment", col = 8)
+    dev.copy(jpeg, "./output/plots/T0_T2_mass_loss.jpg")
+    dev.off()
+
+![Leaf Mass Loss From T0 to T2 by Treatment](../output/plots/T0_T2_mass_loss.jpg)
+
+
+    mass.lost.T3 <- mean.initial.AFDM - T3AFDM
+    par(las = 1)
+    plot(mass.lost.T3 ~ treat$treatment, ylim = c(0, 1), ylab = "T0 - T3 Mass Loss (g)", xlab = "Treatment", col = 8)
     dev.copy(jpeg, "./output/plots/T0_T2_mass_loss.jpg")
     dev.off()
 
