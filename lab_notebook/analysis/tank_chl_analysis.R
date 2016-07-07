@@ -26,4 +26,11 @@ This is the code to analyze the effect of crayfish community on the tank chlorop
     plot(Chl ~ treatment, data = chl, subset = Date == "2016-06-03")
     plot(Chl ~ treatment, data = chl, subset = Date == "2016-06-21")
     
-    anova(lm(Chl ~ treatment, data = chl))
+    anova(lm(Chl ~ treatment * Date, data = chl))
+    plot(lm(Chl ~ treatment, data = chl))
+
+    plot(Chl ~ tank, data = chl)
+    plot(pH ~ tank, data = ysi)
+
+    plot(pH ~ percDO, data = ysi)
+

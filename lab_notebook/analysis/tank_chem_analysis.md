@@ -37,6 +37,6 @@ This is the code to analyze the effect of crayfish community on the tank chemist
     plot(percDO ~ treatment, data = ysi, subset = sampling == "final")
     plot(percDO ~ sampling, data = ysi)
 
-    plot(light ~ treatment, data = ysi, subset = sampling == "second")
-    plot(light ~ treatment, data = ysi, subset = sampling == "final")
+    plot(light ~ treatment, data = ysi, subset = sampling == "second", ylim = c(0, 2000))
+    plot(light ~ treatment, data = ysi, subset = sampling == "final", ylim = c(0, 2000))
     plot(light ~ sampling, data = ysi)
