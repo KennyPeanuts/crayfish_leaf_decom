@@ -4,6 +4,8 @@
 
 * File created on 6 July 2016
 
+* modified 7 July 2016 - KF - added final CHL to the analysis
+
 ## Description
 
 This is the code to analyze the effect of crayfish community on the tank chlorophyll the experiment evaluating the impact of in invasive and native crayfish.
@@ -20,17 +22,27 @@ This is the code to analyze the effect of crayfish community on the tank chlorop
 
     chl <- merge(chl, treat, by = "tank")
 
-### Analyze pH by treatment
+### Analyze Chl by treatment
 
     plot(Chl ~ treatment, data = chl)
     plot(Chl ~ treatment, data = chl, subset = Date == "2016-06-03")
-    plot(Chl ~ treatment, data = chl, subset = Date == "2016-06-21")
+    plot(Chl ~ treatment, data = chl, subset = Date == "2016-06-16")
+    plot(Chl ~ treatment, data = chl, subset = Date == "2016-06-30")
+
+    plot(Phaeo ~ treatment, data = chl)
+    plot(Phaeo ~ treatment, data = chl, subset = Date == "2016-06-03")
+    plot(Phaeo ~ treatment, data = chl, subset = Date == "2016-06-16")
+    plot(Phaeo ~ treatment, data = chl, subset = Date == "2016-06-30")
+
+    plot(Chl ~ Date, data = chl)
+    plot(Phaeo ~ Date, data = chl)
     
+    plot(Phaeo ~ Chl, data = chl)    
+
     anova(lm(Chl ~ treatment * Date, data = chl))
-    plot(lm(Chl ~ treatment, data = chl))
 
     plot(Chl ~ tank, data = chl)
-    plot(pH ~ tank, data = ysi)
+    plot(Phaeo ~ tank, data = chl)
 
     plot(pH ~ percDO, data = ysi)
 
