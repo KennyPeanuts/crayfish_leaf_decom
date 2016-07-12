@@ -125,7 +125,7 @@ F-statistic: 107.6 on 1 and 86 DF,  p-value: < 2.2e-16
 
     mass.lost.T1 <- mean.initial.AFDM - leaf.AFDM$AFDM[leaf.AFDM$Date == "2016-06-06"]
     par(las = 1, mar = c(4, 5, 2, 2))
-    plot(mass.lost.T1 ~ ordered.treat, ylab = "T0 - T1 Mass Loss (g)", xlab = "Treatment", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"), ylim = c(-0.1, 1))
+    plot(mass.lost.T1 ~ ordered.treat, ylab = "3 Day Mass Loss (g)", xlab = "Treatment", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"), ylim = c(-0.1, 1))
     abline(h = 0)
     dev.copy(jpeg, "./output/plots/T0_T1_mass_loss.jpg")
     dev.off()
@@ -134,7 +134,7 @@ F-statistic: 107.6 on 1 and 86 DF,  p-value: < 2.2e-16
 
     mass.lost.T2 <- mean.initial.AFDM - leaf.AFDM$AFDM[leaf.AFDM$Date == "2016-06-13"]
     par(las = 1, mar = c(4, 5, 2, 2))
-    plot(mass.lost.T2 ~ ordered.treat, ylab = "T0 - T2 Mass Loss (g)", xlab = "Treatment", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"), ylim = c(-0.1, 1))
+    plot(mass.lost.T2 ~ ordered.treat, ylab = "10 Day Mass Loss (g)", xlab = "Treatment", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"), ylim = c(-0.1, 1))
     abline(h = 0)
     dev.copy(jpeg, "./output/plots/T0_T2_mass_loss.jpg")
     dev.off()
@@ -143,7 +143,7 @@ F-statistic: 107.6 on 1 and 86 DF,  p-value: < 2.2e-16
 
     mass.lost.T3 <- mean.initial.AFDM - leaf.AFDM$AFDM[leaf.AFDM$Date == "2016-06-27"]
     par(las = 1, mar = c(4, 5, 2, 2))
-    plot(mass.lost.T3 ~ ordered.treat, ylab = "T0 - T3 Mass Loss (g)", xlab = "Treatment", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"), ylim = c(-0.1, 1))
+    plot(mass.lost.T3 ~ ordered.treat, ylab = "24 Day Mass Loss (g)", xlab = "Treatment", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"), ylim = c(-0.1, 1))
     abline(h = 0)
     dev.copy(jpeg, "./output/plots/T0_T3_mass_loss.jpg")
     dev.off()
