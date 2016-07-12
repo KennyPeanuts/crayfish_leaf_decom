@@ -105,12 +105,13 @@ F-statistic: 107.6 on 1 and 86 DF,  p-value: < 2.2e-16
 
 #### By Treatment over Time
  
-    par(las = 1)
-    plot(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "N", xlim = c(0, 30), ylim = c(0, 100), pch = "N", col = 1, xlab = "Days in Tank", ylab = "Percent Initial Leaf Mass Remaining")
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "I", pch = "I", col = 2)
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "E", pch = "E", col = 3)
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "H", pch = "H", col = 4)
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "L", pch = "L", col = 6)
+    par(las = 1, mar = c(4, 5, 2, 2))
+    plot(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "N", xlim = c(0, 30), ylim = c(0, 100), pch = 1, xlab = "Days in Tank", ylab = "Percent Initial Leaf Mass Remaining")
+    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "I", pch = 19, col = "gray40")
+    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "E", pch = 19, col = "deepskyblue")
+    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "H", pch = 19, col = "blue3")
+    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "L", pch = 19, col = "cadetblue2")
+    legend(0, 40, c("Native Only", "Invasive Only", "Low Invasive", "Equal", "High Invasive"), pch = c(1, 19, 19, 19, 19, 19), col = c(1, "gray40", "cadetblue2", "deepskyblue", "blue3"))
     dev.copy(jpeg, "./output/plots/percMassRem_by_treat_days.jpg")
     dev.off()
 

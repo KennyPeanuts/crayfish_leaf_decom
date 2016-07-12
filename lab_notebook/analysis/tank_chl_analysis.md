@@ -6,6 +6,8 @@
 
 * modified 7 July 2016 - KF - added final CHL to the analysis
 
+* modified 12 July 2016 - KF - added figures to report
+
 ## Description
 
 This is the code to analyze the effect of crayfish community on the tank chlorophyll the experiment evaluating the impact of in invasive and native crayfish.
@@ -22,27 +24,44 @@ This is the code to analyze the effect of crayfish community on the tank chlorop
 
     chl <- merge(chl, treat, by = "tank")
 
+Three of the chl measurement read below 0, I removed these values from the analysis with the code below
+
+    chl.trunk <- chl
+    chl.trunk$Chl[chl.trunk$Chl < 0 ] <- NA
+    
 ### Analyze Chl by treatment
 
-    plot(Chl ~ treatment, data = chl)
-    plot(Chl ~ treatment, data = chl, subset = Date == "2016-06-03")
-    plot(Chl ~ treatment, data = chl, subset = Date == "2016-06-16")
-    plot(Chl ~ treatment, data = chl, subset = Date == "2016-06-30")
+#### create factor list in correct order
 
-    plot(Phaeo ~ treatment, data = chl)
-    plot(Phaeo ~ treatment, data = chl, subset = Date == "2016-06-03")
-    plot(Phaeo ~ treatment, data = chl, subset = Date == "2016-06-16")
-    plot(Phaeo ~ treatment, data = chl, subset = Date == "2016-06-30")
+    ordered.treat <- factor(chl.trunk$treatment, levels = c("N", "I", "L", "E", "H"))
 
-    plot(Chl ~ Date, data = chl)
-    plot(Phaeo ~ Date, data = chl)
-    
-    plot(Phaeo ~ Chl, data = chl)    
+#### Plots
+
+
+    par(las = 1, mar = c(4, 5, 2, 2))
+    plot(Chl ~ ordered.treat, data = chl.trunk, subset = Date == "2016-06-03", ylim = c(0, 50), ylab = expression(paste("Chlorophyll Concentration (", mu, "g L"^{-1}, ")")), xlab = " ", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"))
+    text(4, 50, "3 June")
+    dev.copy(jpeg, "./output/plots/chl_treat_T0.jpg")
+    dev.off()
+
+![Plot of Chl by treatment on T0](../output/plots/chl_treat_T0.jpg)
+
+    par(las = 1, mar = c(4, 5, 2, 2))
+    plot(Chl ~ ordered.treat, data = chl.trunk, subset = Date == "2016-06-16", ylim = c(0, 50), ylab = expression(paste("Chlorophyll Concentration (", mu, "g L"^{-1}, ")")), xlab = " ", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"))
+    text(4, 50, "16 June")
+    dev.copy(jpeg, "./output/plots/chl_treat_T1.jpg")
+    dev.off()
+
+![Plot of Chl by treatment on T1](../output/plots/chl_treat_T1.jpg)
+
+    par(las = 1, mar = c(4, 5, 2, 2))
+    plot(Chl ~ ordered.treat, data = chl.trunk, subset = Date == "2016-06-30", ylim = c(0, 50), ylab = expression(paste("Chlorophyll Concentration (", mu, "g L"^{-1}, ")")), xlab = " ", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"))
+    text(4, 50, "30 June")
+    dev.copy(jpeg, "./output/plots/chl_treat_T2.jpg")
+    dev.off()
+
+![Plot of Chl by treatment on T2](../output/plots/chl_treat_T2.jpg)
 
     anova(lm(Chl ~ treatment * Date, data = chl))
 
-    plot(Chl ~ tank, data = chl)
-    plot(Phaeo ~ tank, data = chl)
-
-    plot(pH ~ percDO, data = ysi)
-
+    
