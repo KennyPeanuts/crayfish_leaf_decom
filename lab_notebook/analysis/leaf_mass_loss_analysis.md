@@ -8,6 +8,8 @@
 
 * 5 July 2016 - KF - added T3 to the analysis
 
+* 12 July 2016 - KF - remade individual time point figures for poster and altered code to fix broken variable names from leaf.AFDM data frame
+
 ## Description
 
 This is the code to calculate the mass loss of the leaf packs in the experiment evaluating the impact of in invasive and native crayfish.
