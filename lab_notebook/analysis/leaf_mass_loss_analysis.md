@@ -10,6 +10,8 @@
 
 * 12 July 2016 - KF - remade individual time point figures for poster and altered code to fix broken variable names from leaf.AFDM data frame
 
+* 13 July 2016 - KF - added analysis of summary stats for time points
+
 ## Description
 
 This is the code to calculate the mass loss of the leaf packs in the experiment evaluating the impact of in invasive and native crayfish.
@@ -77,6 +79,49 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
     # add calc variables to data frame
     leaf.AFDM <- data.frame(leaf.AFDM, percAFDM.rem, days.elapsed)
 
+
+#### Summarize AFDM by Day
+
+    tapply(leaf.AFDM$AFDM, leaf.AFDM$days.elapsed, summary)
+
+~~~~
+AFDM (g)
+
+$`3`
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.7647  0.8256  0.8734  0.8820  0.9320  1.0660 
+
+$`10`
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.2342  0.6533  0.7354  0.7288  0.7991  0.9842 
+
+$`24`
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.0000  0.1195  0.3439  0.3216  0.4584  0.7865 
+
+~~~~
+  
+#### Summarize percent AFDM remaining by Day
+
+    tapply(leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed, summary)
+
+~~~~
+Percent AFDM Remaining 
+
+$`3`
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+75.26   81.25   85.95   86.80   91.72  104.90 
+
+$`10`
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+23.05   64.30   72.37   71.72   78.64   96.86 
+
+$`24`
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00   11.77   33.84   31.65   45.11   77.40 
+
+~~~~
+  
 #### All treatments combined
 
     plot(log(percAFDM.rem) ~ days.elapsed)

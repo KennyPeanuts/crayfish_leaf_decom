@@ -8,6 +8,8 @@
 
 * modified 12 July 2016 - KF - added figures to report
 
+* modified 13 Jul 2016 - KF - sumarized chl by day
+
 ## Description
 
 This is the code to analyze the effect of crayfish community on the tank chlorophyll the experiment evaluating the impact of in invasive and native crayfish.
@@ -28,7 +30,27 @@ Three of the chl measurement read below 0, I removed these values from the analy
 
     chl.trunk <- chl
     chl.trunk$Chl[chl.trunk$Chl < 0 ] <- NA
-    
+
+### Summarize Chl by Day
+
+    tapply(chl.trunk$Chl, chl.trunk$Date, summary)
+
+~~~~
+  
+$`2016-06-03`
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NAs 
+  0.240   1.830   3.300   4.781   6.540  14.930       1 
+
+$`2016-06-16`
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NAs 
+1.670   5.698   8.700   9.552  12.070  21.090       2 
+
+$`2016-06-30`
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+8.42   14.70   19.46   21.29   27.06   47.89 
+
+~~~~
+
 ### Analyze Chl by treatment
 
 #### create factor list in correct order
