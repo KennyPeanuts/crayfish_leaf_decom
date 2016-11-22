@@ -79,8 +79,19 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
     # add calc variables to data frame
     leaf.AFDM <- data.frame(leaf.AFDM, percAFDM.rem, days.elapsed)
 
+### Calculate K for each tank
 
-#### Summarize AFDM by Day
+    k.tank <- function(tank, mass, day) {
+     k.list <- numeric(0) 
+     for(i in tank)
+      k <- coef(summary(lm(log(mass[mass != 0]) ~ day[mass != 0])))["days.elapsed[percAFDM.rem != 0]", "Estimate"]
+      k.list <- list(k.list, k)
+      return(k.list)
+    }
+
+    k.tank(leaf.AFDM$BagTank, leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed)
+     
+### Summarize AFDM by Day
 
     tapply(leaf.AFDM$AFDM, leaf.AFDM$days.elapsed, summary)
 
@@ -149,6 +160,7 @@ Multiple R-squared:  0.5557, Adjusted R-squared:  0.5506
 F-statistic: 107.6 on 1 and 86 DF,  p-value: < 2.2e-16
 
 ~~~~
+
 
 #### By Treatment over Time
  
