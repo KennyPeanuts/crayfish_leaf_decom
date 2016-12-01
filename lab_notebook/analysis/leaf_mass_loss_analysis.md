@@ -80,17 +80,106 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
     leaf.AFDM <- data.frame(leaf.AFDM, percAFDM.rem, days.elapsed)
 
 ### Calculate K for each tank
+#### Create a function that calculates k for each tank
 
-    k.tank <- function(tank, mass, day) {
-     k.list <- numeric(0) 
-     for(i in tank)
-      k <- coef(summary(lm(log(mass[mass != 0]) ~ day[mass != 0])))["days.elapsed[percAFDM.rem != 0]", "Estimate"]
-      k.list <- list(k.list, k)
-      return(k.list)
+The function below, runs a linear model on the natural log of the percent leaf mass remaining by the number of days in the tank.  The function then extracts only the slope of the line and makes a data frame that matches the slope, tank number, treatment, and block.
+
+Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 was added to the percent mass remaining to avoid taking the natural log of 0.
+
+##### Function designation
+    k.tank <- function() {
+     # create empty objects
+     k <- numeric(0)
+     tank <- numeric(0)
+     treat <- character(0)
+     block <- character(0)
+     
+     for(i in leaf.AFDM$BagTank)
+       k <- c(coef(summary(lm(log(leaf.AFDM$percAFDM.rem + 1)[leaf.AFDM$BagTank == i] ~ leaf.AFDM$days.elapsed[leaf.AFDM$BagTank == i])))[2, 1], k) # this extracts the slope (col 2, row 1) from the matrix of coefficents produced by the lm
+     
+     for(i in leaf.AFDM$BagTank)
+       tank <- c(i, tank)
+
+     for(i in leaf.AFDM$BagTank)
+       treat <- c(as.character(leaf.AFDM$treatment[leaf.AFDM$BagTank == i]), treat)
+     
+     for(i in leaf.AFDM$BagTank)
+       block <- c(as.character(leaf.AFDM$block[leaf.AFDM$BagTank == i]), block)
+     
+     k.list <- data.frame(unique(tank), unique(treat), unique(block), unique(k)) # the "unique" is needed because the tank numbers are repreated for each day in the dataset so the for-loop runs 3X. The unique eliminates the duplicate data
+     
+     return(k.list)
     }
 
-    k.tank(leaf.AFDM$BagTank, leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed)
+    k.list <- k.tank()
+    names(k.list) <- c("tank", "treat", "block", "k")
+
+#### Analyze k by treatment and block
+
+    anova(lm(k ~ treat + block, data = k.list))
+    
+~~~~
+ANOVA table for the combined effect of treatment and block on k
+
+Analysis of Variance Table
+
+Response: k
+          Df   Sum Sq   Mean Sq F value Pr(>F)
+treat      4 0.009090 0.0022725  0.6435 0.6378
+block      5 0.006813 0.0013626  0.3859 0.8526
+Residuals 20 0.070628 0.0035314   
+
+~~~~
+
+
+
+    anova(lm(k ~ treat, data = k.list))
+    
+~~~~
+ANOVA table for treatment effect on k
+
+Analysis of Variance Table
+
+Response: k
+          Df   Sum Sq   Mean Sq F value Pr(>F)
+treat      4 0.009090 0.0022725  0.7336 0.5777
+Residuals 25 0.077442 0.0030977    
+
+~~~~
+
+
+    plot(k ~ treat, data = k.list, ylim = c(-0.3, 0), col = "wheat", ylab = "k (1/day)", xlab = "Treatment")
+    dev.copy(jpeg, "./output/plots/k_by_treat.jpg")
+    dev.off()
      
+![k by treatment](../output/plots/k_by_treat.jpg)
+
+K by treatment
+
+    anova(lm(k ~ block, data = k.list))
+    
+~~~~
+ANOVA table for effect of block on treatment
+
+Analysis of Variance Table
+
+Response: k
+          Df   Sum Sq   Mean Sq F value Pr(>F)
+block      5 0.006813 0.0013626  0.4102 0.8369
+Residuals 24 0.079718 0.0033216  
+
+~~~~
+
+    plot(k ~ block, data = k.list, ylim = c(-0.3, 0), col = "lightsteelblue", ylab = "k (1/day)", xlab = "Block")
+    dev.copy(jpeg, "./output/plots/k_by_block.jpg")
+    dev.off()
+
+![k by block](../output/plots/k_by_block.jpg)
+
+k by block
+     
+
+
 ### Summarize AFDM by Day
 
     tapply(leaf.AFDM$AFDM, leaf.AFDM$days.elapsed, summary)
