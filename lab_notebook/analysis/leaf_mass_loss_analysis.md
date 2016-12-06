@@ -12,6 +12,8 @@
 
 * 13 July 2016 - KF - added analysis of summary stats for time points
 
+* 1 Dec 2016 - KF - calculated k for each tank and then ran ANOVA
+
 ## Description
 
 This is the code to calculate the mass loss of the leaf packs in the experiment evaluating the impact of in invasive and native crayfish.
@@ -114,6 +116,50 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
     k.list <- k.tank()
     names(k.list) <- c("tank", "treat", "block", "k")
 
+#### Summarize K
+
+    summary(k.list$k)
+    sd(k.list$k)
+
+~~~~
+ 
+ Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     SD
+-0.23210 -0.09043 -0.04463 -0.06596 -0.02889 -0.01455  0.0546246
+
+~~~~
+
+    tapply(k.list$k, k.list$treat, summary)
+    tapply(k.list$k, k.list$treat, sd)
+
+~~~~
+ 
+$E
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-0.09646 -0.09043 -0.06326 -0.06156 -0.03141 -0.02611 
+
+$H
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-0.23210 -0.11060 -0.06235 -0.09256 -0.04623 -0.03100 
+
+$I
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-0.10380 -0.08685 -0.03991 -0.05277 -0.02197 -0.01455 
+
+$L
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-0.22730 -0.08896 -0.04886 -0.07839 -0.03294 -0.01529 
+
+$N
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-0.08670 -0.06574 -0.03263 -0.04452 -0.02416 -0.01707 
+
+** SD
+
+        E          H          I          L          N 
+0.03340144 0.07591803 0.03984435 0.07854372 0.02919630 
+
+~~~~
+
 #### Analyze k by treatment and block
 
     anova(lm(k ~ treat + block, data = k.list))
@@ -179,7 +225,55 @@ Residuals 24 0.079718 0.0033216
 k by block
      
 
+#### Repeated Measures ANCOVA 
 
+The `lmerTest` package is required
+
+    (k.mod <- lmer(percAFDM.rem ~ 1 + days.elapsed * treatment + block + (1|BagTank), data = leaf.AFDM))
+    
+NOTE: I cannot test the interaction between block and treatment because of the design. Produces a singularity
+
+~~~~
+ 
+Linear mixed model fit by REML ['merModLmerTest']
+Formula: percAFDM.rem ~ 1 + days.elapsed * treatment + block + (1 | BagTank)
+   Data: leaf.AFDM
+REML criterion at convergence: 675.2644
+Random effects:
+ Groups   Name        Std.Dev.
+ BagTank  (Intercept)  6.045  
+ Residual             13.528  
+Number of obs: 90, groups:  BagTank, 30
+Fixed Effects:
+            (Intercept)             days.elapsed               treatmentH  
+               100.3758                  -2.9170                  -3.3522  
+             treatmentI               treatmentL               treatmentN  
+                 7.7508                   5.4471                  -3.2299  
+                 blockB                   blockC                   blockD  
+                 2.7005                  -5.3189                 -12.6665  
+                 blockE                   blockF  days.elapsed:treatmentH  
+               -10.6208                  -7.1107                   0.1215  
+days.elapsed:treatmentI  days.elapsed:treatmentL  days.elapsed:treatmentN  
+                 0.3541                   0.1000                   0.7099  
+
+~~~~
+ 
+##### Model Test
+ 
+    anova(k.mod)     
+
+~~~~
+ 
+Analysis of Variance Table of type III  with  Satterthwaite 
+approximation for degrees of freedom
+                       Sum Sq Mean Sq NumDF  DenDF F.value Pr(>F)    
+days.elapsed            48535   48535     1 55.000 265.202 <2e-16 ***
+treatment                 514     129     4 64.527   0.702 0.5933    
+block                    1667     333     5 20.000   1.822 0.1542    
+days.elapsed:treatment    444     111     4 55.000   0.607 0.6596 
+
+~~~~
+ 
 ### Summarize AFDM by Day
 
     tapply(leaf.AFDM$AFDM, leaf.AFDM$days.elapsed, summary)
