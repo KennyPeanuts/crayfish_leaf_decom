@@ -31,6 +31,10 @@ Three of the chl measurement read below 0, I removed these values from the analy
     chl.trunk <- chl
     chl.trunk$Chl[chl.trunk$Chl < 0 ] <- NA
 
+#### Create days.elapsed
+
+     days.elapsed <- as.numeric(as.Date(chl.trunk$Date) - as.Date("2016-06-03"))
+
 ### Summarize Chl by Day
 
     tapply(chl.trunk$Chl, chl.trunk$Date, summary)
@@ -52,6 +56,16 @@ Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
 ~~~~
 
 ### Analyze Chl by treatment
+#### Repeated measures ANCOVA
+
+The `lmerTest` package is required
+
+
+    (chl.mod <- lmer(Chl ~ 1 + days.elapsed * treatment + block + (1|tank), data = chl.trunk))
+
+    anova(chl.mod)
+
+### Plots by Time Step
 
 #### create factor list in correct order
 

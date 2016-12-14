@@ -224,7 +224,24 @@ Residuals 24 0.079718 0.0033216
 
 k by block
      
+#### Test of the invasive vs native control
 
+    t.test(k.list$k[k.list$treat == "N"], k.list$k[k.list$treat == "I"])
+
+~~~~
+ Welch Two Sample t-test
+
+data:  k.list$k[k.list$treat == "N"] and k.list$k[k.list$treat == "I"]
+t = 0.4088, df = 9.168, p-value = 0.6921
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.03724743  0.05373583
+sample estimates:
+  mean of x   mean of y 
+-0.04452361 -0.05276781 
+
+~~~~
+ 
 #### Repeated Measures ANCOVA 
 
 The `lmerTest` package is required
@@ -277,42 +294,44 @@ days.elapsed:treatment    444     111     4 55.000   0.607 0.6596
 ### Summarize AFDM by Day
 
     tapply(leaf.AFDM$AFDM, leaf.AFDM$days.elapsed, summary)
+    tapply(leaf.AFDM$AFDM, leaf.AFDM$days.elapsed, sd)
 
 ~~~~
 AFDM (g)
 
 $`3`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.7647  0.8256  0.8734  0.8820  0.9320  1.0660 
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
+0.7647  0.8256  0.8734  0.8820  0.9320  1.0660  0.07364759
 
 $`10`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.2342  0.6533  0.7354  0.7288  0.7991  0.9842 
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
+0.2342  0.6533  0.7354  0.7288  0.7991  0.9842  0.15621487
 
 $`24`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.0000  0.1195  0.3439  0.3216  0.4584  0.7865 
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
+0.0000  0.1195  0.3439  0.3216  0.4584  0.7865  0.21246679
 
 ~~~~
   
 #### Summarize percent AFDM remaining by Day
 
     tapply(leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed, summary)
+    tapply(leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed, sd)
 
 ~~~~
 Percent AFDM Remaining 
 
 $`3`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-75.26   81.25   85.95   86.80   91.72  104.90 
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max.   SD
+75.26   81.25   85.95   86.80   91.72  104.90  7.247936
 
 $`10`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-23.05   64.30   72.37   71.72   78.64   96.86 
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max.   SD
+23.05   64.30   72.37   71.72   78.64   96.86  15.373691
 
 $`24`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00   11.77   33.84   31.65   45.11   77.40 
+Min. 1st Qu.  Median    Mean 3rd Qu.    Max.   SD
+0.00   11.77   33.84   31.65   45.11   77.40   20.909654
 
 ~~~~
   
