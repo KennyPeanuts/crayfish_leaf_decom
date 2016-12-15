@@ -40,20 +40,24 @@ Three of the chl measurement read below 0, I removed these values from the analy
 ### Summarize Chl by Day
 
     tapply(chl.trunk$Chl, chl.trunk$Date, summary)
+    tapply(chl.trunk$Chl, chl.trunk$Date, sd, na.rm = T)
 
 ~~~~
-  
 $`2016-06-03`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NAs 
-  0.240   1.830   3.300   4.781   6.540  14.930       1 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NAs   SD
+  0.240   1.830   3.300   4.781   6.540  14.930       1  3.864727
 
 $`2016-06-16`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NAs 
-1.670   5.698   8.700   9.552  12.070  21.090       2 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NAs   SD
+  1.670   5.698   8.700   9.552  12.070  21.090       2  4.754465
 
 $`2016-06-30`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-8.42   14.70   19.46   21.29   27.06   47.89 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.  SD
+   8.42   14.70   19.46   21.29   27.06   47.89  9.613351
+
+$`2016-07-22`
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.  SD
+   7.59   16.98   23.89   27.89   35.72   57.28  13.729199
 
 ~~~~
 
@@ -156,6 +160,5 @@ days.elapsed:treatment  675.9   169.0     4 82.269   2.476 0.05046 .
 
 ![Plot of Chl by treatment on T2](../output/plots/chl_treat_T2.jpg)
 
-    anova(lm(Chl ~ treatment * Date, data = chl))
 
     
