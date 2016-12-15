@@ -66,32 +66,33 @@ $`2016-07-22`
 
 The `lmerTest` package is required
 
+I ln-transformed the chl values to correct for non-homogeneity of variance determined by a funnel shape in the resid vs fitted plot of the untransformed data.
 
-    (chl.mod <- lmer(Chl ~ 1 + days.elapsed * treatment + block + (1|tank), data = chl.trunk))
+    (chl.mod <- lmer(log(Chl) ~ 1 + days.elapsed * treatment + block + (1|tank), data = chl.trunk))
 
 ~~~~
 lmer output for above model
 
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: Chl ~ 1 + days.elapsed * treatment + block + (1 | tank)
+Formula: log(Chl) ~ 1 + days.elapsed * treatment + block + (1 | tank)
    Data: chl.trunk
-REML criterion at convergence: 796.0719
+REML criterion at convergence: 273.0313
 Random effects:
  Groups   Name        Std.Dev.
- tank     (Intercept) 1.455   
- Residual             8.260   
+ tank     (Intercept) 0.04542 
+ Residual             0.64197 
 Number of obs: 117, groups:  tank, 30
 Fixed Effects:
             (Intercept)             days.elapsed               treatmentH  
-                -1.8220                   0.5633                   2.5248  
+               0.532620                 0.050734                 0.902980  
              treatmentI               treatmentL               treatmentN  
-                 5.8390                   2.0594                   0.2706  
+               0.651591                 0.420206                 0.091353  
                  blockB                   blockC                   blockD  
-                 5.4610                   2.8582                   5.6476  
+               0.576495                 0.510805                 0.735745  
                  blockE                   blockF  days.elapsed:treatmentH  
-                 8.2260                   5.0450                   0.1534  
+               0.809532                 0.450822                -0.013334  
 days.elapsed:treatmentI  days.elapsed:treatmentL  days.elapsed:treatmentN  
-                -0.2118                  -0.1668                  -0.1124 
+              -0.016935                -0.013043                -0.006306  
 
 ~~~~
 
@@ -107,10 +108,10 @@ NOTE: the interaction between treatment and block could not be analyzed because 
 Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
                        Sum Sq Mean Sq NumDF  DenDF F.value  Pr(>F)    
-days.elapsed           9527.1  9527.1     1 82.321 139.634 < 2e-16 ***
-treatment               188.2    47.0     4 75.694   0.690 0.60144    
-block                   696.6   139.3     5 19.543   2.042 0.11710    
-days.elapsed:treatment  675.9   169.0     4 82.269   2.476 0.05046 .  
+days.elapsed           64.586  64.586     1 81.878 156.714 < 2e-16 ***
+treatment               5.154   1.289     4 78.874   3.127 0.01929 *  
+block                   7.957   1.591     5 19.037   3.862 0.01387 *  
+days.elapsed:treatment  1.371   0.343     4 81.822   0.831 0.50904 
 
 ~~~~
  
