@@ -10,6 +10,8 @@
 
 * modified 13 Jul 2016 - KF - sumarized chl by day
 
+* modified 13 Dec 2016 - KF - coded ANCOVA on chl by treatment
+
 ## Description
 
 This is the code to analyze the effect of crayfish community on the tank chlorophyll the experiment evaluating the impact of in invasive and native crayfish.
@@ -63,7 +65,63 @@ The `lmerTest` package is required
 
     (chl.mod <- lmer(Chl ~ 1 + days.elapsed * treatment + block + (1|tank), data = chl.trunk))
 
+~~~~
+lmer output for above model
+
+Linear mixed model fit by REML ['merModLmerTest']
+Formula: Chl ~ 1 + days.elapsed * treatment + block + (1 | tank)
+   Data: chl.trunk
+REML criterion at convergence: 796.0719
+Random effects:
+ Groups   Name        Std.Dev.
+ tank     (Intercept) 1.455   
+ Residual             8.260   
+Number of obs: 117, groups:  tank, 30
+Fixed Effects:
+            (Intercept)             days.elapsed               treatmentH  
+                -1.8220                   0.5633                   2.5248  
+             treatmentI               treatmentL               treatmentN  
+                 5.8390                   2.0594                   0.2706  
+                 blockB                   blockC                   blockD  
+                 5.4610                   2.8582                   5.6476  
+                 blockE                   blockF  days.elapsed:treatmentH  
+                 8.2260                   5.0450                   0.1534  
+days.elapsed:treatmentI  days.elapsed:treatmentL  days.elapsed:treatmentN  
+                -0.2118                  -0.1668                  -0.1124 
+
+~~~~
+
+Test of factor significants 
+ 
     anova(chl.mod)
+
+~~~~
+ANCOVA of chl by days elapsed, treatment, and block
+
+NOTE: the interaction between treatment and block could not be analyzed because it produces singlarities.
+
+Analysis of Variance Table of type III  with  Satterthwaite 
+approximation for degrees of freedom
+                       Sum Sq Mean Sq NumDF  DenDF F.value  Pr(>F)    
+days.elapsed           9527.1  9527.1     1 82.321 139.634 < 2e-16 ***
+treatment               188.2    47.0     4 75.694   0.690 0.60144    
+block                   696.6   139.3     5 19.543   2.042 0.11710    
+days.elapsed:treatment  675.9   169.0     4 82.269   2.476 0.05046 .  
+
+~~~~
+ 
+### Plot by Days
+ 
+    plot(Chl ~ jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "N", pch = 1, col = "black", ylim = c(0, 60), xlab = "Day of Experiment", ylab = expression(paste("Chlorophyll Conc. (", mu, "g L"^{-1}, ")")))
+    points(Chl ~  jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "I", pch = 19, col = "blue")
+    points(Chl ~ jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "L", pch = 19, col = "green")
+    points(Chl ~ jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "E", pch = 19, col = "yellow")
+    points(Chl ~ jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "H", pch = 19, col = "red")
+    legend(0, 60, c("Native Only", "Invasive Only", "Low Invasive", "Med. Invasive", "High Invasive"), pch = c(1, 19, 19, 19, 19), col = c("black", "blue", "green", "yellow", "red")) 
+    dev.copy(jpeg, "./output/chl_by_day.jpg")
+    dev.off()
+
+![Plot of Chl by Day of incubation](../output/chl_by_day.jpg)
 
 ### Plots by Time Step
 
