@@ -266,19 +266,21 @@ days.elapsed:treatmentH  days.elapsed:treatmentI  days.elapsed:treatmentL
                  0.1419                   0.6111                   0.3571  
 days.elapsed:treatmentN  
                  0.9670  
-~~~~
+~~~~~
  
 ##### Model Test
  
     anova(k.mod)     
 
 ~~~~
-Analysis of Variance Table of type III  with  Satterthwaite 
+
+ Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
                        Sum Sq Mean Sq NumDF  DenDF F.value Pr(>F)    
 days.elapsed            48338   48338     1 51.001 267.582 <2e-16 ***
 treatment                 396      99     4 63.767   0.549 0.7007    
 days.elapsed:treatment    754     188     4 51.001   1.043 0.3944    
+
 ~~~~
  
 ### Summarize AFDM by Day
