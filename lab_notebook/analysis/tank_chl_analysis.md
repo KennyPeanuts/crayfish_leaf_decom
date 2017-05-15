@@ -12,6 +12,8 @@
 
 * modified 13 Dec 2016 - KF - coded ANCOVA on chl by treatment
 
+* modified 15 May 2017 - KF- removed tanks 3 and 4 and re-ran analysis
+
 ## Description
 
 This is the code to analyze the effect of crayfish community on the tank chlorophyll the experiment evaluating the impact of in invasive and native crayfish.
@@ -75,32 +77,30 @@ The `lmerTest` package is required
 
 I ln-transformed the chl values to correct for non-homogeneity of variance determined by a funnel shape in the resid vs fitted plot of the untransformed data.
 
-    (chl.mod <- lmer(log(Chl) ~ 1 + days.elapsed * treatment + block + (1|tank), data = chl.trunk))
+I did not analyze block because the blocks were not properly set up for the present env. gradients. 
+
+    (chl.mod <- lmer(log(Chl) ~ 1 + days.elapsed * treatment + (1|tank), data = chl.trunk))
 
 ~~~~
-lmer output for above model
-
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: log(Chl) ~ 1 + days.elapsed * treatment + block + (1 | tank)
+Formula: log(Chl) ~ 1 + days.elapsed * treatment + (1 | tank)
    Data: chl.trunk
-REML criterion at convergence: 273.0313
+REML criterion at convergence: 252.1155
 Random effects:
  Groups   Name        Std.Dev.
- tank     (Intercept) 0.04542 
- Residual             0.64197 
-Number of obs: 117, groups:  tank, 30
+ tank     (Intercept) 0.1748  
+ Residual             0.6195  
+Number of obs: 109, groups:  tank, 28
 Fixed Effects:
             (Intercept)             days.elapsed               treatmentH  
-               0.532620                 0.050734                 0.902980  
+              1.5204080                0.0396717                0.4479131  
              treatmentI               treatmentL               treatmentN  
-               0.651591                 0.420206                 0.091353  
-                 blockB                   blockC                   blockD  
-               0.576495                 0.510805                 0.735745  
-                 blockE                   blockF  days.elapsed:treatmentH  
-               0.809532                 0.450822                -0.013334  
-days.elapsed:treatmentI  days.elapsed:treatmentL  days.elapsed:treatmentN  
-              -0.016935                -0.013043                -0.006306  
-
+              0.1721757               -0.0536818               -0.3825347  
+days.elapsed:treatmentH  days.elapsed:treatmentI  days.elapsed:treatmentL  
+             -0.0007786               -0.0057770               -0.0019806  
+days.elapsed:treatmentN  
+              0.0047562  
+              
 ~~~~
 
 Test of factor significants 
@@ -108,17 +108,14 @@ Test of factor significants
     anova(chl.mod)
 
 ~~~~
-ANCOVA of chl by days elapsed, treatment, and block
-
-NOTE: the interaction between treatment and block could not be analyzed because it produces singlarities.
+ANCOVA of chl by days elapsed, and treatment
 
 Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
-                       Sum Sq Mean Sq NumDF  DenDF F.value  Pr(>F)    
-days.elapsed           64.586  64.586     1 81.878 156.714 < 2e-16 ***
-treatment               5.154   1.289     4 78.874   3.127 0.01929 *  
-block                   7.957   1.591     5 19.037   3.862 0.01387 *  
-days.elapsed:treatment  1.371   0.343     4 81.822   0.831 0.50904 
+                       Sum Sq Mean Sq NumDF  DenDF F.value Pr(>F)    
+days.elapsed           54.011  54.011     1 76.158 140.733 <2e-16 ***
+treatment               2.915   0.729     4 75.447   1.899 0.1194    
+days.elapsed:treatment  0.453   0.113     4 76.078   0.295 0.8804
 
 ~~~~
  
