@@ -28,11 +28,17 @@ This is the code to analyze the effect of crayfish community on the tank chlorop
 
     chl <- merge(chl, treat, by = "tank")
 
+### Modify data to remove negative numbers and tanks with bad treatments
+
 Three of the chl measurement read below 0, I removed these values from the analysis with the code below
 
     chl.trunk <- chl
     chl.trunk$Chl[chl.trunk$Chl < 0 ] <- NA
 
+Tanks 3 and 4 accidentally had O. longulus added to them rather than O. virilus.  These tanks were removed from the analysis
+
+    chl.trunk <- chl.trunk[chl.trunk$tank != 3 & chl.trunk$tank != 4,]
+    
 #### Create days.elapsed
 
      days.elapsed <- as.numeric(as.Date(chl.trunk$Date) - as.Date("2016-06-03"))
@@ -44,20 +50,21 @@ Three of the chl measurement read below 0, I removed these values from the analy
 
 ~~~~
 $`2016-06-03`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NAs   SD
-  0.240   1.830   3.300   4.781   6.540  14.930       1  3.864727
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD            NA's 
+  0.390   2.085   3.300   4.882   6.445  14.930    3.893177      1 
 
 $`2016-06-16`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NAs   SD
-  1.670   5.698   8.700   9.552  12.070  21.090       2  4.754465
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD             NA's 
+  2.110   5.992   8.700   9.812  12.540  21.090    4.669907       2 
 
 $`2016-06-30`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.  SD
-   8.42   14.70   19.46   21.29   27.06   47.89  9.613351
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
+   8.42   15.77   20.44   22.07   28.30   47.89    9.476181  
 
 $`2016-07-22`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.  SD
-   7.59   16.98   23.89   27.89   35.72   57.28  13.729199
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
+   7.59   16.81   23.03   27.72   37.92   57.28    14.211278
+
 
 ~~~~
 

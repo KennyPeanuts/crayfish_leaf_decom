@@ -14,7 +14,7 @@
 
 * 1 Dec 2016 - KF - calculated k for each tank and then ran ANOVA
 
-* 15 May 2017 - KF - 
+* 15 May 2017 - KF - removed tanks 3 and 4 from the analysis and recalculated the stats. Also, streamlined the function 
 
 ## Description
 
