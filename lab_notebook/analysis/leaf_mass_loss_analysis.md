@@ -14,6 +14,8 @@
 
 * 1 Dec 2016 - KF - calculated k for each tank and then ran ANOVA
 
+* 15 May 2017 - KF - 
+
 ## Description
 
 This is the code to calculate the mass loss of the leaf packs in the experiment evaluating the impact of in invasive and native crayfish.
@@ -66,17 +68,27 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
 
 ### Analyze Mass Lost with time 
 
+#### Remove tanks with C. longulus in them
+
+Due to an error when stocking, tanks 3 and 4 had C. longulus individuals added to in addition to the target species.  
+
+These tanks were removed from the analysis.
+
     # create a single data frame with the T1 - T3 AFDM
-    leaf.AFDM <- rbind(leaf.T1, leaf.T2, leaf.T3)
+    leaf.AFDM.raw <- rbind(leaf.T1, leaf.T2, leaf.T3)
+
+    # remove tanks 3 and 4 from the dataset
+    leaf.AFDM <- leaf.AFDM.raw[leaf.AFDM.raw$BagTank != 3 & leaf.AFDM.raw$BagTank != 4,]
     
     # convert to percent remaining in the tank
     percAFDM.rem <- (leaf.AFDM$AFDM / mean.initial.AFDM) * 100
 
     # calculate the time in the tank
-    date <- c(as.Date(leaf.T1$Date), as.Date(leaf.T2$Date), as.Date(leaf.T3$Date)) 
-    time.step <- c(rep("T1", 30), rep("T2", 30), rep("T3", 30))
+    #date <- c(as.Date(leaf.T1$Date), as.Date(leaf.T2$Date), as.Date(leaf.T3$Date)) 
+    #time.step <- c(rep("T1", 30), rep("T2", 30), rep("T3", 30))
     # calculate the number of days elapsed
-    days.elapsed <- date - as.Date(leaf.initial$Date)[1]
+    days.elapsed <- as.Date(leaf.AFDM$Date) - as.Date(leaf.initial$Date)
+    days.elapsed <- as.numeric(days.elapsed)
 
     # add calc variables to data frame
     leaf.AFDM <- data.frame(leaf.AFDM, percAFDM.rem, days.elapsed)
@@ -90,31 +102,58 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
 
 ##### Function designation
     k.tank <- function() {
-     # create empty objects
      k <- numeric(0)
-     tank <- numeric(0)
      treat <- character(0)
-     block <- character(0)
+     tank_name = unique(leaf.AFDM$BagTank)
+     index = seq_along(tank)
      
-     for(i in leaf.AFDM$BagTank)
-       k <- c(coef(summary(lm(log(leaf.AFDM$percAFDM.rem + 1)[leaf.AFDM$BagTank == i] ~ leaf.AFDM$days.elapsed[leaf.AFDM$BagTank == i])))[2, 1], k) # this extracts the slope (col 2, row 1) from the matrix of coefficents produced by the lm
-     
-     for(i in leaf.AFDM$BagTank)
-       tank <- c(i, tank)
+     for(i in index) { 
+      treat[i] <- as.character(leaf.AFDM$treatment[index == i])[1]
+      k[i] <- coef(summary(lm(log(leaf.AFDM$percAFDM.rem + 1)[index == i] ~ leaf.AFDM$days.elapsed[index == i])))[2, 1] # this extracts the slope (col 2, row 1) from the matrix of coefficents produced by the lm
+     }
 
-     for(i in leaf.AFDM$BagTank)
-       treat <- c(as.character(leaf.AFDM$treatment[leaf.AFDM$BagTank == i]), treat)
-     
-     for(i in leaf.AFDM$BagTank)
-       block <- c(as.character(leaf.AFDM$block[leaf.AFDM$BagTank == i]), block)
-     
-     k.list <- data.frame(unique(tank), unique(treat), unique(block), unique(k)) # the "unique" is needed because the tank numbers are repreated for each day in the dataset so the for-loop runs 3X. The unique eliminates the duplicate data
-     
-     return(k.list)
+     data.frame(tank_name, treat, k)
     }
 
+    # run the function
     k.list <- k.tank()
-    names(k.list) <- c("tank", "treat", "block", "k")
+
+#### Print Data 
+
+     k.list
+
+~~~~
+> k.list
+   tank_name treat           k
+1          1     N -0.03099643
+2          2     L -0.10035310
+3          5     I -0.01454786
+4          6     N -0.04153198
+5          7     E -0.01528752
+6          8     I -0.01706877
+7          9     L -0.02865343
+8         10     H -0.04633552
+9         11     I -0.06030412
+10        12     H -0.04291484
+11        13     N -0.03776685
+12        14     L -0.03969227
+13        15     E -0.10035444
+14        16     E -0.06440327
+15        17     L -0.05480065
+16        18     N -0.07506679
+17        19     H -0.08681979
+18        20     I -0.10375450
+19        21     I -0.23209143
+20        22     E -0.22734437
+21        23     H -0.08669731
+22        24     L -0.09163671
+23        25     N -0.03348355
+24        26     H -0.12604939
+25        27     L -0.02961575
+26        28     N -0.02305021
+27        29     E -0.09646242
+28        30     I -0.01813098
+~~~~~
 
 #### Summarize K
 
@@ -123,8 +162,8 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
 
 ~~~~
  
- Min.  1st Qu.   Median     Mean  3rd Qu.     Max.     SD
--0.23210 -0.09043 -0.04463 -0.06596 -0.02889 -0.01455  0.0546246
+ Min.  1st Qu.   Median     Mean  3rd Qu.     Max.      SD
+-0.23210 -0.09284 -0.05057 -0.06876 -0.03065 -0.01455  0.05552608
 
 ~~~~
 
@@ -135,62 +174,43 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
  
 $E
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--0.09646 -0.09043 -0.06326 -0.06156 -0.03141 -0.02611 
+-0.22730 -0.10040 -0.09646 -0.10080 -0.06440 -0.01529 
 
 $H
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--0.23210 -0.11060 -0.06235 -0.09256 -0.04623 -0.03100 
+-0.12600 -0.08682 -0.08670 -0.07776 -0.04634 -0.04291 
 
 $I
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--0.10380 -0.08685 -0.03991 -0.05277 -0.02197 -0.01455 
+-0.23210 -0.09289 -0.03922 -0.07432 -0.01733 -0.01455 
 
 $L
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--0.22730 -0.08896 -0.04886 -0.07839 -0.03294 -0.01529 
+-0.10040 -0.08243 -0.04725 -0.05746 -0.03213 -0.02865 
 
 $N
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--0.08670 -0.06574 -0.03263 -0.04452 -0.02416 -0.01707 
+-0.07507 -0.04059 -0.03563 -0.04032 -0.03162 -0.02305 
 
 ** SD
 
-        E          H          I          L          N 
-0.03340144 0.07591803 0.03984435 0.07854372 0.02919630 
-
+     E             H            I            L            N 
+0.07853278    0.03426187   0.08480834   0.03141895   0.01815069 
 ~~~~
 
-#### Analyze k by treatment and block
-
-    anova(lm(k ~ treat + block, data = k.list))
-    
-~~~~
-ANOVA table for the combined effect of treatment and block on k
-
-Analysis of Variance Table
-
-Response: k
-          Df   Sum Sq   Mean Sq F value Pr(>F)
-treat      4 0.009090 0.0022725  0.6435 0.6378
-block      5 0.006813 0.0013626  0.3859 0.8526
-Residuals 20 0.070628 0.0035314   
-
-~~~~
-
-
+#### Analyze k by treatment 
 
     anova(lm(k ~ treat, data = k.list))
     
 ~~~~
-ANOVA table for treatment effect on k
+ANOVA table for the effect of treatment on k
 
 Analysis of Variance Table
 
 Response: k
           Df   Sum Sq   Mean Sq F value Pr(>F)
-treat      4 0.009090 0.0022725  0.7336 0.5777
-Residuals 25 0.077442 0.0030977    
-
+treat      4 0.011335 0.0028336  0.9063 0.4767
+Residuals 23 0.071910 0.0031265     
 ~~~~
 
 
@@ -200,30 +220,8 @@ Residuals 25 0.077442 0.0030977
      
 ![k by treatment](../output/plots/k_by_treat.jpg)
 
-K by treatment
+FIGURE: k by Treatment
 
-    anova(lm(k ~ block, data = k.list))
-    
-~~~~
-ANOVA table for effect of block on treatment
-
-Analysis of Variance Table
-
-Response: k
-          Df   Sum Sq   Mean Sq F value Pr(>F)
-block      5 0.006813 0.0013626  0.4102 0.8369
-Residuals 24 0.079718 0.0033216  
-
-~~~~
-
-    plot(k ~ block, data = k.list, ylim = c(-0.3, 0), col = "lightsteelblue", ylab = "k (1/day)", xlab = "Block")
-    dev.copy(jpeg, "./output/plots/k_by_block.jpg")
-    dev.off()
-
-![k by block](../output/plots/k_by_block.jpg)
-
-k by block
-     
 #### Test of the invasive vs native control
 
     t.test(k.list$k[k.list$treat == "N"], k.list$k[k.list$treat == "I"])
@@ -231,48 +229,43 @@ k by block
 ~~~~
  Welch Two Sample t-test
 
+Welch Two Sample t-test
+
 data:  k.list$k[k.list$treat == "N"] and k.list$k[k.list$treat == "I"]
-t = 0.4088, df = 9.168, p-value = 0.6921
+t = 0.9603, df = 5.457, p-value = 0.3775
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -0.03724743  0.05373583
+ -0.0547702  0.1227708
 sample estimates:
   mean of x   mean of y 
--0.04452361 -0.05276781 
-
+-0.04031597 -0.07431628 
 ~~~~
  
 #### Repeated Measures ANCOVA 
 
 The `lmerTest` package is required
 
-    (k.mod <- lmer(percAFDM.rem ~ 1 + days.elapsed * treatment + block + (1|BagTank), data = leaf.AFDM))
-    
-NOTE: I cannot test the interaction between block and treatment because of the design. Produces a singularity
+    (k.mod <- lmer(percAFDM.rem ~ 1 + days.elapsed * treatment + (1|BagTank), data = leaf.AFDM))
 
-~~~~
- 
+~~~~~
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: percAFDM.rem ~ 1 + days.elapsed * treatment + block + (1 | BagTank)
+Formula: percAFDM.rem ~ 1 + days.elapsed * treatment + (1 | BagTank)
    Data: leaf.AFDM
-REML criterion at convergence: 675.2644
+REML criterion at convergence: 659.9343
 Random effects:
  Groups   Name        Std.Dev.
- BagTank  (Intercept)  6.045  
- Residual             13.528  
-Number of obs: 90, groups:  BagTank, 30
+ BagTank  (Intercept)  7.626  
+ Residual             13.441  
+Number of obs: 84, groups:  BagTank, 28
 Fixed Effects:
             (Intercept)             days.elapsed               treatmentH  
-               100.3758                  -2.9170                  -3.3522  
+                97.2299                  -3.1741                  -4.5901  
              treatmentI               treatmentL               treatmentN  
-                 7.7508                   5.4471                  -3.2299  
-                 blockB                   blockC                   blockD  
-                 2.7005                  -5.3189                 -12.6665  
-                 blockE                   blockF  days.elapsed:treatmentH  
-               -10.6208                  -7.1107                   0.1215  
-days.elapsed:treatmentI  days.elapsed:treatmentL  days.elapsed:treatmentN  
-                 0.3541                   0.1000                   0.7099  
-
+                 5.3940                   3.0902                  -5.5868  
+days.elapsed:treatmentH  days.elapsed:treatmentI  days.elapsed:treatmentL  
+                 0.1419                   0.6111                   0.3571  
+days.elapsed:treatmentN  
+                 0.9670  
 ~~~~
  
 ##### Model Test
@@ -280,15 +273,12 @@ days.elapsed:treatmentI  days.elapsed:treatmentL  days.elapsed:treatmentN
     anova(k.mod)     
 
 ~~~~
- 
 Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
                        Sum Sq Mean Sq NumDF  DenDF F.value Pr(>F)    
-days.elapsed            48535   48535     1 55.000 265.202 <2e-16 ***
-treatment                 514     129     4 64.527   0.702 0.5933    
-block                    1667     333     5 20.000   1.822 0.1542    
-days.elapsed:treatment    444     111     4 55.000   0.607 0.6596 
-
+days.elapsed            48338   48338     1 51.001 267.582 <2e-16 ***
+treatment                 396      99     4 63.767   0.549 0.7007    
+days.elapsed:treatment    754     188     4 51.001   1.043 0.3944    
 ~~~~
  
 ### Summarize AFDM by Day
@@ -300,17 +290,21 @@ days.elapsed:treatment    444     111     4 55.000   0.607 0.6596
 AFDM (g)
 
 $`3`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
-0.7647  0.8256  0.8734  0.8820  0.9320  1.0660  0.07364759
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.7647  0.8404  0.8737  0.8881  0.9367  1.0660 
 
 $`10`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
-0.2342  0.6533  0.7354  0.7288  0.7991  0.9842  0.15621487
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.2342  0.6420  0.7440  0.7299  0.8073  0.9842 
 
 $`24`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
-0.0000  0.1195  0.3439  0.3216  0.4584  0.7865  0.21246679
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.0000  0.1159  0.3178  0.3120  0.4315  0.7865 
 
+## SD
+
+       3         10         24 
+0.07236243 0.16168339 0.21685885 
 ~~~~
   
 #### Summarize percent AFDM remaining by Day
@@ -320,48 +314,24 @@ Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
 
 ~~~~
 Percent AFDM Remaining 
-
 $`3`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max.   SD
-75.26   81.25   85.95   86.80   91.72  104.90  7.247936
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  75.26   82.71   85.98   87.40   92.18  104.90 
 
 $`10`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max.   SD
-23.05   64.30   72.37   71.72   78.64   96.86  15.373691
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  23.05   63.18   73.22   71.83   79.45   96.86 
 
 $`24`
-Min. 1st Qu.  Median    Mean 3rd Qu.    Max.   SD
-0.00   11.77   33.84   31.65   45.11   77.40   20.909654
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   0.00   11.40   31.27   30.70   42.47   77.40 
 
+## SD
+> tapply(leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed, sd)
+        3        10        24 
+ 7.121458 15.911869 21.341893 
 ~~~~
   
-#### All treatments combined
-
-    plot(log(percAFDM.rem) ~ days.elapsed)
-    k <- lm(log(percAFDM.rem[percAFDM.rem != 0]) ~ days.elapsed[percAFDM.rem != 0])
-    abline(k)
-
-    summary(k)
-~~~~
-Call:
-lm(formula = log(percAFDM.rem[percAFDM.rem != 0]) ~ days.elapsed[percAFDM.rem != 
-    0])
-
-Residuals:
-     Min       1Q   Median       3Q      Max 
--1.70055 -0.12249  0.01296  0.22722  0.99675 
-
-Coefficients:
-                                Estimate Std. Error t value Pr(>|t|)    
-(Intercept)                      4.69892    0.08032   58.50   <2e-16 ***
-days.elapsed[percAFDM.rem != 0] -0.05611    0.00541  -10.37   <2e-16 ***
----
-
-Residual standard error: 0.4389 on 86 degrees of freedom
-Multiple R-squared:  0.5557, Adjusted R-squared:  0.5506 
-F-statistic: 107.6 on 1 and 86 DF,  p-value: < 2.2e-16
-
-~~~~
 
 
 #### By Treatment over Time
@@ -378,36 +348,6 @@ F-statistic: 107.6 on 1 and 86 DF,  p-value: < 2.2e-16
 
 ![percent mass remaining by treatment and time](../output/plots/percMassRem_by_treat_days.jpg)
 
-### Mass Lost per Time Step
-
-    ordered.treat <- factor(treat$treatment, levels = c("N", "I", "L", "E", "H"))
-
-    mass.lost.T1 <- mean.initial.AFDM - leaf.AFDM$AFDM[leaf.AFDM$Date == "2016-06-06"]
-    par(las = 1, mar = c(4, 5, 2, 2))
-    plot(mass.lost.T1 ~ ordered.treat, ylab = "3 Day Mass Loss (g)", xlab = "Treatment", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"), ylim = c(-0.1, 1))
-    abline(h = 0)
-    dev.copy(jpeg, "./output/plots/T0_T1_mass_loss.jpg")
-    dev.off()
-
-![Leaf Mass Loss From T0 to T1 by Treatment](../output/plots/T0_T1_mass_loss.jpg)
-
-    mass.lost.T2 <- mean.initial.AFDM - leaf.AFDM$AFDM[leaf.AFDM$Date == "2016-06-13"]
-    par(las = 1, mar = c(4, 5, 2, 2))
-    plot(mass.lost.T2 ~ ordered.treat, ylab = "10 Day Mass Loss (g)", xlab = "Treatment", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"), ylim = c(-0.1, 1))
-    abline(h = 0)
-    dev.copy(jpeg, "./output/plots/T0_T2_mass_loss.jpg")
-    dev.off()
-
-![Leaf Mass Loss From T0 to T2 by Treatment](../output/plots/T0_T2_mass_loss.jpg)
-
-    mass.lost.T3 <- mean.initial.AFDM - leaf.AFDM$AFDM[leaf.AFDM$Date == "2016-06-27"]
-    par(las = 1, mar = c(4, 5, 2, 2))
-    plot(mass.lost.T3 ~ ordered.treat, ylab = "24 Day Mass Loss (g)", xlab = "Treatment", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"), ylim = c(-0.1, 1))
-    abline(h = 0)
-    dev.copy(jpeg, "./output/plots/T0_T3_mass_loss.jpg")
-    dev.off()
-
-![Leaf Mass Loss From T0 to T3 by Treatment](../output/plots/T0_T3_mass_loss.jpg)
 
     
 ### Plot by Tank
@@ -416,3 +356,35 @@ F-statistic: 107.6 on 1 and 86 DF,  p-value: < 2.2e-16
     points(percAFDM.rem ~ BagTank, data = leaf.AFDM, subset = days.elapsed == "10", pch = 19, col = 2, ylim = c(0, 110) )
     points(percAFDM.rem ~ BagTank, data = leaf.AFDM, subset = days.elapsed == "24", pch = 19, col = 3, ylim = c(0, 110) )
 
+
+########################## DO NOT USE #################################
+#######################################################################
+#######################################################################
+    #k.tank <- function() {
+     # create empty objects
+     #k <- numeric(0)
+     #tank <- numeric(0)
+     #treat <- character(0)
+     #block <- character(0)
+     
+     #for(i in leaf.AFDM$BagTank)
+       #k <- c(coef(summary(lm(log(leaf.AFDM$percAFDM.rem + 1)[leaf.AFDM$BagTank == i] ~ leaf.AFDM$days.elapsed[leaf.AFDM$BagTank == i])))[2, 1], k) # this extracts the slope (col 2, row 1) from the matrix of coefficents produced by the lm
+     
+     #for(i in leaf.AFDM$BagTank)
+       #tank <- c(i, tank)
+
+     #for(i in leaf.AFDM$BagTank)
+       #treat <- c(as.character(leaf.AFDM$treatment[leaf.AFDM$BagTank == i]), treat)
+     
+     #for(i in leaf.AFDM$BagTank)
+       #block <- c(as.character(leaf.AFDM$block[leaf.AFDM$BagTank == i]), block)
+     
+     #k.list <- data.frame(tank, treat, block, k) # the "unique" is needed because the tank numbers are repreated for each day in the dataset so the for-loop runs 3X. The unique eliminates the duplicate data
+     
+     #return(k) #k.list)
+    }
+
+    #k.list <- k.tank()
+    #names(k.list) <- c("tank", "treat", "block", "k")
+#######################################################################
+#######################################################################
