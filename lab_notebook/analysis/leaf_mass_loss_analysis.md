@@ -87,7 +87,7 @@ These tanks were removed from the analysis.
     #date <- c(as.Date(leaf.T1$Date), as.Date(leaf.T2$Date), as.Date(leaf.T3$Date)) 
     #time.step <- c(rep("T1", 30), rep("T2", 30), rep("T3", 30))
     # calculate the number of days elapsed
-    days.elapsed <- as.Date(leaf.AFDM$Date) - as.Date(leaf.initial$Date)
+    days.elapsed <- as.Date(leaf.AFDM$Date) - as.Date(unique(leaf.initial$Date))
     days.elapsed <- as.numeric(days.elapsed)
 
     # add calc variables to data frame
@@ -105,7 +105,7 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
      k <- numeric(0)
      treat <- character(0)
      tank_name = unique(leaf.AFDM$BagTank)
-     index = seq_along(tank)
+     index = seq_along(tank_name)
      
      for(i in index) { 
       treat[i] <- as.character(leaf.AFDM$treatment[index == i])[1]
@@ -213,8 +213,9 @@ treat      4 0.011335 0.0028336  0.9063 0.4767
 Residuals 23 0.071910 0.0031265     
 ~~~~
 
-
-    plot(k ~ treat, data = k.list, ylim = c(-0.3, 0), col = "wheat", ylab = "k (1/day)", xlab = "Treatment")
+    par(las = 1)
+    x <- factor(k.list$treat, levels=c("N", "I", "L", "E", "H"))
+    plot(k ~ x, data = k.list, ylim = c(-0.3, 0), col = "wheat", ylab = "k (1/day)", xlab = "Treatment")
     dev.copy(jpeg, "./output/plots/k_by_treat.jpg")
     dev.off()
      
@@ -357,6 +358,40 @@ $`24`
     plot(percAFDM.rem ~ BagTank, data = leaf.AFDM, subset = days.elapsed == "3", pch = 19, col = 1, ylim = c(0, 110) )
     points(percAFDM.rem ~ BagTank, data = leaf.AFDM, subset = days.elapsed == "10", pch = 19, col = 2, ylim = c(0, 110) )
     points(percAFDM.rem ~ BagTank, data = leaf.AFDM, subset = days.elapsed == "24", pch = 19, col = 3, ylim = c(0, 110) )
+
+### Calculation of k for each group
+
+    N.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "N")
+    I.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "I")
+    L.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "L")
+    E.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "E")
+    H.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "H")
+    
+#### Plot of decay model fit for each group
+
+    par(las = 1, cex = 1)
+    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "N", xlim = c(0, 25), ylim = c(0, 5), pch = 8, col = "gray40", ylab = "ln Percent AFDM Remaining + 1", xlab = "Days in Tank")
+    abline(N.k, lty = 1, lwd = 4)
+    points(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "I", pch = 3, col = "gray40" )
+    abline(I.k, lty = 3, lwd = 4)
+    points(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "L", pch = 6, col = "gray40")
+    abline(L.k, lty = 2, lwd = 4)
+    points(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "E", pch = 5, col = "gray40")
+    abline(E.k, lty = 4, lwd = 4)
+    points(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "H", pch = 4, col = "gray40")
+    abline(H.k, lty = 5, lwd = 4)
+    legend(0, 2, c("Native Only", "Invasive Only", "Low Invasive", "Equal Invasive", "High Invasive"), pch = c(8, 3, 6, 5, 4), lty = c(1, 3, 2, 4, 5), lwd = 2)
+    dev.copy(jpeg, "./output/plots/k_by_treat_days.jpg")
+    dev.off()
+
+![k by treatment and time](../output/plots/k_by_treat_days.jpg)
+
+
+
+
+
+
+
 
 
 ########################## DO NOT USE #################################
