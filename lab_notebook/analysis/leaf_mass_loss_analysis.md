@@ -16,6 +16,10 @@
 
 * 15 May 2017 - KF - removed tanks 3 and 4 from the analysis and recalculated the stats. Also, streamlined the function 
 
+* 17 May 2017 - KF - calculated k for each treatment level and made figure 
+
+* 18 May 2017 - KF - updated k figure for manuscript
+
 ## Description
 
 This is the code to calculate the mass loss of the leaf packs in the experiment evaluating the impact of in invasive and native crayfish.
@@ -366,7 +370,129 @@ $`24`
     L.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "L")
     E.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "E")
     H.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "H")
-    
+
+#### Decay Model Summaries
+
+    summary(N.k)
+
+~~~~
+Call:
+lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
+    subset = treatment == "N")
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.67002 -0.07375  0.00168  0.15088  0.37404 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   4.60508    0.09354  49.233  < 2e-16 ***
+days.elapsed -0.04032    0.00619  -6.513 7.15e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2293 on 16 degrees of freedom
+Multiple R-squared:  0.7261, Adjusted R-squared:  0.709 
+F-statistic: 42.42 on 1 and 16 DF,  p-value: 7.152e-06
+
+~~~~
+
+    summary(I.k)
+
+~~~~
+Call:
+lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
+    subset = treatment == "I")
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-3.12379 -0.14828 -0.00439  0.33907  1.23807 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   4.90738    0.39084  12.556 1.06e-09 ***
+days.elapsed -0.07432    0.02586  -2.873    0.011 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.958 on 16 degrees of freedom
+Multiple R-squared:  0.3404, Adjusted R-squared:  0.2991 
+F-statistic: 8.256 on 1 and 16 DF,  p-value: 0.01104
+
+~~~~
+ 
+    summary(L.k)
+
+~~~~
+Call:
+lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
+    subset = treatment == "L")
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.88230 -0.06222  0.06356  0.16757  0.57218 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   4.76914    0.15195  31.387 8.42e-16 ***
+days.elapsed -0.05746    0.01006  -5.714 3.20e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.3725 on 16 degrees of freedom
+Multiple R-squared:  0.6711, Adjusted R-squared:  0.6506 
+F-statistic: 32.65 on 1 and 16 DF,  p-value: 3.197e-05
+
+~~~~
+ 
+    summary(E.k)
+
+~~~~
+Call:
+lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
+    subset = treatment == "E")
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.52941 -0.16269 -0.02159  0.29232  1.61763 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   4.94790    0.38963  12.699 1.06e-08 ***
+days.elapsed -0.10077    0.02579  -3.908   0.0018 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.8719 on 13 degrees of freedom
+Multiple R-squared:  0.5402, Adjusted R-squared:  0.5048 
+F-statistic: 15.27 on 1 and 13 DF,  p-value: 0.001799
+
+~~~~
+ 
+    summary(H.k)
+
+~~~~
+Call:
+lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
+    subset = treatment == "H")
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.03997 -0.13135  0.00325  0.25734  0.80796 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   4.73341    0.23078  20.511 2.76e-11 ***
+days.elapsed -0.07776    0.01527  -5.092 0.000207 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.5164 on 13 degrees of freedom
+Multiple R-squared:  0.666, Adjusted R-squared:  0.6403 
+F-statistic: 25.93 on 1 and 13 DF,  p-value: 0.0002067
+~~~~
+
+
 #### Plot of decay model fit for each group
 
     par(las = 1, cex = 1)
@@ -386,10 +512,24 @@ $`24`
 
 ![k by treatment and time](../output/plots/k_by_treat_days.jpg)
 
+#### Multipanel Graph
 
-
-
-
+    par(las = 1, mfcol= c(5, 1), mar = c(3, 15, 0, 15), oma = c(2, 2, 2, 2))
+    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "N", xlim = c(0, 25), ylim = c(0, 5), pch = 19, col = "gray40", ylab = " ", xaxt = 'n', xlab = " ")
+    abline(N.k, lty = 1, lwd = 2)
+    
+    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "I", ylim = c(0, 5), xlim = c(0, 25), xlab = " ", xaxt = 'n', ylab = " ", pch = 19, col = "gray40" )
+    abline(I.k, lty = 1, lwd = 2)
+    
+    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "L", ylim = c(0, 5), xlim = c(0, 25),  xlab = " ", xaxt = 'n', ylab = "Nautral Log of Percent AFDM Remaining + 1", pch = 19, col = "gray40")
+    abline(L.k, lty = 1, lwd = 2)
+    
+    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "E", ylim = c(0, 5), xlim = c(0, 25),  xlab = " ", xaxt = 'n', ylab = " ", pch = 19, col = "gray40")
+    abline(E.k, lty = 1, lwd = 2)
+    
+    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "H", ylim = c(0, 5), xlim = c(0, 25),  ann = F, pch = 19, col = "gray40")
+    abline(H.k, lty = 1, lwd = 2)
+    title(xlab = "Days in the Tank", line = 2)
 
 
 
