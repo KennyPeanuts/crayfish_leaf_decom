@@ -227,6 +227,17 @@ Residuals 23 0.071910 0.0031265
 
 FIGURE: k by Treatment
 
+#### Density Plot
+
+    cf.density <- factor(k.list$treat, levels = c("L", "E", "H"))
+
+    par(las = 1, oma = c(1, 1, 1, 1)) 
+    boxplot(k.list$k ~ cf.density, ylim = c(-0.3, 0), col = c("cadetblue2", "deepskyblue", "blue3"), ann = F, axes = F)
+    axis(2, cex.axis = 0.8)
+    axis(1, c("Low", "Equal", "High"), at = c(1, 2, 3))
+    title(ylab = "k (1/day)", line = 3)
+    box()
+
 #### Test of the invasive vs native control
 
     t.test(k.list$k[k.list$treat == "N"], k.list$k[k.list$treat == "I"])
@@ -245,7 +256,18 @@ sample estimates:
   mean of x   mean of y 
 -0.04031597 -0.07431628 
 ~~~~
+
+##### Plot
  
+    cf.sp.alone <- factor(k.list$treat, levels = c("N", "I"))
+
+    par(las = 1, oma = c(1, 1, 1, 1)) 
+    boxplot(k.list$k ~ cf.sp.alone, ylim = c(-0.3, 0), col = c(0, "gray"), ann = F, axes = F)
+    axis(2, cex.axis = 0.8)
+    axis(1, c("Native", "Invasive"), at = c(1, 2))
+    title(ylab = "k (1/day)", line = 3)
+    box()
+
 #### Repeated Measures ANCOVA 
 
 The `lmerTest` package is required
@@ -313,7 +335,7 @@ $`24`
        3         10         24 
 0.07236243 0.16168339 0.21685885 
 ~~~~
-  
+
 #### Summarize percent AFDM remaining by Day
 
     tapply(leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed, summary)
@@ -344,12 +366,12 @@ $`24`
 #### By Treatment over Time
  
     par(las = 1, mar = c(4, 5, 2, 2))
-    plot(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "N", xlim = c(0, 30), ylim = c(0, 100), pch = 1, xlab = "Days in Tank", ylab = "Percent Initial Leaf Mass Remaining")
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "I", pch = 19, col = "gray40")
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "E", pch = 19, col = "deepskyblue")
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "H", pch = 19, col = "blue3")
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 1), data = leaf.AFDM, subset = treatment == "L", pch = 19, col = "cadetblue2")
-    legend(0, 40, c("Native Only  ", "Invasive Only  ", "Low Invasive  ", "Equal  ", "High Invasive  "), pch = c(1, 19, 19, 19, 19, 19), col = c(1, "gray40", "cadetblue2", "deepskyblue", "blue3"), cex = 0.9)
+    plot(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "N", xlim = c(0, 25), ylim = c(0, 110), pch = 1, xlab = "Days in Tank", ylab = "Percent Initial Leaf Mass Remaining")
+    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "I", pch = 19, col = "gray40")
+    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "E", pch = 19, col = "deepskyblue")
+    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "H", pch = 19, col = "blue3")
+    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "L", pch = 19, col = "cadetblue2")
+    legend(0, 40, c("Native Only  ", "Invasive Only  ", "Low Invasive  ", "Equal  ", "High Invasive  "), pch = c(1, 19, 19, 19, 19, 19), col = c(1, "gray40", "cadetblue2", "deepskyblue", "blue3"), cex = 0.75)
     dev.copy(jpeg, "./output/plots/percMassRem_by_treat_days.jpg")
     dev.off()
 
