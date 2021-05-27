@@ -19,6 +19,11 @@
 This is the code to analyze the effect of crayfish community on the tank chlorophyll the experiment evaluating the impact of in invasive and native crayfish.
 
 ## R Code
+### Load Packages
+
+The `lmerTest` package is required
+
+    library("lmerTest")
 
 ### Import data
 
@@ -50,48 +55,49 @@ Tanks 3 and 4 accidentally had O. longulus added to them rather than O. virilus.
     tapply(chl.trunk$Chl, chl.trunk$Date, summary)
     tapply(chl.trunk$Chl, chl.trunk$Date, sd, na.rm = T)
 
-~~~~
-$`2016-06-03`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD            NA's 
-  0.390   2.085   3.300   4.882   6.445  14.930    3.893177      1 
+    ##################################################
+    $`2016-06-03`
+    Min.    1st Qu.  Median    Mean    3rd Qu.    Max.     SD            NAs 
+    0.390   2.085    3.300     4.882   6.445      14.930   3.893177      1 
 
-$`2016-06-16`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD             NA's 
-  2.110   5.992   8.700   9.812  12.540  21.090    4.669907       2 
+    $`2016-06-16`
+    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD             NAs 
+    2.110   5.992   8.700   9.812  12.540  21.090    4.669907       2 
 
-$`2016-06-30`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
-   8.42   15.77   20.44   22.07   28.30   47.89    9.476181  
+    $`2016-06-30
+    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
+    8.42   15.77   20.44   22.07   28.30   47.89    9.476181  
 
-$`2016-07-22`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
-   7.59   16.81   23.03   27.72   37.92   57.28    14.211278
+    $`2016-07-22`
+    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    SD
+    7.59   16.81   23.03   27.72   37.92   57.28    14.211278
 
-
-~~~~
+    ##################################################
 
 ### Analyze Chl by treatment
 #### Repeated measures ANCOVA
-
-The `lmerTest` package is required
 
 I ln-transformed the chl values to correct for non-homogeneity of variance determined by a funnel shape in the resid vs fitted plot of the untransformed data.
 
 I did not analyze block because the blocks were not properly set up for the present env. gradients. 
 
+##### Set up Mixed Linear Model of chl as a function of days and treatment with tank as the random variable
+
     (chl.mod <- lmer(log(Chl) ~ 1 + days.elapsed * treatment + (1|tank), data = chl.trunk))
 
-~~~~
-Linear mixed model fit by REML ['merModLmerTest']
-Formula: log(Chl) ~ 1 + days.elapsed * treatment + (1 | tank)
-   Data: chl.trunk
-REML criterion at convergence: 252.1155
-Random effects:
- Groups   Name        Std.Dev.
- tank     (Intercept) 0.1748  
- Residual             0.6195  
-Number of obs: 109, groups:  tank, 28
-Fixed Effects:
+    ##################################################
+    # Linear Mixed Model parameters of Chl as a function of days and treatment with tank as the random variable
+
+    Linear mixed model fit by REML ['merModLmerTest']
+    Formula: log(Chl) ~ 1 + days.elapsed * treatment + (1 | tank)
+    Data: chl.trunk
+    REML criterion at convergence: 252.1155
+    Random effects:
+    Groups   Name        Std.Dev.
+    tank     (Intercept) 0.1748  
+    Residual             0.6195  
+    Number of obs: 109, groups:  tank, 28
+    Fixed Effects:
             (Intercept)             days.elapsed               treatmentH  
               1.5204080                0.0396717                0.4479131  
              treatmentI               treatmentL               treatmentN  
