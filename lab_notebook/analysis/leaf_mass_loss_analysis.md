@@ -20,6 +20,8 @@
 
 * 18 May 2017 - KF - updated k figure for manuscript
 
+* 27 May 2021 - KF - cleaned up the script to match the current lab standards and created a new figure for k by treatment with ggplot
+
 ## Description
 
 This is the code to calculate the mass loss of the leaf packs in the experiment evaluating the impact of in invasive and native crayfish.
@@ -130,7 +132,7 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
     k.list <- k.tank()
     
 ##### Replace the treatment names in k.list with more logical level names
-    k.list$treat <- factor(k.list$treat, levels = c("N", "I", "L", "E", "H"))
+    k.list$treat <- factor(k.list$treat, levels = c("N", "L", "E", "H", "I"))
 
 #### Print Data 
 
@@ -260,6 +262,7 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
 ##### Load Packages
     
 The `lmerTest` package is required
+    
     library("lmerTest")
     
     (k.mod <- lmer(percAFDM.rem ~ 1 + days.elapsed * treatment + (1|BagTank), data = leaf.AFDM))
@@ -367,124 +370,119 @@ The `lmerTest` package is required
     H.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "H")
 
 #### Decay Model Summaries
+    
+##### Summary of the decay model for the Native-only treatment (N)
 
     summary(N.k)
 
-~~~~
-Call:
-lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
-    subset = treatment == "N")
+    ################################################## 
+    Call:
+    lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "N")
 
-Residuals:
-     Min       1Q   Median       3Q      Max 
--0.67002 -0.07375  0.00168  0.15088  0.37404 
+    Residuals:
+    Min        1Q        Median   3Q       Max 
+    -0.67002   -0.07375  0.00168  0.15088  0.37404 
 
-Coefficients:
-             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   4.60508    0.09354  49.233  < 2e-16 ***
-days.elapsed -0.04032    0.00619  -6.513 7.15e-06 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+    Coefficients:
+                  Estimate   Std. Error  t value   Pr(>|t|)    
+    (Intercept)   4.60508    0.09354     49.233    < 2e-16 ***
+    days.elapsed  -0.04032   0.00619     -6.513    7.15e-06 ***
 
-Residual standard error: 0.2293 on 16 degrees of freedom
-Multiple R-squared:  0.7261, Adjusted R-squared:  0.709 
-F-statistic: 42.42 on 1 and 16 DF,  p-value: 7.152e-06
+    Residual standard error: 0.2293 on 16 degrees of freedom
+    Multiple R-squared:  0.7261, Adjusted R-squared:  0.709 
+    F-statistic: 42.42 on 1 and 16 DF,  p-value: 7.152e-06
 
-~~~~
+    ################################################## 
+
+##### Summary of the decay model for the Invasive-only treatment (I)
 
     summary(I.k)
 
-~~~~
-Call:
-lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
-    subset = treatment == "I")
+    ##################################################
+    Call:
+    lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "I")
 
-Residuals:
-     Min       1Q   Median       3Q      Max 
--3.12379 -0.14828 -0.00439  0.33907  1.23807 
+    Residuals:
+     Min      1Q         Median     3Q        Max 
+    -3.12379  -0.14828   -0.00439   0.33907   1.23807 
 
-Coefficients:
-             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   4.90738    0.39084  12.556 1.06e-09 ***
-days.elapsed -0.07432    0.02586  -2.873    0.011 *  
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+    Coefficients:
+                 Estimate   Std. Error  t value   Pr(>|t|)    
+    (Intercept)   4.90738    0.39084     12.556    1.06e-09 ***
+    days.elapsed  -0.07432   0.02586     -2.873    0.011 *  
 
-Residual standard error: 0.958 on 16 degrees of freedom
-Multiple R-squared:  0.3404, Adjusted R-squared:  0.2991 
-F-statistic: 8.256 on 1 and 16 DF,  p-value: 0.01104
+    Residual standard error: 0.958 on 16 degrees of freedom
+    Multiple R-squared:  0.3404, Adjusted R-squared:  0.2991 
+    F-statistic: 8.256 on 1 and 16 DF,  p-value: 0.01104
 
-~~~~
+    ##################################################
  
+##### Summary of the decay model for the Low-Density treatment (L)
+
     summary(L.k)
 
-~~~~
-Call:
-lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
-    subset = treatment == "L")
+    ##################################################
+    Call:
+    lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "L")
 
-Residuals:
-     Min       1Q   Median       3Q      Max 
--0.88230 -0.06222  0.06356  0.16757  0.57218 
+    Residuals:
+     Min       1Q        Median    3Q        Max 
+    -0.88230   -0.06222  0.06356   0.16757   0.57218 
 
-Coefficients:
-             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   4.76914    0.15195  31.387 8.42e-16 ***
-days.elapsed -0.05746    0.01006  -5.714 3.20e-05 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+    Coefficients:
+                  Estimate    Std. Error   t value   Pr(>|t|)    
+    (Intercept)   4.76914     0.15195      31.387    8.42e-16 ***
+    days.elapsed  -0.05746    0.01006      -5.714    3.20e-05 ***
 
-Residual standard error: 0.3725 on 16 degrees of freedom
-Multiple R-squared:  0.6711, Adjusted R-squared:  0.6506 
-F-statistic: 32.65 on 1 and 16 DF,  p-value: 3.197e-05
+    Residual standard error: 0.3725 on 16 degrees of freedom
+    Multiple R-squared:  0.6711, Adjusted R-squared:  0.6506 
+    F-statistic: 32.65 on 1 and 16 DF,  p-value: 3.197e-05
 
-~~~~
- 
+    ##################################################
+
+##### Summary of the decay model for the Equal-Density treatment (E)
+
     summary(E.k)
 
-~~~~
-Call:
-lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
-    subset = treatment == "E")
+    ##################################################
+    Call:
+    lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "E")
 
-Residuals:
-     Min       1Q   Median       3Q      Max 
--2.52941 -0.16269 -0.02159  0.29232  1.61763 
+    Residuals:
+    Min        1Q         Median     3Q       Max 
+    -2.52941   -0.16269   -0.02159   0.29232   1.61763 
 
-Coefficients:
-             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   4.94790    0.38963  12.699 1.06e-08 ***
-days.elapsed -0.10077    0.02579  -3.908   0.0018 ** 
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+    Coefficients:
+                  Estimate   Std. Error   t value   Pr(>|t|)    
+    (Intercept)   4.94790    0.38963      12.699    1.06e-08 ***
+    days.elapsed -0.10077    0.02579      -3.908    0.0018 ** 
 
-Residual standard error: 0.8719 on 13 degrees of freedom
-Multiple R-squared:  0.5402, Adjusted R-squared:  0.5048 
-F-statistic: 15.27 on 1 and 13 DF,  p-value: 0.001799
+    Residual standard error: 0.8719 on 13 degrees of freedom
+    Multiple R-squared:  0.5402, Adjusted R-squared:  0.5048 
+    F-statistic: 15.27 on 1 and 13 DF,  p-value: 0.001799
 
-~~~~
+    ##################################################
+
+##### Summary of the decay model for the High-Density treatment (H)
  
     summary(H.k)
 
-~~~~
-Call:
-lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, 
-    subset = treatment == "H")
+    ##################################################
+    Call:
+    lm(formula = log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "H")
 
-Residuals:
-     Min       1Q   Median       3Q      Max 
--1.03997 -0.13135  0.00325  0.25734  0.80796 
+    Residuals:
+     Min       1Q        Median    3Q        Max 
+    -1.03997   -0.13135  0.00325   0.25734   0.80796 
 
-Coefficients:
-             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   4.73341    0.23078  20.511 2.76e-11 ***
-days.elapsed -0.07776    0.01527  -5.092 0.000207 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+    Coefficients:
+                  Estimate   Std. Error  t value     Pr(>|t|)    
+    (Intercept)   4.73341    0.23078     20.511      2.76e-11 ***
+    days.elapsed  -0.07776   0.01527     -5.092      0.000207 ***
 
-Residual standard error: 0.5164 on 13 degrees of freedom
-Multiple R-squared:  0.666, Adjusted R-squared:  0.6403 
-F-statistic: 25.93 on 1 and 13 DF,  p-value: 0.0002067
+    Residual standard error: 0.5164 on 13 degrees of freedom
+    Multiple R-squared:  0.666, Adjusted R-squared:  0.6403 
+    F-statistic: 25.93 on 1 and 13 DF,  p-value: 0.0002067
 
     ################################################## 
 
@@ -508,7 +506,7 @@ F-statistic: 25.93 on 1 and 13 DF,  p-value: 0.0002067
         x = " "
       ) +
       scale_x_discrete(
-        labels = c("Native Only", "Invasive Only", "Low Invasive", "Equal Numbers", "High Invasive"),
+        labels = c("Native Only", "Low Density", "Equal Density", "High Density", "Invasive Only"),
       ) +
       theme_classic()
 
