@@ -26,6 +26,11 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
 
 ## R Code
 
+### Add required packages
+
+    library("tidyverse")
+    library("ggpubr")
+
 ### Import data
 
     leaf.initial <- read.table("./data/initial_leaf_mass.csv", header = T, sep = ",")
@@ -42,12 +47,14 @@ This is the code to calculate the mass loss of the leaf packs in the experiment 
 
 ### Calculate variables
 #### Initial AFDM
+    
+This calculates the AFDM of the leaves before they were incubated in the tanks.
 
     initialDM <- leaf.initial$CrucLeafDM - leaf.initial$CrucMass
     initialAM <- leaf.initial$CrucAM - leaf.initial$CrucMas
     AFDM <- initialDM - initialAM
     leaf.initial <- data.frame(leaf.initial, AFDM)
-    mean.initial.AFDM <- mean(AFDM)
+    mean.initial.AFDM <- mean(AFDM) 
     
 #### T1 AFDM
 
@@ -126,8 +133,8 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
 
      k.list
 
-~~~~
-> k.list
+    ##################################################
+    > k.list
    tank_name treat           k
 1          1     N -0.03099643
 2          2     L -0.10035310
