@@ -350,7 +350,7 @@ The `lmerTest` package is required
 
     $`24`
     Min.    1st Qu.  Median    Mean    3rd Qu.    Max. 
-   0.00     11.40    31.27     30.70   42.47      77.40 
+    0.00     11.40    31.27     30.70   42.47      77.40 
 
     ## SD of the percent AFDM remaining in the litter bags by the number of days of incubation
    
