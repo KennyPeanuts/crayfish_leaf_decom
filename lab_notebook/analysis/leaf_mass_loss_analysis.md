@@ -128,6 +128,9 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
 
     # run the function
     k.list <- k.tank()
+    
+##### Replace the treatment names in k.list with more logical level names
+    k.list$treat <- factor(k.list$treat, levels = c("N", "I", "L", "E", "H"))
 
 #### Print Data 
 
@@ -218,186 +221,143 @@ Since two of the tanks had a percent mass remiaining of 0 on the final day, 1 wa
 #### Analyze k by treatment 
 
     anova(lm(k ~ treat, data = k.list))
-    
-~~~~
-ANOVA table for the effect of treatment on k
 
-Analysis of Variance Table
+    ################################################## 
+    # ANOVA table for the effect of treatment on k
 
-Response: k
-          Df   Sum Sq   Mean Sq F value Pr(>F)
-treat      4 0.011335 0.0028336  0.9063 0.4767
-Residuals 23 0.071910 0.0031265     
-~~~~
+    Analysis of Variance Table
 
-    par(las = 1)
-    x <- factor(k.list$treat, levels=c("N", "I", "L", "E", "H"))
-    plot(k ~ x, data = k.list, ylim = c(-0.3, 0), col = "wheat", ylab = "k (1/day)", xlab = "Treatment")
-    dev.copy(jpeg, "./output/plots/k_by_treat.jpg")
-    dev.off()
-     
-![k by treatment](../output/plots/k_by_treat.jpg)
+    Response: k
+                Df   Sum Sq   Mean Sq    F value   Pr(>F)
+    treat        4   0.011335 0.0028336  0.9063    0.4767
+    Residuals   23   0.071910 0.0031265     
 
-FIGURE: k by Treatment
-
-#### Density Plot
-
-    cf.density <- factor(k.list$treat, levels = c("L", "E", "H"))
-
-    par(las = 1, oma = c(1, 1, 1, 1)) 
-    boxplot(k.list$k ~ cf.density, ylim = c(-0.3, 0), col = c("cadetblue2", "deepskyblue", "blue3"), ann = F, axes = F)
-    axis(2, cex.axis = 0.8)
-    axis(1, c("Low", "Equal", "High"), at = c(1, 2, 3))
-    title(ylab = "k (1/day)", line = 3)
-    box()
+    ################################################## 
 
 #### Test of the invasive vs native control
 
     t.test(k.list$k[k.list$treat == "N"], k.list$k[k.list$treat == "I"])
 
-~~~~
- Welch Two Sample t-test
+    ################################################## 
+    # T test if k is equal between the Native-only and Invasive-only treatments
+    Welch Two Sample t-test
 
-Welch Two Sample t-test
+    data:  k.list$k[k.list$treat == "N"] and k.list$k[k.list$treat == "I"]
+    t = 0.9603, df = 5.457, p-value = 0.3775
+    alternative hypothesis: true difference in means is not equal to 0
+    95 percent confidence interval:
+    -0.0547702  0.1227708
+    sample estimates:
+    mean of x     mean of y 
+    -0.04031597   -0.07431628 
+    
+    x = N and y = I
 
-data:  k.list$k[k.list$treat == "N"] and k.list$k[k.list$treat == "I"]
-t = 0.9603, df = 5.457, p-value = 0.3775
-alternative hypothesis: true difference in means is not equal to 0
-95 percent confidence interval:
- -0.0547702  0.1227708
-sample estimates:
-  mean of x   mean of y 
--0.04031597 -0.07431628 
-~~~~
+    ################################################## 
 
-##### Plot
- 
-    cf.sp.alone <- factor(k.list$treat, levels = c("N", "I"))
-
-    par(las = 1, oma = c(1, 1, 1, 1)) 
-    boxplot(k.list$k ~ cf.sp.alone, ylim = c(-0.3, 0), col = c(0, "gray"), ann = F, axes = F)
-    axis(2, cex.axis = 0.8)
-    axis(1, c("Native", "Invasive"), at = c(1, 2))
-    title(ylab = "k (1/day)", line = 3)
-    box()
 
 #### Repeated Measures ANCOVA 
-
+##### Load Packages
+    
 The `lmerTest` package is required
-
+    library("lmerTest")
+    
     (k.mod <- lmer(percAFDM.rem ~ 1 + days.elapsed * treatment + (1|BagTank), data = leaf.AFDM))
 
-~~~~~
-Linear mixed model fit by REML ['merModLmerTest']
-Formula: percAFDM.rem ~ 1 + days.elapsed * treatment + (1 | BagTank)
-   Data: leaf.AFDM
-REML criterion at convergence: 659.9343
-Random effects:
- Groups   Name        Std.Dev.
- BagTank  (Intercept)  7.626  
- Residual             13.441  
-Number of obs: 84, groups:  BagTank, 28
-Fixed Effects:
+    ################################################## 
+    # Linier Mixed Model of the effects of treatment and time on percent leaf mass remaining where tank (BagTank) is the random variable 
+    
+    Linear mixed model fit by REML ['merModLmerTest']
+    Formula: percAFDM.rem ~ 1 + days.elapsed * treatment + (1 | BagTank)
+    Data: leaf.AFDM
+    REML criterion at convergence: 659.9343
+    Random effects:
+    Groups   Name        Std.Dev.
+    BagTank  (Intercept)  7.626  
+    Residual             13.441  
+    Number of obs: 84, groups:  BagTank, 28
+    Fixed Effects:
             (Intercept)             days.elapsed               treatmentH  
                 97.2299                  -3.1741                  -4.5901  
              treatmentI               treatmentL               treatmentN  
                  5.3940                   3.0902                  -5.5868  
-days.elapsed:treatmentH  days.elapsed:treatmentI  days.elapsed:treatmentL  
-                 0.1419                   0.6111                   0.3571  
-days.elapsed:treatmentN  
-                 0.9670  
-~~~~~
- 
-##### Model Test
+    days.elapsed:treatmentH  days.elapsed:treatmentI  days.elapsed:treatmentL  
+                     0.1419                   0.6111                   0.3571  
+    days.elapsed:treatmentN  
+                     0.9670  
+
+    ################################################## 
+                     
+##### Test of the Linear Mixed Model 
  
     anova(k.mod)     
 
-~~~~
+    ################################################## 
+    # ANOVA Test of Linier Mixed Model of the effects of treatment and time on percent leaf mass remaining where tank (BagTank) is the random variable 
+    Analysis of Variance Table of type III  with  Satterthwaite approximation for degrees of freedom
+                           SumSq    MeanSq NumDF  DenDF     F.value   Pr(>F)    
+    days.elapsed           48338     48338     1   51.001   267.582   <2e-16 ***
+    treatment                396        99     4   63.767     0.549   0.7007    
+    days.elapsed:treatment   754       188     4   51.001     1.043   0.3944    
 
- Analysis of Variance Table of type III  with  Satterthwaite 
-approximation for degrees of freedom
-                       Sum Sq Mean Sq NumDF  DenDF F.value Pr(>F)    
-days.elapsed            48338   48338     1 51.001 267.582 <2e-16 ***
-treatment                 396      99     4 63.767   0.549 0.7007    
-days.elapsed:treatment    754     188     4 51.001   1.043 0.3944    
-
-~~~~
+    ################################################## 
  
-### Summarize AFDM by Day
+### Summarize AFDM remaining by days of incubation
 
     tapply(leaf.AFDM$AFDM, leaf.AFDM$days.elapsed, summary)
     tapply(leaf.AFDM$AFDM, leaf.AFDM$days.elapsed, sd)
 
-~~~~
-AFDM (g)
+    ################################################## 
+    # Summary of AFDM (g) in the litter bags by number of days elapsed 
 
-$`3`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.7647  0.8404  0.8737  0.8881  0.9367  1.0660 
+    $`3`
+    Min.    1st Qu.  Median    Mean    3rd Qu.    Max. 
+    0.7647  0.8404   0.8737    0.8881  0.9367     1.0660 
 
-$`10`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.2342  0.6420  0.7440  0.7299  0.8073  0.9842 
+    $`10`
+    Min.    1st Qu.  Median    Mean    3rd Qu.    Max. 
+    0.2342  0.6420   0.7440    0.7299  0.8073     0.9842 
 
-$`24`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.0000  0.1159  0.3178  0.3120  0.4315  0.7865 
+    $`24`
+    Min.     1st Qu.  Median    Mean    3rd Qu.    Max. 
+    0.0000   0.1159   0.3178    0.3120  0.4315     0.7865 
 
-## SD
+    ## SD of the AFDM (g) in the litter bags by number of days elapsed
 
-       3         10         24 
-0.07236243 0.16168339 0.21685885 
-~~~~
+    3             10            24 
+    0.07236243    0.16168339    0.21685885 
 
-#### Summarize percent AFDM remaining by Day
+    ################################################## 
+
+#### Summarize percent AFDM remaining by days of incubation
 
     tapply(leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed, summary)
     tapply(leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed, sd)
 
-~~~~
-Percent AFDM Remaining 
-$`3`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  75.26   82.71   85.98   87.40   92.18  104.90 
-
-$`10`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  23.05   63.18   73.22   71.83   79.45   96.86 
-
-$`24`
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   0.00   11.40   31.27   30.70   42.47   77.40 
-
-## SD
-> tapply(leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed, sd)
-        3        10        24 
- 7.121458 15.911869 21.341893 
-~~~~
-  
-
-
-#### By Treatment over Time
- 
-    par(las = 1, mar = c(4, 5, 2, 2))
-    plot(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "N", xlim = c(0, 25), ylim = c(0, 110), pch = 1, xlab = "Days in Tank", ylab = "Percent Initial Leaf Mass Remaining")
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "I", pch = 19, col = "gray40")
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "E", pch = 19, col = "deepskyblue")
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "H", pch = 19, col = "blue3")
-    points(percAFDM.rem ~ jitter(as.numeric(days.elapsed), 0.5), data = leaf.AFDM, subset = treatment == "L", pch = 19, col = "cadetblue2")
-    legend(0, 40, c("Native Only  ", "Invasive Only  ", "Low Invasive  ", "Equal  ", "High Invasive  "), pch = c(1, 19, 19, 19, 19, 19), col = c(1, "gray40", "cadetblue2", "deepskyblue", "blue3"), cex = 0.75)
-    dev.copy(jpeg, "./output/plots/percMassRem_by_treat_days.jpg")
-    dev.off()
-
-![percent mass remaining by treatment and time](../output/plots/percMassRem_by_treat_days.jpg)
-
-
+    ################################################## 
+    # Summary of the Percent AFDM remaining in the litter bags by the number of days of incubation
     
-### Plot by Tank
+    $`3`
+    Min.    1st Qu.  Median    Mean    3rd Qu.    Max. 
+    75.26   82.71    85.98     87.40   92.18      104.90 
 
-    plot(percAFDM.rem ~ BagTank, data = leaf.AFDM, subset = days.elapsed == "3", pch = 19, col = 1, ylim = c(0, 110) )
-    points(percAFDM.rem ~ BagTank, data = leaf.AFDM, subset = days.elapsed == "10", pch = 19, col = 2, ylim = c(0, 110) )
-    points(percAFDM.rem ~ BagTank, data = leaf.AFDM, subset = days.elapsed == "24", pch = 19, col = 3, ylim = c(0, 110) )
+    $`10`
+    Min.    1st Qu.  Median    Mean    3rd Qu.    Max. 
+    23.05   63.18    73.22     71.83   79.45      96.86 
 
+    $`24`
+    Min.    1st Qu.  Median    Mean    3rd Qu.    Max. 
+   0.00     11.40    31.27     30.70   42.47      77.40 
+
+    ## SD of the percent AFDM remaining in the litter bags by the number of days of incubation
+   
+    > tapply(leaf.AFDM$percAFDM.rem, leaf.AFDM$days.elapsed, sd)
+    
+    3          10          24 
+    7.121458   15.911869   21.341893 
+    
+    ################################################## 
+  
 ### Calculation of k for each group
 
     N.k <- lm(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "N")
@@ -525,78 +485,34 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 Residual standard error: 0.5164 on 13 degrees of freedom
 Multiple R-squared:  0.666, Adjusted R-squared:  0.6403 
 F-statistic: 25.93 on 1 and 13 DF,  p-value: 0.0002067
-~~~~
 
+    ################################################## 
 
-#### Plot of decay model fit for each group
+## Plots
+  
+### Plot of the effect of treatment level on k
+  
+    k_by_treat <- 
+      ggplot(k.list, mapping = aes(y = k, x = factor(treat))) +
+      geom_jitter(
+        width = 0.1,
+        color = 8
+      ) +
+      stat_summary(
+        fun = mean,
+        fun.min = function(x) mean(x) - sd(x),
+        fun.max = function(x) mean(x) + sd(x)
+      ) +
+      labs(
+        y = expression(days^{-1}),
+        x = " "
+      ) +
+      scale_x_discrete(
+        labels = c("Native Only", "Invasive Only", "Low Invasive", "Equal Numbers", "High Invasive"),
+      ) +
+      theme_classic()
 
-    par(las = 1, cex = 1)
-    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "N", xlim = c(0, 25), ylim = c(0, 5), pch = 8, col = "gray40", ylab = "ln Percent AFDM Remaining + 1", xlab = "Days in Tank")
-    abline(N.k, lty = 1, lwd = 4)
-    points(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "I", pch = 3, col = "gray40" )
-    abline(I.k, lty = 3, lwd = 4)
-    points(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "L", pch = 6, col = "gray40")
-    abline(L.k, lty = 2, lwd = 4)
-    points(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "E", pch = 5, col = "gray40")
-    abline(E.k, lty = 4, lwd = 4)
-    points(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "H", pch = 4, col = "gray40")
-    abline(H.k, lty = 5, lwd = 4)
-    legend(0, 2, c("Native Only", "Invasive Only", "Low Invasive", "Equal Invasive", "High Invasive"), pch = c(8, 3, 6, 5, 4), lty = c(1, 3, 2, 4, 5), lwd = 2)
-    dev.copy(jpeg, "./output/plots/k_by_treat_days.jpg")
-    dev.off()
+#### Export plot as pdf
 
-![k by treatment and time](../output/plots/k_by_treat_days.jpg)
-
-#### Multipanel Graph
-
-    par(las = 1, mfcol= c(5, 1), mar = c(3, 15, 0, 15), oma = c(2, 2, 2, 2))
-    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "N", xlim = c(0, 25), ylim = c(0, 5), pch = 19, col = "gray40", ylab = " ", xaxt = 'n', xlab = " ")
-    abline(N.k, lty = 1, lwd = 2)
+    ggexport(k_by_treat, width = 7, height = 7, filename = "k_by_treat.pdf")
     
-    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "I", ylim = c(0, 5), xlim = c(0, 25), xlab = " ", xaxt = 'n', ylab = " ", pch = 19, col = "gray40" )
-    abline(I.k, lty = 1, lwd = 2)
-    
-    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "L", ylim = c(0, 5), xlim = c(0, 25),  xlab = " ", xaxt = 'n', ylab = "Nautral Log of Percent AFDM Remaining + 1", pch = 19, col = "gray40")
-    abline(L.k, lty = 1, lwd = 2)
-    
-    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "E", ylim = c(0, 5), xlim = c(0, 25),  xlab = " ", xaxt = 'n', ylab = " ", pch = 19, col = "gray40")
-    abline(E.k, lty = 1, lwd = 2)
-    
-    plot(log(percAFDM.rem + 1) ~ days.elapsed, data = leaf.AFDM, subset = treatment == "H", ylim = c(0, 5), xlim = c(0, 25),  ann = F, pch = 19, col = "gray40")
-    abline(H.k, lty = 1, lwd = 2)
-    title(xlab = "Days in the Tank", line = 2)
-
-
-
-
-########################## DO NOT USE #################################
-#######################################################################
-#######################################################################
-    #k.tank <- function() {
-     # create empty objects
-     #k <- numeric(0)
-     #tank <- numeric(0)
-     #treat <- character(0)
-     #block <- character(0)
-     
-     #for(i in leaf.AFDM$BagTank)
-       #k <- c(coef(summary(lm(log(leaf.AFDM$percAFDM.rem + 1)[leaf.AFDM$BagTank == i] ~ leaf.AFDM$days.elapsed[leaf.AFDM$BagTank == i])))[2, 1], k) # this extracts the slope (col 2, row 1) from the matrix of coefficents produced by the lm
-     
-     #for(i in leaf.AFDM$BagTank)
-       #tank <- c(i, tank)
-
-     #for(i in leaf.AFDM$BagTank)
-       #treat <- c(as.character(leaf.AFDM$treatment[leaf.AFDM$BagTank == i]), treat)
-     
-     #for(i in leaf.AFDM$BagTank)
-       #block <- c(as.character(leaf.AFDM$block[leaf.AFDM$BagTank == i]), block)
-     
-     #k.list <- data.frame(tank, treat, block, k) # the "unique" is needed because the tank numbers are repreated for each day in the dataset so the for-loop runs 3X. The unique eliminates the duplicate data
-     
-     #return(k) #k.list)
-    }
-
-    #k.list <- k.tank()
-    #names(k.list) <- c("tank", "treat", "block", "k")
-#######################################################################
-#######################################################################
