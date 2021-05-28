@@ -1,17 +1,11 @@
 # Analysis of the tank chl
 
 ## Metadata
-
 * File created on 6 July 2016
-
 * modified 7 July 2016 - KF - added final CHL to the analysis
-
 * modified 12 July 2016 - KF - added figures to report
-
 * modified 13 Jul 2016 - KF - sumarized chl by day
-
 * modified 13 Dec 2016 - KF - coded ANCOVA on chl by treatment
-
 * modified 15 May 2017 - KF- removed tanks 3 and 4 and re-ran analysis
 
 ## Description
@@ -21,9 +15,17 @@ This is the code to analyze the effect of crayfish community on the tank chlorop
 ## R Code
 ### Load Packages
 
-The `lmerTest` package is required
+The `lmerTest` package is required for the linear mixed models.
 
     library("lmerTest")
+
+The `tidyverse` package is required for plotting and data wranging.
+
+    library("tidyverse")
+    
+The `ggpubr` package is required to make and export the plots to file.
+
+    library("ggpubr")
 
 ### Import data
 
@@ -49,6 +51,11 @@ Tanks 3 and 4 accidentally had O. longulus added to them rather than O. virilus.
 #### Create days.elapsed
 
      days.elapsed <- as.numeric(as.Date(chl.trunk$Date) - as.Date("2016-06-03"))
+     
+### Create final data.frame for use in analyses
+     
+     chl.trunk <- data.frame(chl.trunk, days.elapsed)
+     chl.trunk$treatment <- factor(chl.trunk$treatment, levels = c("N", "L", "E", "H", "I"))
 
 ### Summarize Chl by Day
 
@@ -56,6 +63,8 @@ Tanks 3 and 4 accidentally had O. longulus added to them rather than O. virilus.
     tapply(chl.trunk$Chl, chl.trunk$Date, sd, na.rm = T)
 
     ##################################################
+    # Summary of Chlorophyll concentration by date
+    
     $`2016-06-03`
     Min.    1st Qu.  Median    Mean    3rd Qu.    Max.     SD            NAs 
     0.390   2.085    3.300     4.882   6.445      14.930   3.893177      1 
@@ -102,74 +111,45 @@ I did not analyze block because the blocks were not properly set up for the pres
               1.5204080                0.0396717                0.4479131  
              treatmentI               treatmentL               treatmentN  
               0.1721757               -0.0536818               -0.3825347  
-days.elapsed:treatmentH  days.elapsed:treatmentI  days.elapsed:treatmentL  
+             days.elapsed:treatmentH  days.elapsed:treatmentI  days.elapsed:treatmentL  
              -0.0007786               -0.0057770               -0.0019806  
-days.elapsed:treatmentN  
+              days.elapsed:treatmentN  
               0.0047562  
               
-~~~~
-
-Test of factor significants 
+    ##################################################
+              
+##### ANOVA on the Linear Mixed Model to test for treatment effects
  
     anova(chl.mod)
 
-~~~~
-ANCOVA of chl by days elapsed, and treatment
+    ##################################################
+    # ANOVA on the Linear Mixed Model of Chl as a function of days and treatment with tank as the random variable
 
-Analysis of Variance Table of type III  with  Satterthwaite 
-approximation for degrees of freedom
-                       Sum Sq Mean Sq NumDF  DenDF F.value Pr(>F)    
-days.elapsed           54.011  54.011     1 76.158 140.733 <2e-16 ***
-treatment               2.915   0.729     4 75.447   1.899 0.1194    
-days.elapsed:treatment  0.453   0.113     4 76.078   0.295 0.8804
+    Analysis of Variance Table of type III  with  Satterthwaite 
+    approximation for degrees of freedom
+                           Sum Sq  Mean Sq    NumDF  DenDF   F.value   Pr(>F)    
+    days.elapsed           54.011  54.011     1      76.158  140.733   <2e-16 *** 
+    treatment               2.915   0.729     4      75.447    1.899   0.1194    
+    days.elapsed:treatment  0.453   0.113     4      76.078    0.295   0.8804
 
-~~~~
+    ##################################################
  
-### Plot by Days
- 
-    plot(Chl ~ jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "N", pch = 1, col = "black", ylim = c(0, 60), xlab = "Day of Experiment", ylab = expression(paste("Chlorophyll Conc. (", mu, "g L"^{-1}, ")")))
-    points(Chl ~  jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "I", pch = 19, col = "blue")
-    points(Chl ~ jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "L", pch = 19, col = "green")
-    points(Chl ~ jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "E", pch = 19, col = "yellow")
-    points(Chl ~ jitter(days.elapsed, 0.5), data = chl.trunk, subset = treatment == "H", pch = 19, col = "red")
-    legend(0, 60, c("Native Only", "Invasive Only", "Low Invasive", "Med. Invasive", "High Invasive"), pch = c(1, 19, 19, 19, 19), col = c("black", "blue", "green", "yellow", "red")) 
-    dev.copy(jpeg, "./output/chl_by_day.jpg")
-    dev.off()
-
-![Plot of Chl by Day of incubation](../output/chl_by_day.jpg)
-
-### Plots by Time Step
-
-#### create factor list in correct order
-
-    ordered.treat <- factor(chl.trunk$treatment, levels = c("N", "I", "L", "E", "H"))
-
-#### Plots
-
-
-    par(las = 1, mar = c(4, 5, 2, 2))
-    plot(Chl ~ ordered.treat, data = chl.trunk, subset = Date == "2016-06-03", ylim = c(0, 50), ylab = expression(paste("Chlorophyll Concentration (", mu, "g L"^{-1}, ")")), xlab = " ", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"))
-    text(4, 50, "3 June")
-    dev.copy(jpeg, "./output/plots/chl_treat_T0.jpg")
-    dev.off()
-
-![Plot of Chl by treatment on T0](../output/plots/chl_treat_T0.jpg)
-
-    par(las = 1, mar = c(4, 5, 2, 2))
-    plot(Chl ~ ordered.treat, data = chl.trunk, subset = Date == "2016-06-16", ylim = c(0, 50), ylab = expression(paste("Chlorophyll Concentration (", mu, "g L"^{-1}, ")")), xlab = " ", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"))
-    text(4, 50, "16 June")
-    dev.copy(jpeg, "./output/plots/chl_treat_T1.jpg")
-    dev.off()
-
-![Plot of Chl by treatment on T1](../output/plots/chl_treat_T1.jpg)
-
-    par(las = 1, mar = c(4, 5, 2, 2))
-    plot(Chl ~ ordered.treat, data = chl.trunk, subset = Date == "2016-06-30", ylim = c(0, 50), ylab = expression(paste("Chlorophyll Concentration (", mu, "g L"^{-1}, ")")), xlab = " ", col = c("white", "gray40", "cadetblue2", "deepskyblue", "blue3"))
-    text(4, 50, "30 June")
-    dev.copy(jpeg, "./output/plots/chl_treat_T2.jpg")
-    dev.off()
-
-![Plot of Chl by treatment on T2](../output/plots/chl_treat_T2.jpg)
-
-
+## Plots
+    
+### Plot of chl by treatment
+    
+    ggplot(chl.trunk, mapping = aes(y = Chl, x = treatment)) +
+      geom_jitter(
+        width = 0.1,
+        col = 8
+      ) +
+      stat_summary(
+        fun = mean,
+        fun.min = function(x) mean(x) - sd(x),
+        fun.max = function(x) mean(x) + sd(x)
+      ) +
+      facet_wrap(
+        ~ Date
+      ) +
+      theme_classic()
     
