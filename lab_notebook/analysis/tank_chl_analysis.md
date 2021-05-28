@@ -151,5 +151,12 @@ I did not analyze block because the blocks were not properly set up for the pres
       facet_wrap(
         ~ Date
       ) +
+      labs(
+        x = " ",
+        y = expression("Chlorophyll ("*mu*g~L^{-1}*")")
+      ) +
+      scale_x_discrete(
+        labels = c("Native Only", "Low Density", "Equal Density", "High Density", "Invasive Only")
+      ) +
       theme_classic()
     
