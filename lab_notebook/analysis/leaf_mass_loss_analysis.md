@@ -490,7 +490,7 @@ The `lmerTest` package is required
   
 ### Plot of the effect of treatment level on k
   
-    k_by_treat <- 
+    #k_by_treat <- 
       ggplot(k.list, mapping = aes(y = k, x = factor(treat))) +
       geom_jitter(
         width = 0.1,
