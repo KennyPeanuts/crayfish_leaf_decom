@@ -1,4 +1,4 @@
-﻿Species,Density,MassChange,LogMassChange,Survival 
+Species,Density,MassChange,LogMassChange,Survival 
 Native,equal,1.550,0.1903,100.00
 Native,equal,1.475,0.1688,100.00
 Native,equal,1.725,0.2368,75.00
@@ -47,4 +47,3 @@ Invasive,low,-7.850,NA,0.00
 Invasive,low,3.750,0.5740,100.00
 Invasive,low,-1.050,NA,100.00
 Invasive,low,1.450,0.1614,100.00
-,,,,

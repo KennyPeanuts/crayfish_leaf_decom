@@ -1,0 +1,84 @@
+# Analysis of the mass change in the crayfish for the crayfish-litter-decomp exp
+
+## Metadata
+
+* File Created: 2021-06-17 - KF
+
+### Description
+
+
+## Load packages
+
+    library("tidyverse") # for data analysis and ggplot graphing
+    library("ggpubr") # for plot creation and saving
+
+## Import Data
+
+    cray <- read.table("./data/crayfish_growth_surv.csv", header = T, sep = ",")
+    
+## Create Variables
+    
+    Sp.Abundance <- c(rep(4, 24), rep(4, 12), rep(6, 6), rep(2, 6))
+    Total.Abundance <- c(rep(8, 6), rep(10, 6), rep(6, 6), rep(4, 6), rep(4, 6), rep(8, 6), rep(10, 6), rep(6, 6))
+    
+## Add Created Variables to the data.frame
+    
+    cray <- data.frame(cray, Sp.Abundance, Total.Abundance)
+
+### Variable Descriptions    
+    
+    
+## Variable Summary
+### MassChange
+    
+    cray %>%
+      group_by(Species, Density) %>%
+        summarize(mean = mean(MassChange), sd = sd(MassChange), min = min(MassChange), max = max(MassChange))
+
+    ##################################################     
+    # Summary of the change is mass of the crayfish 
+    
+    `summarise()` has grouped output by 'Species'. You can override using the `.groups` argument.
+    # A tibble: 8 x 6
+    # Groups:   Species [2]
+    Species  Density  mean    sd    min   max
+    <chr>    <chr>   <dbl> <dbl>  <dbl> <dbl>
+    1 Invasive control  5.12 1.53   2.61   6.7 
+    2 Invasive equal    3.01 1.59   0.942  5.55
+    3 Invasive high     2.67 0.338  2.15   3.1 
+    4 Invasive low      1.84 6.14  -7.85  10.6 
+    5 Native   control  2.42 0.778  1.72   3.62
+    6 Native   equal    1.06 1.41  -1.8    1.94
+    7 Native   high     1.53 0.554  1.05   2.33
+    8 Native   low      2.86 0.954  1.23   3.75
+    
+    ################################################## 
+    
+## Exploratory Plots
+    
+    ggplot(cray, mapping = aes(y = MassChange, x = Density)) +
+      facet_wrap(
+        ~Species
+        ) +
+      geom_jitter(
+        width = 0.1,
+        col = 8
+      ) +
+      stat_summary(
+        fun = mean,
+        fun.min = function(x) mean(x) - sd(x),
+        fun.max = function(x) mean(x) + sd(x)
+      ) +
+      theme_classic()
+
+    ggplot(cray, mapping = aes(y = LogMassChange, x = Total.Abundance, color = Species)) +
+      geom_point() +
+      geom_smooth(
+        method = "lm"
+      ) +
+      theme_classic()
+    
+    summary(lm(LogMassChange ~ Total.Abundance, data = cray, subset = Species == "Native"))
+    summary(lm(LogMassChange ~ Total.Abundance, data = cray, subset = Species == "Invasive"))
+    summary(lm(LogMassChange ~ Total.Abundance * Species, data = cray))
+    
