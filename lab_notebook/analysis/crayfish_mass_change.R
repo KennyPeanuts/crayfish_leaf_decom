@@ -6,6 +6,7 @@
 
 ### Description
 
+This code describes the analysis of the growth and survival data from the experiment evaluating invasive crayfish species density on the growth, survival and function (leaf litter consumption) of a native crayfish species using mesocosms. The experiment was conducted in 2016 in collaboration with Sujan Henkanaththegedara.  Additonal details on the experimental design and the output of the plots can be found at [https://github.com/KennyPeanuts/crayfish_leaf_decom](https://github.com/KennyPeanuts/crayfish_leaf_decom).
 
 ## Load packages
 
@@ -20,13 +21,31 @@
     
     Sp.Abundance <- c(rep(4, 24), rep(4, 12), rep(6, 6), rep(2, 6))
     Total.Abundance <- c(rep(8, 6), rep(10, 6), rep(6, 6), rep(4, 6), rep(4, 6), rep(8, 6), rep(10, 6), rep(6, 6))
+    Final.Sp.Abundance <- Sp.Abundance * (cray$Survival / 100)
+    Final.Total.Abundance <- rep(Final.Sp.Abundance[cray$Species == "Native"] + Final.Sp.Abundance[cray$Species == "Invasive"], 2)
     
 ## Add Created Variables to the data.frame
     
-    cray <- data.frame(cray, Sp.Abundance, Total.Abundance)
+    cray <- data.frame(cray, Sp.Abundance, Total.Abundance, Final.Sp.Abundance, Final.Total.Abundance)
 
 ### Variable Descriptions    
     
+* Species = the designation of native or invasive crayfish, where 'Native' = _Cambarus_ _sp C_ and 'Invasive' = _Faxonius virilis_.
+
+* Density = the treatment designation where 'control' = 4 individuals of either the native or the invasive species alone, 'low' = 4 individuals of the native and 2 individuals of the invasive, 'equal' = 4 individuals of both the native and the invasive species, and 'high' = 4 individuals of the native species and 6 individuals of the invasive species.
+    
+* MassChange = the average change in mass of all of the crayfish of a group (native or invasive) over the course of the experiment (g). Negative numbers indicate an average loss of mass.
+    
+* LogMassChange = the log (base 10) of MassChange
+    
+* Survival = the percent of the original number of individuals that were alive a the end of the experiment.
+    
+* Sp.Abundance = the number of each crayfish of a given species in a treatment at the beginning of the experiment.
+
+* Total.Abundance = the total number of crayfish in a treatment at the beginnig of the experiment.
+    
+* Final.Abundance = the number of each crayfish of a given species in a treatment at the end of the experiment.
+        
     
 ## Variable Summary
 ### MassChange
@@ -71,14 +90,39 @@
       ) +
       theme_classic()
 
-    ggplot(cray, mapping = aes(y = LogMassChange, x = Total.Abundance, color = Species)) +
+    ggplot(cray, mapping = aes(y = MassChange, x = Final.Total.Abundance, color = Species)) +
       geom_point() +
       geom_smooth(
         method = "lm"
       ) +
       theme_classic()
     
-    summary(lm(LogMassChange ~ Total.Abundance, data = cray, subset = Species == "Native"))
-    summary(lm(LogMassChange ~ Total.Abundance, data = cray, subset = Species == "Invasive"))
-    summary(lm(LogMassChange ~ Total.Abundance * Species, data = cray))
+    ggplot(cray, mapping = aes(y = LogMassChange, x = Final.Total.Abundance, color = Species)) +
+      geom_point() +
+      geom_smooth(
+        method = "lm"
+      ) +
+      theme_classic()
     
+    ggplot(cray, mapping = aes(y = MassChange, x = Final.Abundance, color = Species)) +
+      geom_point() +
+      geom_smooth(
+        method = "lm"
+      ) +
+      theme_classic()
+    
+    ggplot(cray, mapping = aes(y = MassChange, x = Total.Abundance, color = Species)) +
+      geom_point() +
+      geom_smooth(
+        method = "lm"
+      ) +
+      theme_classic()
+    
+    summary(lm(LogMassChange ~ Final.Total.Abundance, data = cray, subset = Species == "Native"))
+    summary(lm(LogMassChange ~ Final.Total.Abundance, data = cray, subset = Species == "Invasive"))
+    summary(lm(LogMassChange ~ Final.Total.Abundance * Species, data = cray))
+    summary(lm(LogMassChange ~ Total.Abundance * Species, data = cray))
+    summary(lm(LogMassChange ~ Total.Abundance, data = cray))
+    summary(lm(MassChange ~ Total.Abundance, data = cray))
+    anova(lm(log10(MassChange + 10) ~ Density * Species, data = cray))
+     
