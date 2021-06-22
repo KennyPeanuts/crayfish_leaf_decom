@@ -23,6 +23,8 @@ This code describes the analysis of the growth and survival data from the experi
     Total.Abundance <- c(rep(8, 6), rep(10, 6), rep(6, 6), rep(4, 6), rep(4, 6), rep(8, 6), rep(10, 6), rep(6, 6))
     Final.Sp.Abundance <- Sp.Abundance * (cray$Survival / 100)
     Final.Total.Abundance <- rep(Final.Sp.Abundance[cray$Species == "Native"] + Final.Sp.Abundance[cray$Species == "Invasive"], 2)
+    Final.Invasive.Abundance <- rep(Final.Sp.Abundance[cray$Species == "Invasive"], 2)
+    Invasive.Abundance <- rep(Sp.Abundance[cray$Species == "Invasive"], 2)
     
 ## Add Created Variables to the data.frame
     
@@ -44,7 +46,9 @@ This code describes the analysis of the growth and survival data from the experi
 
 * Total.Abundance = the total number of crayfish in a treatment at the beginnig of the experiment.
     
-* Final.Abundance = the number of each crayfish of a given species in a treatment at the end of the experiment.
+* Final.Sp.Abundance = the number of crayfish of a given species in a treatment at the end of the experiment.
+
+* Final.Total.Abundance = the number of crayfish in a treatment at the end of the experiment.
         
     
 ## Variable Summary
@@ -70,6 +74,31 @@ This code describes the analysis of the growth and survival data from the experi
     6 Native   equal    1.06 1.41  -1.8    1.94
     7 Native   high     1.53 0.554  1.05   2.33
     8 Native   low      2.86 0.954  1.23   3.75
+    
+    ################################################## 
+    
+### Survival
+    
+    cray %>%
+      group_by(Species, Density) %>%
+        summarize(mean = mean(Survival), sd = sd(Survival), min = min(Survival), max = max(Survival))
+
+    ##################################################     
+    # Summary of the percent crayfish survied to the end of the experiment by species and treatment
+    
+    `summarise()` has grouped output by 'Species'. You can override using the `.groups` argument.
+    # A tibble: 8 x 6
+    # Groups:   Species [2]
+    Species  Density  mean    sd   min   max
+    <chr>    <chr>   <dbl> <dbl> <dbl> <dbl>
+    1 Invasive control  83.3  12.9  75     100
+    2 Invasive equal    87.5  13.7  75     100
+    3 Invasive high     86.1  12.5  66.7   100
+    4 Invasive low      75    41.8   0     100
+    5 Native   control  91.7  12.9  75     100
+    6 Native   equal    79.2  29.2  25     100
+    7 Native   high     87.5  20.9  50     100
+    8 Native   low      70.8  24.6  25     100
     
     ################################################## 
     
