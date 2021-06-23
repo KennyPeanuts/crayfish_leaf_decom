@@ -23,12 +23,12 @@ This code describes the analysis of the growth and survival data from the experi
     Total.Abundance <- c(rep(8, 6), rep(10, 6), rep(6, 6), rep(4, 6), rep(4, 6), rep(8, 6), rep(10, 6), rep(6, 6))
     Final.Sp.Abundance <- Sp.Abundance * (cray$Survival / 100)
     Final.Total.Abundance <- rep(Final.Sp.Abundance[cray$Species == "Native"] + Final.Sp.Abundance[cray$Species == "Invasive"], 2)
-    Final.Invasive.Abundance <- rep(Final.Sp.Abundance[cray$Species == "Invasive"], 2)
-    Invasive.Abundance <- rep(Sp.Abundance[cray$Species == "Invasive"], 2)
+    Final.Invasive.Abundance <- c((Final.Total.Abundance[cray$Species == "Native"] - Final.Sp.Abundance[cray$Species == "Native"]), (Final.Total.Abundance[cray$Species == "Invasive"] - Final.Sp.Abundance[cray$Species == "Invasive"]))
+    Invasive.Abundance <- c(rep(4, 6), rep(6, 6), rep(2, 6), rep(0, 6), rep(4, 6), rep(4, 6), rep(6, 6), rep(2, 6))
     
 ## Add Created Variables to the data.frame
     
-    cray <- data.frame(cray, Sp.Abundance, Total.Abundance, Final.Sp.Abundance, Final.Total.Abundance)
+    cray <- data.frame(cray, Sp.Abundance, Total.Abundance, Final.Sp.Abundance, Final.Total.Abundance, Invasive.Abundance, Final.Invasive.Abundance)
 
 ### Variable Descriptions    
     
@@ -49,6 +49,10 @@ This code describes the analysis of the growth and survival data from the experi
 * Final.Sp.Abundance = the number of crayfish of a given species in a treatment at the end of the experiment.
 
 * Final.Total.Abundance = the number of crayfish in a treatment at the end of the experiment.
+
+* Invasive.Abundance = the number of 'Invasive' crayfish in the a treatment at the beginning of the experiment. 
+
+* Final.Invasive.Abundance = the number of 'Invasive' crayfish in the a treatment at the end of the experiment. 
         
     
 ## Variable Summary
@@ -133,7 +137,7 @@ This code describes the analysis of the growth and survival data from the experi
       ) +
       theme_classic()
     
-    ggplot(cray, mapping = aes(y = MassChange, x = Final.Abundance, color = Species)) +
+    ggplot(cray, mapping = aes(y = MassChange, x = Final.Invasive.Abundance, color = Species)) +
       geom_point() +
       geom_smooth(
         method = "lm"
@@ -147,11 +151,14 @@ This code describes the analysis of the growth and survival data from the experi
       ) +
       theme_classic()
     
-    summary(lm(LogMassChange ~ Final.Total.Abundance, data = cray, subset = Species == "Native"))
-    summary(lm(LogMassChange ~ Final.Total.Abundance, data = cray, subset = Species == "Invasive"))
-    summary(lm(LogMassChange ~ Final.Total.Abundance * Species, data = cray))
-    summary(lm(LogMassChange ~ Total.Abundance * Species, data = cray))
-    summary(lm(LogMassChange ~ Total.Abundance, data = cray))
-    summary(lm(MassChange ~ Total.Abundance, data = cray))
+    ggplot(cray, mapping = aes(y = MassChange, x = Invasive.Abundance, color = Species)) +
+      geom_point() +
+      geom_smooth(
+        method = "lm"
+      ) +
+      theme_classic()
+    
+    summary(lm(MassChange ~ Total.Abundance * Species, data = cray))
+    summary(lm(MassChange ~ Invasive.Abundance * Species, data = cray))
     anova(lm(log10(MassChange + 10) ~ Density * Species, data = cray))
      
