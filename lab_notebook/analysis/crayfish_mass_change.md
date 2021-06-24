@@ -108,6 +108,7 @@ This code describes the analysis of the growth and survival data from the experi
     
 ## Exploratory Plots
     
+    mass_by_treat <-
     ggplot(cray, mapping = aes(y = MassChange, x = Density)) +
       facet_wrap(
         ~Species
@@ -122,6 +123,10 @@ This code describes the analysis of the growth and survival data from the experi
         fun.max = function(x) mean(x) + sd(x)
       ) +
       theme_classic()
+    
+    ggexport(mass_by_treat, width = 7, height = 7, filename = "./output/plots/mass_by_treat.pdf")
+    
+![mass_by_treat](./output/plots/mass_by_treat.pdf)
 
     ggplot(cray, mapping = aes(y = MassChange, x = Final.Total.Abundance, color = Species)) +
       geom_point() +
