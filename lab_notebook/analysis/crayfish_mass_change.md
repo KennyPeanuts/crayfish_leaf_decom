@@ -124,9 +124,9 @@ This code describes the analysis of the growth and survival data from the experi
       ) +
       theme_classic()
     
-    ggexport(mass_by_treat, width = 7, height = 7, filename = "./output/plots/mass_by_treat.pdf")
+    ggexport(mass_by_treat, width = 7, height = 7, filename = "./output/plots/mass_by_treat.jpg")
     
-![mass_by_treat](https://github.com/KennyPeanuts/crayfish_leaf_decom/blob/master/lab_notebook/output/plots/mass_by_treat.pdf)
+![mass_by_treat](https://github.com/KennyPeanuts/crayfish_leaf_decom/blob/master/lab_notebook/output/plots/mass_by_treat.jpg)
 
     ggplot(cray, mapping = aes(y = MassChange, x = Final.Total.Abundance, color = Species)) +
       geom_point() +
