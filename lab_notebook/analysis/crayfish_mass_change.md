@@ -29,7 +29,28 @@ This code describes the analysis of the growth and survival data from the experi
 ## Add Created Variables to the data.frame
     
     cray <- data.frame(cray, Sp.Abundance, Total.Abundance, Final.Sp.Abundance, Final.Total.Abundance, Invasive.Abundance, Final.Invasive.Abundance)
+    
+### Make a new data.frame without the tanks with negative growth.
+    
+Three of the tanks had an average growth that was less than 0, indicating that on average, the crayfish lost mass over the course of the experiment. This average loss of mass may indicate that these tanks were not representative of the overall experimental conditions and therefore do not provide a proper test of the treatment (i.e., crayfish density).
 
+    ##################################################
+    # Tanks that had negative crayfish growth
+
+    > cray[cray$MassChange < 0, ]
+       Species   Density  MassChange  LogMassChange Survival Sp.Abundance Total.Abundance
+    6  Native    equal         -1.80            NA        25            4               8
+    45 Invasive  low           -7.85            NA         0            2               6
+    47 Invasive  low           -1.05            NA       100            2               6
+      Final.Sp.Abundance Final.Total.Abundance Invasive.Abundance Final.Invasive.Abundance
+    6                  1                     4                  4                        3
+    45                 0                     4                  2                        4
+    47                 2                     5                  2                        3
+    
+    ################################################## 
+
+    cray.pos.trunk <- cray[cray$MassChange >= 0, ]
+    
 ### Variable Descriptions    
     
 * Species = the designation of native or invasive crayfish, where 'Native' = _Cambarus_ _sp C_ and 'Invasive' = _Faxonius virilis_.
@@ -57,6 +78,7 @@ This code describes the analysis of the growth and survival data from the experi
     
 ## Variable Summary
 ### MassChange
+#### By Species and Density
     
     cray %>%
       group_by(Species, Density) %>%
@@ -78,6 +100,28 @@ This code describes the analysis of the growth and survival data from the experi
     6 Native   equal    1.06 1.41  -1.8    1.94
     7 Native   high     1.53 0.554  1.05   2.33
     8 Native   low      2.86 0.954  1.23   3.75
+    
+    ################################################## 
+    
+    cray.pos.trunk %>%
+      group_by(Species, Density) %>%
+        summarize(mean = mean(MassChange), sd = sd(MassChange), min = min(MassChange), max = max(MassChange))
+    
+    ################################################## 
+    # Summary of the change in mass without the tanks with negative growth
+    `summarise()` has grouped output by 'Species'. You can override using the `.groups` argument.
+    # A tibble: 8 x 6
+    # Groups:   Species [2]
+    Species  Density  mean    sd   min   max
+    <chr>    <chr>   <dbl> <dbl> <dbl> <dbl>
+    1 Invasive control  5.12 1.53  2.61   6.7 
+    2 Invasive equal    3.01 1.59  0.942  5.55
+    3 Invasive high     2.67 0.338 2.15   3.1 
+    4 Invasive low      4.99 3.95  1.45  10.6 
+    5 Native   control  2.42 0.778 1.72   3.62
+    6 Native   equal    1.63 0.200 1.48   1.94
+    7 Native   high     1.53 0.554 1.05   2.33
+    8 Native   low      2.86 0.954 1.23   3.75
     
     ################################################## 
     
@@ -106,7 +150,24 @@ This code describes the analysis of the growth and survival data from the experi
     
     ################################################## 
     
-## Exploratory Plots
+## Mass Change Analysis
+### Comparison of the treatment groups on the change in mass
+    
+    anova(lm(MassChange ~ Density * Species, data = cray))
+   
+    ##################################################
+    # 2-way ANOVA of the change in mass by treatment and species
+    
+    Analysis of Variance Table
+    
+    Response: MassChange
+    Df  Sum Sq Mean Sq F value  Pr(>F)  
+    Density          3  23.948  7.9826  1.3711 0.26546  
+    Species          1  17.062 17.0623  2.9306 0.09466 .
+    Density:Species  3  23.291  7.7637  1.3335 0.27703  
+    Residuals       40 232.883  5.8221       
+    
+    ################################################## 
     
     mass_by_treat <-
     ggplot(cray, mapping = aes(y = MassChange, x = Density)) +
@@ -124,11 +185,31 @@ This code describes the analysis of the growth and survival data from the experi
       ) +
       theme_classic()
     
-    ggexport(mass_by_treat, filename = "./output/plots/mass_by_treat.jpg")
+    ggexport(mass_by_treat, width = 7, height = 7, filename = "./output/plots/mass_by_treat.pdf")
     
-![mass_by_treat](https://github.com/KennyPeanuts/crayfish_leaf_decom/blob/master/lab_notebook/output/plots/mass_by_treat.jpg)
+![Plot of mass change by treatment](https://github.com/KennyPeanuts/crayfish_leaf_decom/blob/master/lab_notebook/output/plots/mass_by_treat.pdf)
+    
+The analysis by treatment group shows no effect of the treatment group and only a marginally significant effect of species.
 
-    ggplot(cray, mapping = aes(y = MassChange, x = Final.Total.Abundance, color = Species)) +
+    cray %>%
+      group_by(Species) %>%
+        summarize(mean = mean(MassChange), sd = sd(MassChange), min = min(MassChange), max = max(MassChange))
+    
+    ##################################################
+    # Summary of mass change by species
+    
+    # A tibble: 2 x 5
+    Species   mean    sd   min   max
+    <chr>    <dbl> <dbl> <dbl> <dbl>
+    1 Invasive  3.16  3.29 -7.85 10.6 
+    2 Native    1.97  1.16 -1.8   3.75 
+    
+    ################################################## 
+    
+Given that the number of crayfish in the tanks could be considered a continuous variable, it may make more sense to think of mass change as a function of total crayfish in the tank.
+    
+    
+    ggplot(cray, mapping = aes(y = MassChange, x = Total.Abundance, color = Species)) +
       geom_point() +
       geom_smooth(
         method = "lm"
@@ -149,14 +230,14 @@ This code describes the analysis of the growth and survival data from the experi
       ) +
       theme_classic()
     
-    ggplot(cray, mapping = aes(y = MassChange, x = Total.Abundance, color = Species)) +
+    ggplot(cray, mapping = aes(y = LogMassChange, x = Total.Abundance, color = Species)) +
       geom_point() +
       geom_smooth(
         method = "lm"
       ) +
       theme_classic()
     
-    ggplot(cray, mapping = aes(y = MassChange, x = Invasive.Abundance, color = Species)) +
+    ggplot(cray, mapping = aes(y = LogMassChange, x = Invasive.Abundance, color = Species)) +
       geom_point() +
       geom_smooth(
         method = "lm"
@@ -165,5 +246,4 @@ This code describes the analysis of the growth and survival data from the experi
     
     summary(lm(MassChange ~ Total.Abundance * Species, data = cray))
     summary(lm(MassChange ~ Invasive.Abundance * Species, data = cray))
-    anova(lm(log10(MassChange + 10) ~ Density * Species, data = cray))
      
