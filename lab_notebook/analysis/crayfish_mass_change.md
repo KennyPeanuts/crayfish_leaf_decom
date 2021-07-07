@@ -24,8 +24,13 @@ To better distingish between patterns in these two components of the ecology, we
 
 ## Import Data
 
-    cray2015 <- read.table("./data/crayfish_mass_raw_2015.csv", header = T, sep = ",")
-    cray2016 <- read.table("./data/crayfish_mass_raw_2016.csv", header = T, sep = ",")
+    cray.raw <- read.table("./data/crayfish_mass_raw.csv", header = T, sep = ",")
+    
+## Create variables
+    
+    mean.mass <- cray.raw %>%
+      group_by(Year, Tank, Species, Treatment) %>%
+        summarize(n.Stocked = length(Stocked), mean.Stocked = mean(Stocked, na.rm = T), sd.Stocked = sd(Stocked), n.Harvested = length(Harvested), mean.Harvested = mean(Harvested, na.rm = T), sd.Harvested = sd(Harvested))
     
 
 ## Analysis of Tank Mass Change
