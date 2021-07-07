@@ -3,6 +3,7 @@
 ## Metadata
 
 * File Created: 2021-06-17 - KF
+* File Modified: 2021-07-07 - KF - based on discussions with SH, I am re-analyzing the data using the raw masses from each crayfish to generate an estimate of individual crayfish mass change, rather than tank mass change. I am also analyzing tank total mass at the end of the exp.
 
 ### Description
 
@@ -12,6 +13,22 @@ This code describes the analysis of the growth and survival data from the experi
 
     library("tidyverse") # for data analysis and ggplot graphing
     library("ggpubr") # for plot creation and saving
+
+## Analysis of Crayfish Growth Rate and Tank Final Mass
+
+### Description
+
+Initially the change in mass was measured as the final mass of the *tank* minus the initial mass of the *tank*. This measured the change in total crayfish mass in the tank and any dead crayfish were not incuded in the final mass (because they has been eaten). The results of this analysis can be seen below in [Analysis of Tank Mass Change](#analysis-of-tank-mass-change). As a result of this way of calculating mass change, tanks that had crayfish deaths could have negative growth.  This way of calculating mass change seemed to conflate the effects of individual crayfish growth and the total mass that a tank could support.
+
+To better distingish between patterns in these two components of the ecology, we are analyzing them separately as the estimated change in mass of an individual crayfish and the total crayfish mass in the tank at the end of the experiment.
+
+## Import Data
+
+    cray2015 <- read.table("./data/crayfish_mass_raw_2015.csv", header = T, sep = ",")
+    cray2016 <- read.table("./data/crayfish_mass_raw_2016.csv", header = T, sep = ",")
+    
+
+## Analysis of Tank Mass Change
 
 ## Import Data
 

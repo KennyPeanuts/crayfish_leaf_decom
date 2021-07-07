@@ -1,0 +1,47 @@
+﻿Tank,Treatment,Species,Gender,Stocked,Harvested
+1,Native ,Cambarus sp C,M,5.4,5.6
+1,Native ,Cambarus sp C,M,5,5.2
+1,Native ,Cambarus sp C,F,3.7,4.5
+1,Native ,Cambarus sp C,F,4.5,4.9
+5,Native ,Cambarus sp C,M,3.8,3.6
+5,Native ,Cambarus sp C,M,5.5,5.9
+5,Native ,Cambarus sp C,F,6.3,7.3
+5,Native ,Cambarus sp C,F,11.5,11.9
+2,Native ,Cambarus sp C,F,3.5,3.8
+2,Native ,Cambarus sp C,F,7.3,7.5
+2,Native ,Cambarus sp C,M,4.1,5.3
+2,Native ,Cambarus sp C,F,7.4,10.4
+7,Native ,Cambarus sp C,F,3.9,NA
+7,Native ,Cambarus sp C,M,4.1,5.4
+7,Native ,Cambarus sp C,F,6.5,6.3
+7,Native ,Cambarus sp C,F,6.5,6.8
+6,Both,Cambarus sp C,F,4.8,NA
+6,Both,Cambarus sp C,F,5,NA
+6,Both,Cambarus sp C,M,7.3,NA
+12,Both,Cambarus sp C,F,9.3,NA
+12,Both,Cambarus sp C,F,6,3.7
+12,Both,Cambarus sp C,F,2.9,NA
+8,Both,Cambarus sp C,M,4.9,4.5
+8,Both,Cambarus sp C,F,6.9,6.1
+8,Both,Cambarus sp C,M,9.6,9.5
+9,Both,Cambarus sp C,M,10.2,10.6
+9,Both,Cambarus sp C,M,10.5,10.6
+9,Both,Cambarus sp C,M,6.7,6.9
+6,Both,P. clarkii,M,18.3,23.5
+6,Both,P. clarkii,F,5.8,8.7
+6,Both,P. clarkii,F,3.3,5
+12,Both,P. clarkii,F,21.1,22.3
+12,Both,P. clarkii,F,6.2,6.2
+12,Both,P. clarkii,M,6,6
+8,Both,P. clarkii,M,21.3,22.5
+8,Both,P. clarkii,M,3.3,4.6
+8,Both,P. clarkii,M,3.1,3.6
+9,Both,P. clarkii,M,10.9,16.1
+9,Both,P. clarkii,M,2.9,NA
+9,Both,P. clarkii,F,2.3,3.5
+3,Invasive ,P. clarkii,M,1.7,10.2
+3,Invasive ,P. clarkii,F,1.6,9.1
+3,Invasive ,P. clarkii,F,1.5,5.7
+4,Invasive ,P. clarkii,M,1.6,2.5
+4,Invasive ,P. clarkii,F,1.8,3.8
+4,Invasive ,P. clarkii,F,1.4,4.9
