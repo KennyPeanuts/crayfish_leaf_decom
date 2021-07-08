@@ -28,10 +28,31 @@ To better distingish between patterns in these two components of the ecology, we
     
 ## Create variables
     
-    mean.mass <- cray.raw %>%
-      group_by(Year, Tank, Species, Treatment) %>%
-        summarize(n.Stocked = length(Stocked), mean.Stocked = mean(Stocked, na.rm = T), sd.Stocked = sd(Stocked), n.Harvested = length(Harvested), mean.Harvested = mean(Harvested, na.rm = T), sd.Harvested = sd(Harvested))
+### Calculate the mean of the stocked mass and harvested mass for species in each tank
+
+This code calculates the mean stocked mass and harvested mass of all the crayfish in each tank and produces a new data.frame with the values.
     
+    mean.mass <- cray.raw %>%
+      group_by(Year, Type, Tank) %>%
+        summarize(mean.Stocked.Mass = mean(Stocked_Mass, na.rm = T), sd.Stocked.Mass = sd(Stocked_Mass), mean.Harvested.Mass = mean(Harvested_Mass, na.rm = T), sd.Harvested.Mass = sd(Harvested_Mass))
+    
+    tank.abundance <- cray.raw %>%
+      group_by(Year, Type, Tank) %>%
+      summarize(Abundance = unique(Abundance), Total.Abundance = unique(Total_Abundance), Invasive.Abundance = unique(Invasive_Abundance))
+
+### Merge the mean.mass data.frame with the cray.raw data frame
+    
+    cray.mean <- 
+      left_join(mean.mass, tank.abundance)
+    
+### Estimate the stocked and harvested mass of a single crayfish in the tank
+    
+    ind.stocked.mass <- cray.mean$mean.Stocked.Mass / cray.mean$Abundance
+    
+### Calculate the estimated change in mass for each species.
+    
+This code subtracts the mean stocked mass from the mean harvested mass 
+
 
 ## Analysis of Tank Mass Change
 
