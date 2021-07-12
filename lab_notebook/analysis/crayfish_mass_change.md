@@ -36,24 +36,58 @@ This code calculates the mean stocked mass and harvested mass of all the crayfis
       group_by(Year, Type, Tank) %>%
         summarize(mean.Stocked.Mass = mean(Stocked_Mass, na.rm = T), sd.Stocked.Mass = sd(Stocked_Mass), mean.Harvested.Mass = mean(Harvested_Mass, na.rm = T), sd.Harvested.Mass = sd(Harvested_Mass))
     
+### Create a data.frame with the crayfish abundance of each tank not replicated for the number of crayfish
+
+This code produces a data.frame with a single abundance value for each tank by using `unique` to select only a single abundance value from the replicate crayfish values.
+
     tank.abundance <- cray.raw %>%
       group_by(Year, Type, Tank) %>%
       summarize(Abundance = unique(Abundance), Total.Abundance = unique(Total_Abundance), Invasive.Abundance = unique(Invasive_Abundance))
 
+### Create a data.frame with the treatment designation of each tank not replicated for the number of crayfish
+
+This code produces a data.frame with a single treatment value for each tank by using `unique` to select only a single abundance value from the replicate crayfish values.
+
+    tank.treatment <- cray.raw %>%
+      group_by(Year, Type, Tank) %>%
+      summarize(Treatment = unique(Treatment))
+    
 ### Merge the mean.mass data.frame with the cray.raw data frame
     
     cray.mean <- 
-      left_join(mean.mass, tank.abundance)
+      left_join(mean.mass, tank.abundance) 
+    
+    cray.mean <-
+      left_join(cray.mean, tank.treatment)
     
 ### Estimate the stocked and harvested mass of a single crayfish in the tank
     
+This code estimates the stocked or harvested mass of an individual crayfish in the tank by dividing the total crayfish mass of the tank for each species by the abundance of that species.
+    
     ind.stocked.mass <- cray.mean$mean.Stocked.Mass / cray.mean$Abundance
+    ind.harvested.mass <- cray.mean$mean.Harvested.Mass / cray.mean$Abundance
     
-### Calculate the estimated change in mass for each species.
+### Calculate the estimated change in mass of an individual crayfish for each species.
     
-This code subtracts the mean stocked mass from the mean harvested mass 
+This code subtracts the estmated stocked mass from the estimated harvested mass of a single crayfish in each tank.
 
+    ind.delta.mass <- ind.harvested.mass - ind.stocked.mass
+    
+## Create data.frame for analyis
+    
+    cray.mean <- data.frame(cray.mean, ind.stocked.mass, ind.harvested.mass, ind.delta.mass)
 
+## Variable Descriptions    
+    
+## Data Visualizations
+    
+    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = mean.Harvested.Mass, x = Total.Abundance, color = Type)) +
+             geom_point() +
+             geom_smooth(
+               method = "lm"
+             ) +
+             theme_classic()
+    
 ## Analysis of Tank Mass Change
 
 ## Import Data
