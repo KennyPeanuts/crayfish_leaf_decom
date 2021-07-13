@@ -73,7 +73,7 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
 ## Variable Descriptions
     
 * Year = the year of the study
-* Type = the description of whether the crayfish is "Invasive" or "Native". Invasive crayfish were _P. clarkii_ in 2015, and _F. virilis in 2016. The Native crayfish were _C. sp. C_ in both years.
+* Type = the description of whether the crayfish is "Invasive" or "Native". Invasive crayfish were _P. clarkii_ in 2015, and _F. virilis_ in 2016. The Native crayfish were _C. sp. C_ in both years.
 * Tank = the unique ID number of the experimental unit (tank).
 * mean.Stocked.Mass = the mean mass of the crayfish stocked in the tank of a given treatment and crayfish type. (g)
 * sd.Stocked.Mass = the standard deviation of the mean of the mass of the crayfish stocked in the tank of a given treatment and crayfish type. (g)
