@@ -30,11 +30,11 @@ To better distingish between patterns in these two components of the ecology, we
     
 ### Calculate the mean of the stocked mass and harvested mass for species in each tank
 
-This code calculates the mean stocked mass and harvested mass of all the crayfish in each tank and produces a new data.frame with the values.
+This code calculates the mean stocked mass and harvested mass of all the crayfish in each tank and produces a new data.frame with the values. The code also calculates the total mass of each species of crayfish at the end of the experiment.
     
     mean.mass <- cray.raw %>%
       group_by(Year, Type, Tank) %>%
-        summarize(mean.Stocked.Mass = mean(Stocked_Mass, na.rm = T), sd.Stocked.Mass = sd(Stocked_Mass), mean.Harvested.Mass = mean(Harvested_Mass, na.rm = T), sd.Harvested.Mass = sd(Harvested_Mass))
+        summarize(mean.Stocked.Mass = mean(Stocked_Mass, na.rm = T), sd.Stocked.Mass = sd(Stocked_Mass), mean.Harvested.Mass = mean(Harvested_Mass, na.rm = T), sd.Harvested.Mass = sd(Harvested_Mass), total.Harvested.Mass = sum(Harvested_Mass, na.rm = T))
     
 ### Create a data.frame with the crayfish abundance of each tank not replicated for the number of crayfish
 
@@ -60,28 +60,42 @@ This code produces a data.frame with a single treatment value for each tank by u
     cray.mean <-
       left_join(cray.mean, tank.treatment)
     
-### Estimate the stocked and harvested mass of a single crayfish in the tank
-    
-This code estimates the stocked or harvested mass of an individual crayfish in the tank by dividing the total crayfish mass of the tank for each species by the abundance of that species.
-    
-    ind.stocked.mass <- cray.mean$mean.Stocked.Mass / cray.mean$Abundance
-    ind.harvested.mass <- cray.mean$mean.Harvested.Mass / cray.mean$Abundance
-    
 ### Calculate the estimated change in mass of an individual crayfish for each species.
     
 This code subtracts the estmated stocked mass from the estimated harvested mass of a single crayfish in each tank.
 
-    ind.delta.mass <- ind.harvested.mass - ind.stocked.mass
+    ind.delta.mass <- cray.mean$mean.Harvested.Mass - cray.mean$mean.Stocked.Mass
     
 ## Create data.frame for analyis
     
-    cray.mean <- data.frame(cray.mean, ind.stocked.mass, ind.harvested.mass, ind.delta.mass)
+    cray.mean <- data.frame(cray.mean, ind.delta.mass)
 
-## Variable Descriptions    
+## Variable Descriptions
+    
+* Year = the year of the study
+* Type = the description of whether the crayfish is "Invasive" or "Native". Invasive crayfish were _P. clarkii_ in 2015, and _F. virilis in 2016. The Native crayfish were _C. sp. C_ in both years.
+* Tank = the unique ID number of the experimental unit (tank).
+* mean.Stocked.Mass = the mean mass of the crayfish stocked in the tank of a given treatment and crayfish type. (g)
+* sd.Stocked.Mass = the standard deviation of the mean of the mass of the crayfish stocked in the tank of a given treatment and crayfish type. (g)
+* mean.Harvested.Mass = the mean mass of the crayfish harvested from the tank of a given treatment and crayfish type at the end of the experiment. Missing (presumed dead) crayfish were not included in the mean. (g)
+* sd.Harvested.Mass = the standard deviation of the mean of the mass of the crayfish harvested from the tank of a given treatment and crayfish type at the end of the experiment. (g)
+* total.Harvested.Mass = the sum of the mass of the crayfish harvested from the tank of a given treatment and crayfish type at the end of the experiment. Missing (presumed dead) crayfish were not included in the sum. (g)
+* Abundance = the number of crayfish of a given type stocked into each tank at the beginning of the experiment.
+* Total.Abundance = the total number of crayfish in each tank (native + invasive) stocked into each tank at the beginning of the experiment.
+* Invasive.Abundance = the number of invasive crayfish stocked into each tank at the beginning of the experiment.
+* Treatment = the treatment level identifier, where "Ctl_Invasive" indicates a tank with only invasive crayfish, "Ctl_Native" indicates a tank with only native crayfish, "Equal" indicates a tank with equal numbers of invasive and native crayfish, "Low" indicates a tank with more native than invasive crayfish, and "High" indicates a tank with more invasive than native crayfish.
+* ind.delta.mass = the estimated change in mass of a crayfish in a tank over the course of the experiment measured as the mean harvested mass minus the mean stocked mass. (g)
     
 ## Data Visualizations
     
-    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = mean.Harvested.Mass, x = Total.Abundance, color = Type)) +
+    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
+             geom_point() +
+             geom_smooth(
+               method = "lm"
+             ) +
+             theme_classic()
+    
+    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Total.Abundance, color = Type)) +
              geom_point() +
              geom_smooth(
                method = "lm"
