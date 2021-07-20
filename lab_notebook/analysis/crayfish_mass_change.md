@@ -22,13 +22,13 @@ Initially the change in mass was measured as the final mass of the *tank* minus 
 
 To better distingish between patterns in these two components of the ecology, we are analyzing them separately as the estimated change in mass of an individual crayfish and the total crayfish mass in the tank at the end of the experiment.
 
-## Import Data
+### Import Data
 
     cray.raw <- read.table("./data/crayfish_mass_raw.csv", header = T, sep = ",")
     
-## Create variables
+### Create variables
     
-### Calculate the mean of the stocked mass and harvested mass for species in each tank
+#### Calculate the mean of the stocked mass and harvested mass for species in each tank
 
 This code calculates the mean stocked mass and harvested mass of all the crayfish in each tank and produces a new data.frame with the values. The code also calculates the total mass of each species of crayfish at the end of the experiment.
     
@@ -36,7 +36,7 @@ This code calculates the mean stocked mass and harvested mass of all the crayfis
       group_by(Year, Type, Tank) %>%
         summarize(mean.Stocked.Mass = mean(Stocked_Mass, na.rm = T), sd.Stocked.Mass = sd(Stocked_Mass), mean.Harvested.Mass = mean(Harvested_Mass, na.rm = T), sd.Harvested.Mass = sd(Harvested_Mass), total.Harvested.Mass = sum(Harvested_Mass, na.rm = T))
     
-### Create a data.frame with the crayfish abundance of each tank not replicated for the number of crayfish
+#### Create a data.frame with the crayfish abundance of each tank not replicated for the number of crayfish
 
 This code produces a data.frame with a single abundance value for each tank by using `unique` to select only a single abundance value from the replicate crayfish values.
 
@@ -44,7 +44,7 @@ This code produces a data.frame with a single abundance value for each tank by u
       group_by(Year, Type, Tank) %>%
       summarize(Abundance = unique(Abundance), Total.Abundance = unique(Total_Abundance), Invasive.Abundance = unique(Invasive_Abundance))
 
-### Create a data.frame with the treatment designation of each tank not replicated for the number of crayfish
+#### Create a data.frame with the treatment designation of each tank not replicated for the number of crayfish
 
 This code produces a data.frame with a single treatment value for each tank by using `unique` to select only a single abundance value from the replicate crayfish values.
 
@@ -52,7 +52,7 @@ This code produces a data.frame with a single treatment value for each tank by u
       group_by(Year, Type, Tank) %>%
       summarize(Treatment = unique(Treatment))
     
-### Merge the mean.mass data.frame with the cray.raw data frame
+#### Merge the mean.mass data.frame with the cray.raw data frame
     
     cray.mean <- 
       left_join(mean.mass, tank.abundance) 
@@ -60,17 +60,17 @@ This code produces a data.frame with a single treatment value for each tank by u
     cray.mean <-
       left_join(cray.mean, tank.treatment)
     
-### Calculate the estimated change in mass of an individual crayfish for each species.
+#### Calculate the estimated change in mass of an individual crayfish for each species.
     
 This code subtracts the estmated stocked mass from the estimated harvested mass of a single crayfish in each tank.
 
     ind.delta.mass <- cray.mean$mean.Harvested.Mass - cray.mean$mean.Stocked.Mass
     
-## Create data.frame for analyis
+### Create data.frame for analyis
     
     cray.mean <- data.frame(cray.mean, ind.delta.mass)
 
-## Variable Descriptions
+### Variable Descriptions
     
 * Year = the year of the study
 * Type = the description of whether the crayfish is "Invasive" or "Native". Invasive crayfish were _P. clarkii_ in 2015, and _F. virilis_ in 2016. The Native crayfish were _C. sp. C_ in both years.
@@ -86,7 +86,7 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
 * Treatment = the treatment level identifier, where "Ctl_Invasive" indicates a tank with only invasive crayfish, "Ctl_Native" indicates a tank with only native crayfish, "Equal" indicates a tank with equal numbers of invasive and native crayfish, "Low" indicates a tank with more native than invasive crayfish, and "High" indicates a tank with more invasive than native crayfish.
 * ind.delta.mass = the estimated change in mass of a crayfish in a tank over the course of the experiment measured as the mean harvested mass minus the mean stocked mass. (g)
     
-## Data Visualizations
+### Data Visualizations
     
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
              geom_point() +
@@ -101,6 +101,39 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
                method = "lm"
              ) +
              theme_classic()
+    
+    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Treatment, color = Type)) +
+             geom_jitter(
+               width = 0.1,
+               ) +
+             stat_summary(
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x),
+               fun.max = function(x) mean(x) + sd(x)
+              ) +
+             theme_classic()
+    
+    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Treatment, color = Type)) +
+             geom_jitter(
+               width = 0.1,
+               ) +
+             stat_summary(
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x),
+               fun.max = function(x) mean(x) + sd(x)
+              ) +
+             theme_classic()
+
+### Statisitical Tests
+    
+#### The effect of total crayfish abundance at the beginning of the exp on individual crayfish change in mass.
+    
+    summary(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean))
+    anova(lm(ind.delta.mass ~ Treatment * Type, data = cray.mean))
+    summary(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean))
+    anova(lm(total.Harvested.Mass ~ Treatment * Type, data = cray.mean))
+
+    
     
 ## Analysis of Tank Mass Change
 
