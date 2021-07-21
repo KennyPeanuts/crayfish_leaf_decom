@@ -214,7 +214,7 @@ In this case, the regression analysis seems to give more meaningful information.
              theme_classic()
     ggsave(filename = "ind.delta.mass.by.treatment.jpg", path = "./output/plots", dpi = 300)
     
-![ind.delta.mass.by.treatment.jpg](./lab_notebook/output/plots/ind.delta.mass.by.treatment.jpg)
+![ind.delta.mass.by.treatment.jpg](../output/plots/ind.delta.mass.by.treatment.jpg)
     
 #### Effect of abundance and treatment on final harvested mass
     
@@ -272,7 +272,7 @@ In this case we can see that there is no difference in the final mass of the dif
              theme_classic()
     ggsave(filename = "total.harvested.mass.by.abundance.jpg", path = "./output/plots", dpi = 300)
     
-![total.harvested.mass.by.abundance.jpg](./lab_notebook/output/plots/total.harvested.mass.by.abundance.jpg)
+![total.harvested.mass.by.abundance.jpg](../output/plots/total.harvested.mass.by.abundance.jpg)
     
 ##### ANOVA of total final mass by treatment
     
@@ -349,7 +349,7 @@ For the Invasive crayfish there was a significant effect of treatment on the tot
              theme_classic()
     ggsave(filename = "total.harvested.mass.by.treatment.jpg", path = "./output/plots", dpi = 300)
     
-![total.harvested.mass.by.treatment.jpg](./lab_notebook/output/plots/total.harvested.mass.by.treatment.jpg)
+![total.harvested.mass.by.treatment.jpg](../output/plots/total.harvested.mass.by.treatment.jpg)
 
     
 ## Analysis of Tank Mass Change
