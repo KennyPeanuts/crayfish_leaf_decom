@@ -69,6 +69,10 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
 ### Create data.frame for analyis
     
     cray.mean <- data.frame(cray.mean, ind.delta.mass)
+    
+#### Reorder the treatment levels in Treatment to reflect the logical order
+    
+    cray.mean$Treatment <- factor(cray.mean$Treatment, levels = c("Ctl_Native", "Ctl_Invasive", "Low", "Equal", "High"))
 
 ### Variable Descriptions
     
@@ -88,13 +92,6 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
     
 ### Data Visualizations
     
-    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
-             geom_point() +
-             geom_smooth(
-               method = "lm"
-             ) +
-             theme_classic()
-    
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Total.Abundance, color = Type)) +
              geom_point() +
              geom_smooth(
@@ -103,24 +100,32 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
              theme_classic()
     
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Treatment, color = Type)) +
-             geom_jitter(
-               width = 0.1,
+             geom_point(
+               position = position_jitterdodge(
+                 dodge.width = 0.65,
+                 jitter.width = 0.15
+               )
                ) +
              stat_summary(
                fun = mean,
                fun.min = function(x) mean(x) - sd(x),
-               fun.max = function(x) mean(x) + sd(x)
+               fun.max = function(x) mean(x) + sd(x),
+               position = position_dodge(width = 0.65)
               ) +
              theme_classic()
     
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Treatment, color = Type)) +
-             geom_jitter(
-               width = 0.1,
+             geom_point(
+               position = position_jitterdodge(
+                 dodge.width = 0.65,
+                 jitter.width = 0.15
+               )
                ) +
              stat_summary(
                fun = mean,
                fun.min = function(x) mean(x) - sd(x),
-               fun.max = function(x) mean(x) + sd(x)
+               fun.max = function(x) mean(x) + sd(x),
+               position = position_dodge(width = 0.65)
               ) +
              theme_classic()
 
@@ -128,9 +133,65 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
     
 #### The effect of total crayfish abundance at the beginning of the exp on individual crayfish change in mass.
     
+Based on the data there are two ways to analyze the results. One approach would be to treat the number of crayfish in the treatments as a continuous variable and analyze the data as an regression with `abundance` and `type` as a covariate.
+
+##### Regression of mass change by total abundance 
+
     summary(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean))
+    
+    ##################################################    
+    Call:
+      lm(formula = ind.delta.mass ~ Total.Abundance * Type, data = cray.mean)
+    
+    Residuals:
+      Min      1Q  Median      3Q     Max 
+    -4.7663 -0.5859  0.0830  0.7332  6.9337 
+    
+    Coefficients:
+      Estimate Std. Error t value Pr(>|t|)    
+    (Intercept)                  5.7478     1.0602   5.421  1.3e-06 ***
+      Total.Abundance             -0.3386     0.1514  -2.236   0.0293 *  
+      TypeNative                  -3.7940     1.4843  -2.556   0.0133 *  
+      Total.Abundance:TypeNative   0.2742     0.2138   1.283   0.2049   
+    
+    ################################################## 
+    
+For mass change, the regression analysis shows that there is a significant effect of abundance on mass change overall and that there is no interaction between the types of crayfish.
+    
+To evaluate the effect of type we can report the results as an ANCOVA (the model is the same, the output just differs).
+
+    anova(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean))
+    
+    ##################################################
+    Analysis of Variance Table
+    
+    Response: ind.delta.mass
+    Df  Sum Sq Mean Sq F value    Pr(>F)    
+    Total.Abundance       1  11.016  11.016  3.1858 0.0796954 .  
+    Type                  1  59.465  59.465 17.1978 0.0001153 ***
+    Total.Abundance:Type  1   5.688   5.688  1.6451 0.2049068    
+    Residuals            56 193.631   3.458  
+    
+    ################################################## 
+    
+The ANCOVA results show a strongly significant effect of `type` on the mass change and a marginally significant effect of `abundance`. The difference in the results of the ANCOVA from the regression is that the ANCOVA is testing for the difference in means and not the difference of the slope from 0.
+    
+So, the way to interpret these results is that there is a strongly significant difference in the overall mean change in mass of the two types of crayfish (independent of the effect of abundance) and there is an overall negative effect of abundance on change in mass (independent of the effect of crayfish type). The lack of a significant interaction indicates that these results are fully independent.
+    
+    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
+             geom_point() +
+             geom_smooth(
+               method = "lm"
+             ) +
+             theme_classic()
+    ggsave(filename = "ind.delta.mass.by.abundance.jpg", path = "./output/plots", dpi = 300)
+    
+![ind.delta.mass.by.abundance](./output/plots/ind.delta.mass.by.abundance.jpg)
+    
     anova(lm(ind.delta.mass ~ Treatment * Type, data = cray.mean))
+    
     summary(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean))
+    anova(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean))
     anova(lm(total.Harvested.Mass ~ Treatment * Type, data = cray.mean))
 
     
