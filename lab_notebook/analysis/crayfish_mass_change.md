@@ -90,25 +90,6 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
 * Treatment = the treatment level identifier, where "Ctl_Invasive" indicates a tank with only invasive crayfish, "Ctl_Native" indicates a tank with only native crayfish, "Equal" indicates a tank with equal numbers of invasive and native crayfish, "Low" indicates a tank with more native than invasive crayfish, and "High" indicates a tank with more invasive than native crayfish.
 * ind.delta.mass = the estimated change in mass of a crayfish in a tank over the course of the experiment measured as the mean harvested mass minus the mean stocked mass. (g)
     
-### Data Visualizations
-    
-    
-    
-    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Treatment, color = Type)) +
-             geom_point(
-               position = position_jitterdodge(
-                 dodge.width = 0.65,
-                 jitter.width = 0.15
-               )
-               ) +
-             stat_summary(
-               fun = mean,
-               fun.min = function(x) mean(x) - sd(x),
-               fun.max = function(x) mean(x) + sd(x),
-               position = position_dodge(width = 0.65)
-              ) +
-             theme_classic()
-
 ### Statisitical Tests
     
 #### The effect of total crayfish abundance at the beginning of the exp on individual crayfish change in mass.
@@ -166,7 +147,7 @@ So, the way to interpret these results is that there is a strongly significant d
              theme_classic()
     ggsave(filename = "ind.delta.mass.by.abundance.jpg", path = "./output/plots", dpi = 300)
     
-![ind.delta.mass.by.abundance](./output/plots/ind.delta.mass.by.abundance.jpg)
+![ind.delta.mass.by.abundance](./lab_notebook/output/plots/ind.delta.mass.by.abundance.jpg)
     
 ##### ANOVA of change in mass by treatment
     
@@ -233,7 +214,7 @@ In this case, the regression analysis seems to give more meaningful information.
              theme_classic()
     ggsave(filename = "ind.delta.mass.by.treatment.jpg", path = "./output/plots", dpi = 300)
     
-![ind.delta.mass.by.treatment.jpg](./output/plots/ind.delta.mass.by.treatment.jpg)
+![ind.delta.mass.by.treatment.jpg](./lab_notebook/output/plots/ind.delta.mass.by.treatment.jpg)
     
 #### Effect of abundance and treatment on final harvested mass
     
@@ -291,14 +272,85 @@ In this case we can see that there is no difference in the final mass of the dif
              theme_classic()
     ggsave(filename = "total.harvested.mass.by.abundance.jpg", path = "./output/plots", dpi = 300)
     
-![total.harvested.mass.by.abundance.jpg](./output/plots/total.harvested.mass.by.abundance.jpg)
+![total.harvested.mass.by.abundance.jpg](./lab_notebook/output/plots/total.harvested.mass.by.abundance.jpg)
     
+##### ANOVA of total final mass by treatment
     
-    
-    
+The second way to analyze the effect of the treatments on total final mass of crayfish is to run a 2-way ANOVA with the treatment levels.
+
     anova(lm(total.Harvested.Mass ~ Treatment * Type, data = cray.mean, subset = Year == "2016"))
 
+    ##################################################
+    Analysis of Variance Table
     
+    Response: total.Harvested.Mass
+                    Df  Sum Sq Mean Sq F value    Pr(>F)    
+    Treatment       4 2413.71  603.43  7.8183 9.393e-05 ***
+    Type            1    4.13    4.13  0.0536   0.81815    
+    Treatment:Type  2  638.64  319.32  4.1373   0.02327 *  
+    Residuals      40 3087.27   77.18    
+    
+    ################################################## 
+    
+The results of this analysis show that there is a highly significant effect of treatment but no effect of species (type) on the total final mass. The signficant interaction indicates that the treatment effect was no independent of species. 
+To explore this more fully, next I conduct a one-way ANOVA with post-hoc tests. I conduct separate tests for the two species because of the significant interaction.
+
+    summary(aov(total.Harvested.Mass ~ Treatment, data = cray.mean, subset = Type == "Native" & Year == "2016"))
+    
+    ##################################################
+                 Df Sum Sq Mean Sq F value Pr(>F)
+    Treatment    3   68.9   22.97   0.355  0.786
+    Residuals   20 1295.0   64.75 
+    
+    ##################################################
+    
+The results show no significant effect of the treatment on the total final mass of the Native crayfish.
+    
+    summary(aov(total.Harvested.Mass ~ Treatment, data = cray.mean, subset = Type == "Invasive" & Year == "2016"))
+    TukeyHSD(aov(total.Harvested.Mass ~ Treatment, data = cray.mean, subset = Type == "Invasive" & Year == "2016"))
+    
+    ##################################################
+    
+    Df Sum Sq Mean Sq F value   Pr(>F)    
+    Treatment    3   2791   930.2   10.38 0.000248 ***
+    Residuals   20   1792    89.6  
+    
+    Tukey multiple comparisons of means
+    95% family-wise confidence level
+    
+    Fit: aov(formula = total.Harvested.Mass ~ Treatment, data = cray.mean, subset = Type == "Invasive" & Year == "2016")
+    
+    $Treatment
+    diff        lwr         upr     p adj
+    Low-Ctl_Invasive   -28.233333 -43.530756 -12.9359103 0.0002548 ***
+    Equal-Ctl_Invasive -15.783333 -31.080756  -0.4859103 0.0416372 *
+    High-Ctl_Invasive   -5.383333 -20.680756   9.9140897 0.7594810
+    Equal-Low           12.450000  -2.847423  27.7474230 0.1369486
+    High-Low            22.850000   7.552577  38.1474230 0.0023957 *
+    High-Equal          10.400000  -4.897423  25.6974230 0.2584053
+    
+    ################################################## 
+    
+For the Invasive crayfish there was a significant effect of treatment on the total final mass and the post-hoc test shows that the differences are between the control and the low and equal, and between the low and high.
+    
+    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Treatment, color = Type)) +
+             geom_point(
+               position = position_jitterdodge(
+                 dodge.width = 0.65,
+                 jitter.width = 0.15
+               )
+               ) +
+             stat_summary(
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x),
+               fun.max = function(x) mean(x) + sd(x),
+               position = position_dodge(width = 0.65)
+              ) +
+             theme_classic()
+    ggsave(filename = "total.harvested.mass.by.treatment.jpg", path = "./output/plots", dpi = 300)
+    
+![total.harvested.mass.by.treatment.jpg](./lab_notebook/output/plots/total.harvested.mass.by.treatment.jpg)
+
     
 ## Analysis of Tank Mass Change
 
