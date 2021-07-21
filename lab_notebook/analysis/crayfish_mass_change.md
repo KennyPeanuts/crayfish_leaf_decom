@@ -92,12 +92,6 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
     
 ### Data Visualizations
     
-    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Total.Abundance, color = Type)) +
-             geom_point() +
-             geom_smooth(
-               method = "lm"
-             ) +
-             theme_classic()
     
     
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Treatment, color = Type)) +
@@ -221,7 +215,7 @@ To further identify what is happening we can do a post-hoc test to determine whi
     
 The results of the ANOVA show that there is a significant difference between the invasive control and both the equal and high treatments. There is also a marginally significant difference between the native control and the invasive control.
     
-
+In this case, the regression analysis seems to give more meaningful information. The negative effect of total abunance is clear as is the difference in the types of crayfish.
     
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Treatment, color = Type)) +
              geom_point(
@@ -241,9 +235,67 @@ The results of the ANOVA show that there is a significant difference between the
     
 ![ind.delta.mass.by.treatment.jpg](./output/plots/ind.delta.mass.by.treatment.jpg)
     
+#### Effect of abundance and treatment on final harvested mass
     
+As with mass change there are two ways to analyze the data: regression analysis and ANCOVA.
+
+##### Regression of final mass by abundance
+
+In this model I am using a regression of harvested mass by the inital abundance in the tank with the type of crayfish as the covariate.
+
     summary(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
+    
+    ##################################################
+    Call:
+      lm(formula = total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, 
+         subset = Year == "2016")
+    
+    Residuals:
+      Min      1Q  Median      3Q     Max 
+    -28.918  -4.803   1.168   6.372  28.012 
+    
+    Coefficients:
+                               Estimate Std. Error t value Pr(>|t|)    
+    (Intercept)                30.02833    7.79288   3.853 0.000375 ***
+    Total.Abundance            -0.18500    1.06048  -0.174 0.862312    
+    TypeNative                 -3.93333   11.02079  -0.357 0.722872    
+    Total.Abundance:TypeNative -0.01667    1.49974  -0.011 0.991183 
+    
+    ################################################## 
+    
+The results show that there is no relationship between abundance and the final mass of the crayfish in the tank. Since the interaction is not significant, this applies independently to both species.
+    
+To investigate the effect of the species we can report the model results as an ANOVA to see the effect of the catagorical variable.
+
     anova(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
+    
+    ################################################## 
+    Analysis of Variance Table
+    
+    Response: total.Harvested.Mass
+                          Df Sum Sq Mean Sq F value Pr(>F)
+    Total.Abundance       1    9.0   8.971  0.0665 0.7977
+    Type                  1  196.8 196.830  1.4585 0.2336
+    Total.Abundance:Type  1    0.0   0.017  0.0001 0.9912
+    Residuals            44 5937.9 134.953 
+    
+    ##################################################
+    
+In this case we can see that there is no difference in the final mass of the different types of crayfish.
+    
+    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Total.Abundance, color = Type)) +
+             geom_point() +
+             geom_smooth(
+               method = "lm"
+             ) +
+             theme_classic()
+    ggsave(filename = "total.harvested.mass.by.abundance.jpg", path = "./output/plots", dpi = 300)
+    
+![total.harvested.mass.by.abundance.jpg](./output/plots/total.harvested.mass.by.abundance.jpg)
+    
+    
+    
+    
     anova(lm(total.Harvested.Mass ~ Treatment * Type, data = cray.mean, subset = Year == "2016"))
 
     
