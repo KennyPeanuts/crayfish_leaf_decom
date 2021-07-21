@@ -147,7 +147,7 @@ So, the way to interpret these results is that there is a strongly significant d
              theme_classic()
     ggsave(filename = "ind.delta.mass.by.abundance.jpg", path = "./output/plots", dpi = 300)
     
-![ind.delta.mass.by.abundance](./lab_notebook/output/plots/ind.delta.mass.by.abundance.jpg)
+![ind.delta.mass.by.abundance](../output/plots/ind.delta.mass.by.abundance.jpg)
     
 ##### ANOVA of change in mass by treatment
     
