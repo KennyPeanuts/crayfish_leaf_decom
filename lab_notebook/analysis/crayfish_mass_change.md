@@ -99,20 +99,6 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
              ) +
              theme_classic()
     
-    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Treatment, color = Type)) +
-             geom_point(
-               position = position_jitterdodge(
-                 dodge.width = 0.65,
-                 jitter.width = 0.15
-               )
-               ) +
-             stat_summary(
-               fun = mean,
-               fun.min = function(x) mean(x) - sd(x),
-               fun.max = function(x) mean(x) + sd(x),
-               position = position_dodge(width = 0.65)
-              ) +
-             theme_classic()
     
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Treatment, color = Type)) +
              geom_point(
@@ -137,22 +123,23 @@ Based on the data there are two ways to analyze the results. One approach would 
 
 ##### Regression of mass change by total abundance 
 
-    summary(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean))
+    summary(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
     
     ##################################################    
     Call:
-      lm(formula = ind.delta.mass ~ Total.Abundance * Type, data = cray.mean)
+      lm(formula = ind.delta.mass ~ Total.Abundance * Type, data = cray.mean, 
+         subset = Year == "2016")
     
     Residuals:
       Min      1Q  Median      3Q     Max 
-    -4.7663 -0.5859  0.0830  0.7332  6.9337 
+    -5.1168 -0.2979 -0.0123  0.5561  6.5832 
     
     Coefficients:
-      Estimate Std. Error t value Pr(>|t|)    
-    (Intercept)                  5.7478     1.0602   5.421  1.3e-06 ***
-      Total.Abundance             -0.3386     0.1514  -2.236   0.0293 *  
-      TypeNative                  -3.7940     1.4843  -2.556   0.0133 *  
-      Total.Abundance:TypeNative   0.2742     0.2138   1.283   0.2049   
+    Estimate Std. Error t value Pr(>|t|)    
+    (Intercept)                  6.5237     1.1696   5.578  1.5e-06 ***
+    Total.Abundance             -0.4095     0.1580  -2.591   0.0130 *  
+    TypeNative                  -2.9992     1.6446  -1.824   0.0752 .  
+    Total.Abundance:TypeNative   0.1872     0.2230   0.839   0.4059  
     
     ################################################## 
     
@@ -160,18 +147,17 @@ For mass change, the regression analysis shows that there is a significant effec
     
 To evaluate the effect of type we can report the results as an ANCOVA (the model is the same, the output just differs).
 
-    anova(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean))
+    anova(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
     
     ##################################################
     Analysis of Variance Table
     
     Response: ind.delta.mass
-    Df  Sum Sq Mean Sq F value    Pr(>F)    
-    Total.Abundance       1  11.016  11.016  3.1858 0.0796954 .  
-    Type                  1  59.465  59.465 17.1978 0.0001153 ***
-    Total.Abundance:Type  1   5.688   5.688  1.6451 0.2049068    
-    Residuals            56 193.631   3.458  
-    
+    Df  Sum Sq Mean Sq F value   Pr(>F)   
+    Total.Abundance       1  23.244  23.244  7.8249 0.007678 **
+    Type                  1  33.338  33.338 11.2227 0.001690 **
+    Total.Abundance:Type  1   2.093   2.093  0.7046 0.405887   
+    Residuals            43 127.734   2.971                    
     ################################################## 
     
 The ANCOVA results show a strongly significant effect of `type` on the mass change and a marginally significant effect of `abundance`. The difference in the results of the ANCOVA from the regression is that the ANCOVA is testing for the difference in means and not the difference of the slope from 0.
@@ -188,11 +174,77 @@ So, the way to interpret these results is that there is a strongly significant d
     
 ![ind.delta.mass.by.abundance](./output/plots/ind.delta.mass.by.abundance.jpg)
     
-    anova(lm(ind.delta.mass ~ Treatment * Type, data = cray.mean))
+##### ANOVA of change in mass by treatment
     
-    summary(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean))
-    anova(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean))
-    anova(lm(total.Harvested.Mass ~ Treatment * Type, data = cray.mean))
+The other way to analyze the effect would be to treat the different abundance levels as a catagorical variable and analyze the effect on the response with a two-way ANOVA.
+    
+    anova(lm(ind.delta.mass ~ Treatment * Type, data = cray.mean, subset = Year == "2016"))
+    
+    ################################################## 
+    Analysis of Variance Table
+    
+    Response: ind.delta.mass
+    Df  Sum Sq Mean Sq F value   Pr(>F)   
+    Treatment       4  48.710 12.1776  3.9522 0.008696 **
+    Type            1  15.816 15.8158  5.1330 0.029104 * 
+    Treatment:Type  2   1.717  0.8586  0.2787 0.758286   
+    Residuals      39 120.166  3.0812 
+    
+    ################################################## 
+    
+In this case we can see a highly signficant effect of both the treatment levels (which are the different combinations of the two species abundance) and species type. Again there is no interaction effect, indicating that the impacts are completely independent.
+    
+To further identify what is happening we can do a post-hoc test to determine which of the treatment levels are different from each other. Since there is no interaction effect, I am running the post-hoc test on the ANOVA with only Treatment as the independent variable.
+
+    summary(aov(ind.delta.mass ~ Treatment, data = cray.mean, subset = Year == "2016"))
+    TukeyHSD(aov(ind.delta.mass ~ Treatment, data = cray.mean, subset = Year == "2016"))
+    
+    ################################################## 
+                 Df Sum Sq Mean Sq F value Pr(>F)  
+    Treatment    4  48.71  12.178   3.714 0.0112 *
+    Residuals   42 137.70   3.279
+    
+    $Treatment
+    diff        lwr        upr     p adj
+    Ctl_Invasive-Ctl_Native  2.70833333 -0.2708403  5.6875070 0.0904447 *
+    Low-Ctl_Native           0.86212121 -1.7567186  3.4809610 0.8803408
+    Equal-Ctl_Native        -0.38194444 -2.9619845  2.1980956 0.9931292
+    High-Ctl_Native         -0.31513889 -2.8951789  2.2649011 0.9967234
+    Low-Ctl_Invasive        -1.84621212 -4.4650519  0.7726277 0.2795084
+    Equal-Ctl_Invasive      -3.09027778 -5.6703178 -0.5102377 0.0118326 ***
+    High-Ctl_Invasive       -3.02347222 -5.6035123 -0.4434322 0.0144379 ***
+    Equal-Low               -1.24406566 -3.3980046  0.9098733 0.4774801
+    High-Low                -1.17726010 -3.3311991  0.9766789 0.5320882
+    High-Equal               0.06680556 -2.0397883  2.1733994 0.9999842
+    
+    ################################################## 
+    
+The results of the ANOVA show that there is a significant difference between the invasive control and both the equal and high treatments. There is also a marginally significant difference between the native control and the invasive control.
+    
+
+    
+    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Treatment, color = Type)) +
+             geom_point(
+               position = position_jitterdodge(
+                 dodge.width = 0.65,
+                 jitter.width = 0.15
+               )
+               ) +
+             stat_summary(
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x),
+               fun.max = function(x) mean(x) + sd(x),
+               position = position_dodge(width = 0.65)
+              ) +
+             theme_classic()
+    ggsave(filename = "ind.delta.mass.by.treatment.jpg", path = "./output/plots", dpi = 300)
+    
+![ind.delta.mass.by.treatment.jpg](./output/plots/ind.delta.mass.by.treatment.jpg)
+    
+    
+    summary(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
+    anova(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
+    anova(lm(total.Harvested.Mass ~ Treatment * Type, data = cray.mean, subset = Year == "2016"))
 
     
     
