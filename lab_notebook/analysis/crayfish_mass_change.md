@@ -4,6 +4,7 @@
 
 * File Created: 2021-06-17 - KF
 * File Modified: 2021-07-07 - KF - based on discussions with SH, I am re-analyzing the data using the raw masses from each crayfish to generate an estimate of individual crayfish mass change, rather than tank mass change. I am also analyzing tank total mass at the end of the exp.
+* File Modified: 2021-07-28 - KF - bgan adding code for the analysis of survival but did not complete the data summary or the data visualization.
 
 ### Description
 
@@ -491,6 +492,28 @@ Three of the tanks had an average growth that was less than 0, indicating that o
     
     ################################################## 
     
+### Analysis of Survival
+    
+    summary(lm(Survival ~ Total.Abundance * Species, data = cray))
+    
+    ################################################## 
+    Call:
+lm(formula = Survival ~ Total.Abundance * Species, data = cray)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-81.94  -7.50  -2.78  17.92  20.14 
+
+Coefficients:
+                              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                     75.695     15.531   4.874 1.46e-05 ***
+Total.Abundance                  1.042      2.114   0.493    0.625    
+SpeciesNative                    8.055     21.964   0.367    0.716    
+Total.Abundance:SpeciesNative   -1.250      2.989  -0.418    0.678   
+
+    ##################################################
+
+    summary(aov(Survival ~ Density * Species, data = cray))
 ## Mass Change Analysis
 ### Comparison of the treatment groups on the change in mass
     
