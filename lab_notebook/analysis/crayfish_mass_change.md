@@ -4,6 +4,9 @@
 
 * File Created: 2021-06-17 - KF
 * File Modified: 2021-07-07 - KF - based on discussions with SH, I am re-analyzing the data using the raw masses from each crayfish to generate an estimate of individual crayfish mass change, rather than tank mass change. I am also analyzing tank total mass at the end of the exp.
+* File Modified: 2021-07-28 - KF - began adding code for the analysis of survival but did not complete the data summary or the data visualization.
+* File Modified: 2021-08-18 - KF - completed analysis of mass change for 2015 experiment
+* File Modified 2021-08-18 - KF - calculated survival of each species for each exp based on the raw data.
 
 ### Description
 
@@ -62,6 +65,29 @@ This code produces a data.frame with a single treatment value for each tank by u
     cray.mean <-
       left_join(cray.mean, tank.treatment)
     
+## Survival Calculation 
+    
+    cray.N <- 
+      cray.raw %>%
+      group_by(Year, Type, Tank) %>%
+      summarize(N.initial = length(which(!is.na(Stocked_Mass))), N.final = length(which(!is.na(Harvested_Mass))))
+    
+### Calculate the proportion survived
+    
+    prop.surv <- cray.N$N.final / cray.N$N.initial
+    
+### Combine N with survival data
+    
+    cray.N <- data.frame(cray.N, prop.surv)
+    
+#### Merge the mean.mass data.frame with the cray.raw data frame
+    
+    cray.N <- 
+      left_join(cray.N, tank.abundance) 
+    
+    cray.N <-
+      left_join(cray.N, tank.treatment)
+    
 #### Calculate the estimated change in mass of an individual crayfish for each species.
     
 This code subtracts the estmated stocked mass from the estimated harvested mass of a single crayfish in each tank.
@@ -94,6 +120,7 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
     
 ### Statisitical Tests
 #### 2015 Experiment
+##### Mass
 
 #### The effect of total crayfish abundance at the beginning of the exp on individual crayfish change in mass.
     
@@ -271,6 +298,89 @@ The second way to analyze the effect of the treatments on total final mass of cr
     
 ![total.harvested.mass.by.treatment.2015.jpg](../output/plots/total.harvested.mass.by.treatment.jpg)
 
+#### The effect of total crayfish abundance at the beginning of the exp on survival
+    
+##### Regression of mass change by total abundance 
+
+    summary(lm(prop.surv ~ Total.Abundance * Type, data = cray.N, subset = Year == "2015"))
+    
+    ##################################################    
+    Call:
+      lm(formula = prop.surv ~ Total.Abundance * Type, data = cray.N, 
+         subset = Year == "2015")
+    
+    Residuals:
+      Min       1Q   Median       3Q      Max 
+    -0.58333 -0.14062  0.06250  0.08333  0.41667 
+    
+    Coefficients:
+      Estimate Std. Error t value Pr(>|t|)  
+    (Intercept)                 1.08333    0.44502   2.434   0.0352 *
+      Total.Abundance            -0.02778    0.08565  -0.324   0.7524  
+    TypeNative                  0.56250    0.69578   0.808   0.4376  
+    Total.Abundance:TypeNative -0.14931    0.13542  -1.103   0.2960  
+    ---
+    Residual standard error: 0.2967 on 10 degrees of freedom
+    Multiple R-squared:  0.2994,	Adjusted R-squared:  0.08928 
+    F-statistic: 1.425 on 3 and 10 DF,  p-value: 0.2928
+    ################################################## 
+    
+    anova(lm(prop.surv ~ Total.Abundance * Type, data = cray.N, subset = Year == "2015"))
+    
+    ##################################################
+    Analysis of Variance Table
+    
+    Response: prop.surv
+    Df  Sum Sq  Mean Sq F value Pr(>F)
+    Total.Abundance       1 0.15312 0.153125  1.7396 0.2166
+    Type                  1 0.11611 0.116113  1.3192 0.2775
+    Total.Abundance:Type  1 0.10700 0.107002  1.2156 0.2960
+    Residuals            10 0.88021 0.088021  
+    ################################################## 
+    
+    ggplot(subset(cray.N, Year == "2015"), mapping = aes(y = prop.surv, x = Total.Abundance, color = Type)) +
+             geom_point() +
+             geom_smooth(
+               method = "lm"
+             ) +
+             theme_classic()
+    ggsave(filename = "prop.surv.by.abundance.2015.jpg", path = "./output/plots", dpi = 300)
+    
+![prop.surv.by.abundanceprop.surv.2015](../output/plots/prop.surv.by.abundance.2015.jpg)
+    
+##### ANOVA of change in mass by treatment
+    
+The other way to analyze the effect would be to treat the different abundance levels as a catagorical variable and analyze the effect on the response with a two-way ANOVA.
+    
+    anova(lm(prop.surv ~ Treatment * Type, data = cray.N, subset = Year == "2015"))
+    
+    ################################################## 
+    Analysis of Variance Table
+    
+    Response: prop.surv
+    Df  Sum Sq  Mean Sq F value Pr(>F)
+    Treatment  2 0.15402 0.077009  0.8749 0.4465
+    Type       1 0.22222 0.222222  2.5247 0.1432
+    Residuals 10 0.88021 0.088021  
+    ################################################## 
+    
+    ggplot(subset(cray.N, Year == "2015"), mapping = aes(y = prop.surv, x = Treatment, color = Type)) +
+             geom_point(
+               position = position_jitterdodge(
+                 dodge.width = 0.65,
+                 jitter.width = 0.15
+               )
+               ) +
+             stat_summary(
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x),
+               fun.max = function(x) mean(x) + sd(x),
+               position = position_dodge(width = 0.65)
+              ) +
+             theme_classic()
+    ggsave(filename = "prop.surv.by.treatment.2015.jpg", path = "./output/plots", dpi = 300)
+    
+![prop.surv.by.treatment.2015.jpg](../output/plots/prop.surv.by.treatment.jpg)
 #### 2016 Experiment 
     
 #### The effect of total crayfish abundance at the beginning of the exp on individual crayfish change in mass.
@@ -531,12 +641,14 @@ For the Invasive crayfish there was a significant effect of treatment on the tot
     ggsave(filename = "total.harvested.mass.by.treatment.jpg", path = "./output/plots", dpi = 300)
     
 ![total.harvested.mass.by.treatment.jpg](../output/plots/total.harvested.mass.by.treatment.jpg)
-
+    
+    
+##################################################    
 ## Analysis of Tank Mass Change
 
 ## Import Data
 
-    cray <- read.table("./data/crayfish_growth_surv.csv", header = T, sep = ",")
+    cray.2016 <- read.table("./data/crayfish_growth_surv.csv", header = T, sep = ",")
     
 ## Create Variables
     
@@ -551,26 +663,6 @@ For the Invasive crayfish there was a significant effect of treatment on the tot
     
     cray <- data.frame(cray, Sp.Abundance, Total.Abundance, Final.Sp.Abundance, Final.Total.Abundance, Invasive.Abundance, Final.Invasive.Abundance)
     
-### Make a new data.frame without the tanks with negative growth.
-    
-Three of the tanks had an average growth that was less than 0, indicating that on average, the crayfish lost mass over the course of the experiment. This average loss of mass may indicate that these tanks were not representative of the overall experimental conditions and therefore do not provide a proper test of the treatment (i.e., crayfish density).
-
-    ##################################################
-    # Tanks that had negative crayfish growth
-
-    > cray[cray$MassChange < 0, ]
-       Species   Density  MassChange  LogMassChange Survival Sp.Abundance Total.Abundance
-    6  Native    equal         -1.80            NA        25            4               8
-    45 Invasive  low           -7.85            NA         0            2               6
-    47 Invasive  low           -1.05            NA       100            2               6
-      Final.Sp.Abundance Final.Total.Abundance Invasive.Abundance Final.Invasive.Abundance
-    6                  1                     4                  4                        3
-    45                 0                     4                  2                        4
-    47                 2                     5                  2                        3
-    
-    ################################################## 
-
-    cray.pos.trunk <- cray[cray$MassChange >= 0, ]
     
 ### Variable Descriptions    
     
@@ -595,57 +687,8 @@ Three of the tanks had an average growth that was less than 0, indicating that o
 * Invasive.Abundance = the number of 'Invasive' crayfish in the a treatment at the beginning of the experiment. 
 
 * Final.Invasive.Abundance = the number of 'Invasive' crayfish in the a treatment at the end of the experiment. 
-        
-    
-## Variable Summary
-### MassChange
-#### By Species and Density
-    
-    cray %>%
-      group_by(Species, Density) %>%
-        summarize(mean = mean(MassChange), sd = sd(MassChange), min = min(MassChange), max = max(MassChange))
 
-    ##################################################     
-    # Summary of the change is mass of the crayfish 
-    
-    `summarise()` has grouped output by 'Species'. You can override using the `.groups` argument.
-    # A tibble: 8 x 6
-    # Groups:   Species [2]
-    Species  Density  mean    sd    min   max
-    <chr>    <chr>   <dbl> <dbl>  <dbl> <dbl>
-    1 Invasive control  5.12 1.53   2.61   6.7 
-    2 Invasive equal    3.01 1.59   0.942  5.55
-    3 Invasive high     2.67 0.338  2.15   3.1 
-    4 Invasive low      1.84 6.14  -7.85  10.6 
-    5 Native   control  2.42 0.778  1.72   3.62
-    6 Native   equal    1.06 1.41  -1.8    1.94
-    7 Native   high     1.53 0.554  1.05   2.33
-    8 Native   low      2.86 0.954  1.23   3.75
-    
-    ################################################## 
-    
-    cray.pos.trunk %>%
-      group_by(Species, Density) %>%
-        summarize(mean = mean(MassChange), sd = sd(MassChange), min = min(MassChange), max = max(MassChange))
-    
-    ################################################## 
-    # Summary of the change in mass without the tanks with negative growth
-    `summarise()` has grouped output by 'Species'. You can override using the `.groups` argument.
-    # A tibble: 8 x 6
-    # Groups:   Species [2]
-    Species  Density  mean    sd   min   max
-    <chr>    <chr>   <dbl> <dbl> <dbl> <dbl>
-    1 Invasive control  5.12 1.53  2.61   6.7 
-    2 Invasive equal    3.01 1.59  0.942  5.55
-    3 Invasive high     2.67 0.338 2.15   3.1 
-    4 Invasive low      4.99 3.95  1.45  10.6 
-    5 Native   control  2.42 0.778 1.72   3.62
-    6 Native   equal    1.63 0.200 1.48   1.94
-    7 Native   high     1.53 0.554 1.05   2.33
-    8 Native   low      2.86 0.954 1.23   3.75
-    
-    ################################################## 
-    
+## 2016 Experiment        
 ### Survival
     
     cray %>%
@@ -671,6 +714,28 @@ Three of the tanks had an average growth that was less than 0, indicating that o
     
     ################################################## 
     
+### Analysis of Survival
+    
+    summary(lm(Survival ~ Total.Abundance * Species, data = cray))
+    
+    ################################################## 
+    Call:
+lm(formula = Survival ~ Total.Abundance * Species, data = cray)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-81.94  -7.50  -2.78  17.92  20.14 
+
+Coefficients:
+                              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                     75.695     15.531   4.874 1.46e-05 ***
+Total.Abundance                  1.042      2.114   0.493    0.625    
+SpeciesNative                    8.055     21.964   0.367    0.716    
+Total.Abundance:SpeciesNative   -1.250      2.989  -0.418    0.678   
+
+    ##################################################
+
+    summary(aov(Survival ~ Density * Species, data = cray))
 ## Mass Change Analysis
 ### Comparison of the treatment groups on the change in mass
     
