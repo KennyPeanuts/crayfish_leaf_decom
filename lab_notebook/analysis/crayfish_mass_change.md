@@ -749,7 +749,7 @@ This analysis also shows no effect of the number of crayfish at the beginning of
              theme_classic()
     ggsave(filename = "prop.surv.by.treatment.2016.jpg", path = "./output/plots", dpi = 300)
     
-![prop.surv.by.treatment.2016.jpg](../output/plots/prop.surv.by.treatment.2016jpg)
+![prop.surv.by.treatment.2016.jpg](../output/plots/prop.surv.by.treatment.2016.jpg)
     
     
 ##################################################    
