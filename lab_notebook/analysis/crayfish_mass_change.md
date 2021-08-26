@@ -7,6 +7,7 @@
 * File Modified: 2021-07-28 - KF - began adding code for the analysis of survival but did not complete the data summary or the data visualization.
 * File Modified: 2021-08-18 - KF - completed analysis of mass change for 2015 experiment
 * File Modified 2021-08-18 - KF - calculated survival of each species for each exp based on the raw data.
+* File Modified 2021-08-26 - KF - completed the calculated survival of each species for each exp based on the raw data and added summaries of all the mass and survival data.
 
 ### Description
 
