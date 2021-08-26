@@ -712,7 +712,7 @@ There was no effect of the total abundance of crayfish in the tank (at the begin
              theme_classic()
     ggsave(filename = "prop.surv.by.abundance.2016.jpg", path = "./output/plots", dpi = 300)
     
-![prop.surv.by.abundanceprop.surv.2016](../output/plots/prop.surv.by.abundance.2016.jpg)
+![prop.surv.by.abundance.2016](../output/plots/prop.surv.by.abundance.2016.jpg)
     
 ##### ANOVA of survival by treatment
     
