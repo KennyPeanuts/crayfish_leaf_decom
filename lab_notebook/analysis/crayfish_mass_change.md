@@ -126,6 +126,86 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 * N.initial = the number of crayfish of that type that were stocked into the tank at the beginnig of the experiment.
 * N. final = the number of crayfish of that type that were harvested from the tank at the end of the experiment.
 * prop.surv = the proportion of the stocked crayfish of that type ('N.initial') that were recovered at the end of the experiment.
+
+### Statistical Summaries
+
+#### Stocked Mass
+
+    cray.mean %>%
+      group_by(Year, Type) %>%
+        summarize(mean.stocked = mean(mean.Stocked.Mass), sd.stocked = sd(mean.Stocked.Mass), min.stocked = min(mean.Stocked.Mass), max.stocked = max(mean.Stocked.Mass))
+    
+    ##################################################
+    # A tibble: 4 x 6
+    # Groups:   Year [2]
+    Year Type     mean.stocked sd.stocked min.stocked max.stocked
+    <int> <chr>           <dbl>      <dbl>       <dbl>       <dbl>
+    1  2015 Invasive         6.34      4.12         1.6        11.1 
+    2  2015 Native           6.29      1.40         4.65        9.13
+    3  2016 Invasive         5.19      1.65         3.12        9.2 
+    4  2016 Native           5.46      0.932        4.03        8.72
+    ################################################## 
+    
+#### Harvested Mass
+
+    cray.mean %>%
+      group_by(Year, Type) %>%
+        summarize(mean.harvested = mean(mean.Harvested.Mass, na.rm = T), sd.harvested = sd(mean.Harvested.Mass, na.rm = T), min.harvested = min(mean.Harvested.Mass, na.rm = T), max.harvested = max(mean.Harvested.Mass, na.rm = T))
+    
+    ##################################################
+    # A tibble: 4 x 6
+    # Groups:   Year [2]
+    Year Type     mean.harvested sd.harvested min.harvested max.harvested
+    <int> <chr>             <dbl>        <dbl>         <dbl>         <dbl>
+    1  2015 Invasive           9.33         3.08          3.73         12.4 
+    2  2015 Native             6.42         1.77          3.7           9.37
+    3  2016 Invasive           8.71         3.30          3.9          15.3 
+    4  2016 Native             7.43         1.48          2.7           9.78
+    
+    # NOTE: NA`s were removed 
+    ################################################## 
+    
+#### Survival
+
+    cray.N %>%
+      group_by(Year, Type) %>%
+        summarize(mean.prop.surv = mean(prop.surv, na.rm = T), sd.prop.surv = sd(prop.surv, na.rm = T), min.prop.surv = min(prop.surv, na.rm = T), max.prop.surv = max(prop.surv, na.rm = T))
+    
+    ##################################################
+    # A tibble: 4 x 6
+    # Groups:   Year [2]
+    Year Type     mean.prop.surv sd.prop.surv min.prop.surv max.prop.surv
+    <int> <chr>             <dbl>        <dbl>         <dbl>         <dbl>
+    1  2015 Invasive          0.944        0.136         0.667             1
+    2  2015 Native            0.760        0.387         0                 1
+    3  2016 Invasive          0.830        0.227         0                 1
+    4  2016 Native            0.823        0.227         0.25              1 
+    ################################################## 
+
+#### Final Number
+
+    cray.N %>%
+      group_by(Year, Type, Treatment) %>%
+        summarize(mean.N.final = mean(N.final, na.rm = T), sd.N.final = sd(N.final, na.rm = T), min.N.final = min(N.final, na.rm = T), max.N.final = max(N.final, na.rm = T))
+    
+    ##################################################
+    # A tibble: 12 x 7
+    # Groups:   Year, Type [4]
+    Year Type     Treatment    mean.N.final sd.N.final min.N.final max.N.final
+    <int> <chr>    <chr>               <dbl>      <dbl>       <int>       <int>
+    1   2015 Invasive Ctl_Invasive         3         0               3           3
+    2   2015 Invasive Equal                2.75      0.5             2           3
+    3   2015 Native   Ctl_Native           3.75      0.5             3           4
+    4   2015 Native   Equal                1.75      1.5             0           3
+    5   2016 Invasive Ctl_Invasive         3.33      0.516           3           4
+    6   2016 Invasive Equal                3.5       0.548           3           4
+    7   2016 Invasive High                 5.17      0.753           4           6
+    8   2016 Invasive Low                  1.5       0.837           0           2
+    9   2016 Native   Ctl_Native           3.67      0.516           3           4
+    10  2016 Native   Equal                3.17      1.17            1           4
+    11  2016 Native   High                 3.5       0.837           2           4
+    12  2016 Native   Low                  2.83      0.983           1           4 
+    ################################################## 
     
 ### Statisitical Tests
 #### 2015 Experiment
@@ -271,7 +351,7 @@ In this model I am using a regression of harvested mass by the inital abundance 
              theme_classic()
     ggsave(filename = "total.harvested.mass.by.abundance.2015.jpg", path = "./output/plots", dpi = 300)
     
-![total.harvested.mass.by.abundance.2015.jpg](../output/plots/total.harvested.mass.by.abundance.jpg)
+![total.harvested.mass.by.abundance.2015.jpg](../output/plots/total.harvested.mass.by.abundance.2015.jpg)
     
 ##### ANOVA of total final mass by treatment
     
