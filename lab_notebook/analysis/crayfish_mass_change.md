@@ -8,6 +8,7 @@
 * File Modified: 2021-08-18 - KF - completed analysis of mass change for 2015 experiment
 * File Modified 2021-08-18 - KF - calculated survival of each species for each exp based on the raw data.
 * File Modified 2021-08-26 - KF - completed the calculated survival of each species for each exp based on the raw data and added summaries of all the mass and survival data.
+* File Modified 2021-09-02 - KF - I observed that the df were too great on the tests and realized that we were treating the different type of crayfish as independent samples when they are not. 
 
 ### Description
 
@@ -16,7 +17,9 @@ This code describes the analysis of the growth and survival data from the experi
 ## Load packages
 
     library("tidyverse") # for data analysis and ggplot graphing
-    library("ggpubr") # for plot creation and saving
+    #library("ggpubr") # for plot creation and saving
+    library("lme4") # permits linear mixed model construction
+    library("lmerTest") # calculates p-values from linear mixed models
 
 ## Analysis of Crayfish Growth Rate and Tank Final Mass
 
@@ -107,7 +110,8 @@ This code subtracts the estmated stocked mass from the estimated harvested mass 
     
     cray.mean$Treatment <- factor(cray.mean$Treatment, levels = c("Ctl_Native", "Ctl_Invasive", "Low", "Equal", "High"))
 
-### Variable Descriptions
+    
+# Variable Descriptions
 NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' data.frames.
 
 * Year = the year of the study
@@ -133,34 +137,34 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 
     cray.mean %>%
       group_by(Year, Type) %>%
-        summarize(mean.stocked = mean(mean.Stocked.Mass), sd.stocked = sd(mean.Stocked.Mass), min.stocked = min(mean.Stocked.Mass), max.stocked = max(mean.Stocked.Mass))
+        summarize(mean.stocked = mean(mean.Stocked.Mass), sd.stocked = sd(mean.Stocked.Mass), min.stocked = min(mean.Stocked.Mass), max.stocked = max(mean.Stocked.Mass), N = length(mean.Stocked.Mass))
     
     ##################################################
-    # A tibble: 4 x 6
+    # A tibble: 4 x 7
     # Groups:   Year [2]
-    Year Type     mean.stocked sd.stocked min.stocked max.stocked
-    <int> <chr>           <dbl>      <dbl>       <dbl>       <dbl>
-    1  2015 Invasive         6.34      4.12         1.6        11.1 
-    2  2015 Native           6.29      1.40         4.65        9.13
-    3  2016 Invasive         5.19      1.65         3.12        9.2 
-    4  2016 Native           5.46      0.932        4.03        8.72
+       Year Type     mean.stocked sd.stocked  min.stocked  max.stocked   N
+    <int> <chr>           <dbl>      <dbl>       <dbl>       <dbl> <int>
+    1  2015 Invasive         6.34      4.12         1.6        11.1      6
+    2  2015 Native           6.29      1.40         4.65        9.13     8
+    3  2016 Invasive         5.19      1.65         3.12        9.2     24
+    4  2016 Native           5.46      0.932        4.03        8.72    24
     ################################################## 
     
 #### Harvested Mass
 
     cray.mean %>%
       group_by(Year, Type) %>%
-        summarize(mean.harvested = mean(mean.Harvested.Mass, na.rm = T), sd.harvested = sd(mean.Harvested.Mass, na.rm = T), min.harvested = min(mean.Harvested.Mass, na.rm = T), max.harvested = max(mean.Harvested.Mass, na.rm = T))
+        summarize(mean.harvested = mean(mean.Harvested.Mass, na.rm = T), sd.harvested = sd(mean.Harvested.Mass, na.rm = T), min.harvested = min(mean.Harvested.Mass, na.rm = T), max.harvested = max(mean.Harvested.Mass, na.rm = T), N = length(mean.Harvested.Mass))
     
     ##################################################
-    # A tibble: 4 x 6
+    # A tibble: 4 x 7
     # Groups:   Year [2]
-    Year Type     mean.harvested sd.harvested min.harvested max.harvested
-    <int> <chr>             <dbl>        <dbl>         <dbl>         <dbl>
-    1  2015 Invasive           9.33         3.08          3.73         12.4 
-    2  2015 Native             6.42         1.77          3.7           9.37
-    3  2016 Invasive           8.71         3.30          3.9          15.3 
-    4  2016 Native             7.43         1.48          2.7           9.78
+    Year Type     mean.harvested sd.harvested   min.harvested  max.harvested     N
+    <int> <chr>             <dbl>        <dbl>         <dbl>         <dbl> <int>
+    1  2015 Invasive           9.33         3.08          3.73         12.4      6
+    2  2015 Native             6.42         1.77          3.7           9.37     8
+    3  2016 Invasive           8.71         3.30          3.9          15.3     24
+    4  2016 Native             7.43         1.48          2.7           9.78    24 
     
     # NOTE: NA`s were removed 
     ################################################## 
@@ -169,42 +173,41 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 
     cray.N %>%
       group_by(Year, Type) %>%
-        summarize(mean.prop.surv = mean(prop.surv, na.rm = T), sd.prop.surv = sd(prop.surv, na.rm = T), min.prop.surv = min(prop.surv, na.rm = T), max.prop.surv = max(prop.surv, na.rm = T))
+        summarize(mean.prop.surv = mean(prop.surv, na.rm = T), sd.prop.surv = sd(prop.surv, na.rm = T), min.prop.surv = min(prop.surv, na.rm = T), max.prop.surv = max(prop.surv, na.rm = T), N = length(prop.surv))
     
     ##################################################
-    # A tibble: 4 x 6
+    # A tibble: 4 x 7
     # Groups:   Year [2]
-    Year Type     mean.prop.surv sd.prop.surv min.prop.surv max.prop.surv
-    <int> <chr>             <dbl>        <dbl>         <dbl>         <dbl>
-    1  2015 Invasive          0.944        0.136         0.667             1
-    2  2015 Native            0.760        0.387         0                 1
-    3  2016 Invasive          0.830        0.227         0                 1
-    4  2016 Native            0.823        0.227         0.25              1 
+        Year Type     mean.prop.surv sd.prop.surv min.prop.surv   max.prop.surv  N
+    <int> <chr>             <dbl>        <dbl>         <dbl>         <dbl> <int>
+    1  2015 Invasive          0.944        0.136         0.667             1     6
+    2  2015 Native            0.760        0.387         0                 1     8
+    3  2016 Invasive          0.830        0.227         0                 1    24
+    4  2016 Native            0.823        0.227         0.25              1    24
     ################################################## 
 
 #### Final Number
 
     cray.N %>%
       group_by(Year, Type, Treatment) %>%
-        summarize(mean.N.final = mean(N.final, na.rm = T), sd.N.final = sd(N.final, na.rm = T), min.N.final = min(N.final, na.rm = T), max.N.final = max(N.final, na.rm = T))
+        summarize(mean.N.final = mean(N.final, na.rm = T), sd.N.final = sd(N.final, na.rm = T), min.N.final = min(N.final, na.rm = T), max.N.final = max(N.final, na.rm = T), N = length(N.final))
     
     ##################################################
-    # A tibble: 12 x 7
+    # A tibble: 12 x 8
     # Groups:   Year, Type [4]
-    Year Type     Treatment    mean.N.final sd.N.final min.N.final max.N.final
-    <int> <chr>    <chr>               <dbl>      <dbl>       <int>       <int>
-    1   2015 Invasive Ctl_Invasive         3         0               3           3
-    2   2015 Invasive Equal                2.75      0.5             2           3
-    3   2015 Native   Ctl_Native           3.75      0.5             3           4
-    4   2015 Native   Equal                1.75      1.5             0           3
-    5   2016 Invasive Ctl_Invasive         3.33      0.516           3           4
-    6   2016 Invasive Equal                3.5       0.548           3           4
-    7   2016 Invasive High                 5.17      0.753           4           6
-    8   2016 Invasive Low                  1.5       0.837           0           2
-    9   2016 Native   Ctl_Native           3.67      0.516           3           4
-    10  2016 Native   Equal                3.17      1.17            1           4
-    11  2016 Native   High                 3.5       0.837           2           4
-    12  2016 Native   Low                  2.83      0.983           1           4 
+        Year Type     Treatment    mean.N.final sd.N.final min.N.final max.N.final     N
+    <int> <chr>    <chr>               <dbl>      <dbl>       <int>       <int> <int>
+    1   2015 Invasive Ctl_Invasive         3         0               3           3     2
+    2   2015 Invasive Equal                2.75      0.5             2           3     4
+    3   2015 Native   Ctl_Native           3.75      0.5             3           4     4
+    4   2015 Native   Equal                1.75      1.5             0           3     4
+    5   2016 Invasive Ctl_Invasive         3.33      0.516           3           4     6
+    6   2016 Invasive Equal                3.5       0.548           3           4     6
+    7   2016 Invasive High                 5.17      0.753           4           6     6
+    8   2016 Invasive Low                  1.5       0.837           0           2     6
+    9   2016 Native   Ctl_Native           3.67      0.516           3           4     6
+    10  2016 Native   Equal                3.17      1.17            1           4     6
+    11  2016 Native   High                 3.5       0.837           2           4     6
     ################################################## 
     
 ### Statisitical Tests
@@ -213,7 +216,9 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 
 #### The effect of total crayfish abundance at the beginning of the exp on individual crayfish change in mass.
     
-Based on the data there are two ways to analyze the results. One approach would be to treat the number of crayfish in the treatments as a continuous variable and analyze the data as an regression with `abundance` and `type` as a covariate.
+~~Based on the data there are two ways to analyze the results. One approach would be to treat the number of crayfish in the treatments as a continuous variable and analyze the data as an regression with `abundance` and `type` as a covariate. ~~
+
+Because both types of crayfish were "subsampled" from the same tank. Tank is the experimental unit and we need to use a linear mixed model to analyze the data.
 
 ##### Regression of mass change by total abundance 
 
