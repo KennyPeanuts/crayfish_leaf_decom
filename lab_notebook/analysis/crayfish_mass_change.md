@@ -9,6 +9,7 @@
 * File Modified 2021-08-18 - KF - calculated survival of each species for each exp based on the raw data.
 * File Modified 2021-08-26 - KF - completed the calculated survival of each species for each exp based on the raw data and added summaries of all the mass and survival data.
 * File Modified 2021-09-02 - KF - I observed that the df were too great on the tests and realized that we were treating the different type of crayfish as independent samples when they are not. 
+* File Modified 2021-09-15 - KF - added code to complete a linear mixed model test with tank as the random variable.
 
 ### Description
 
@@ -211,6 +212,22 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
     ################################################## 
     
 ### Statisitical Tests
+    
+Because both types of crayfish were "subsampled" from the same tank. Tank is the experimental unit and we need to use a linear mixed model to analyze the data.
+
+#### 2015 Experiment
+##### Mass
+    
+
+    (delta.mass.tot.abundance.mod <- lmer(ind.delta.mass ~ (1|Tank) + Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
+    
+    summary(delta.mass.tot.abundance.mod)
+    anova(delta.mass.tot.abundance.mod)
+
+    
+***************************************************************************    
+# All of the analyses below are based on simple linear models and they are pseudoreplicated
+      
 #### 2015 Experiment
 ##### Mass
 
@@ -218,11 +235,10 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
     
 ~~Based on the data there are two ways to analyze the results. One approach would be to treat the number of crayfish in the treatments as a continuous variable and analyze the data as an regression with `abundance` and `type` as a covariate. ~~
 
-Because both types of crayfish were "subsampled" from the same tank. Tank is the experimental unit and we need to use a linear mixed model to analyze the data.
 
 ##### Regression of mass change by total abundance 
 
-    summary(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2015"))
+    summary(lm(ind.delta.mass ~ total.abundance * type, data = cray.mean, subset = year == "2015"))
     
     ##################################################    
     all:
