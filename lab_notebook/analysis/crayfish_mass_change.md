@@ -316,7 +316,7 @@ The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as t
              theme_classic()
     ggsave(filename = "ind_delta_mass_by_abundance_2015.jpg", path = "./output/plots", dpi = 300)
     
-![ind_delta_mass_by_abundance_2015](../output/plots/ind.delta_mass_by_abundance_2015.jpg)
+![ind_delta_mass_by_abundance_2015](../output/plots/ind_delta_mass_by_abundance_2015.jpg)
     
 ##### Plot of the 2015 Experiment Change in Mass by Treatment
     
@@ -336,7 +336,7 @@ The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as t
              theme_classic()
     ggsave(filename = "ind_delta_mass_by_treatment_2015.jpg", path = "./output/plots", dpi = 300)
     
-![ind_delta_mass_by_treatment_2015.jpg](../output/plots/ind.delta_mass_by_treatment_2015.jpg)
+![ind_delta_mass_by_treatment_2015.jpg](../output/plots/ind_delta_mass_by_treatment_2015.jpg)
     
 ### Description of the 2015 Experiment Change in Mass Results
     
