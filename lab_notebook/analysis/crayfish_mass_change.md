@@ -236,7 +236,6 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
     
 Because both types of crayfish were "subsampled" from the same tank. Tank is the experimental unit and we need to use a linear mixed model to analyze the data.
 
-### 2015 Experiment
 ## Mass (2015 Experiment)
 
 The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
@@ -460,56 +459,79 @@ In the 2015 experiment there was no effect of the total abundance of crayfish on
 
 A mean (+/- 1 SD) proportion of 0.944 (+/- 0.135) of the invasive crayfish survived to the end of the experiment and this was not significantly different from the mean proportion of 0.760 (+/- 0.387) native crayfish that survived to the end of the experiment.
     
-#### 2016 Experiment 
-#### Mass
+## Mass (2016 Experiment)
 
+    (delta.mass.tot.abundance.mod.2016 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2016"))
     
-#### The effect of total crayfish abundance at the beginning of the exp on individual crayfish change in mass.
-    
-Based on the data there are two ways to analyze the results. One approach would be to treat the number of crayfish in the treatments as a continuous variable and analyze the data as an regression with `abundance` and `type` as a covariate.
-
-##### Regression of mass change by total abundance 
-
-    summary(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
-    
-    ##################################################    
-    Call:
-      lm(formula = ind.delta.mass ~ Total.Abundance * Type, data = cray.mean, 
-         subset = Year == "2016")
-    
-    Residuals:
-      Min      1Q  Median      3Q     Max 
-    -5.1168 -0.2979 -0.0123  0.5561  6.5832 
-    
-    Coefficients:
-    Estimate Std. Error t value Pr(>|t|)    
-    (Intercept)                  6.5237     1.1696   5.578  1.5e-06 ***
-    Total.Abundance             -0.4095     0.1580  -2.591   0.0130 *  
-    TypeNative                  -2.9992     1.6446  -1.824   0.0752 .  
-    Total.Abundance:TypeNative   0.1872     0.2230   0.839   0.4059  
+    summary(delta.mass.tot.abundance.mod.2016)
+    anova(delta.mass.tot.abundance.mod.2016)
     
     ################################################## 
+    # Model Results
+    (delta.mass.tot.abundance.mod.2016 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2016"))
+    boundary (singular) fit: see ?isSingular
+    Linear mixed model fit by REML ['lmerModLmerTest']
+    Formula: ind.delta.mass ~ 1 + Total.Abundance * Type + (1 | Tank)
+    Data: cray.mean
+    Subset: Year == "2016"
+    REML criterion at convergence: 184.7249
+    Random effects:
+      Groups   Name        Std.Dev.
+    Tank     (Intercept) 0.000   
+    Residual             1.724   
+    Number of obs: 47, groups:  Tank, 30
+    Fixed Effects:
+      (Intercept)             Total.Abundance                  TypeNative  
+    6.5237                     -0.4095                     -2.9992  
+    Total.Abundance:TypeNative  
+    0.1872  
     
-For mass change, the regression analysis shows that there is a significant effect of abundance on mass change overall and that there is no interaction between the types of crayfish.
+    # Summary of results as a regression Analysis
     
-To evaluate the effect of type we can report the results as an ANCOVA (the model is the same, the output just differs).
-
-    anova(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
+    summary(delta.mass.tot.abundance.mod.2016)
+    Linear mixed model fit by REML. t-tests use Satterthwaites method ['lmerModLmerTest']
+    Formula: ind.delta.mass ~ 1 + Total.Abundance * Type + (1 | Tank)
+    Data: cray.mean
+    Subset: Year == "2016"
     
-    ##################################################
-    Analysis of Variance Table
+    REML criterion at convergence: 184.7
     
-    Response: ind.delta.mass
-    Df  Sum Sq Mean Sq F value   Pr(>F)   
-    Total.Abundance       1  23.244  23.244  7.8249 0.007678 **
-    Type                  1  33.338  33.338 11.2227 0.001690 **
-    Total.Abundance:Type  1   2.093   2.093  0.7046 0.405887   
-    Residuals            43 127.734   2.971                    
+    Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+    -2.9688 -0.1728 -0.0071  0.3226  3.8196 
+    
+    Random effects:
+    Groups   Name        Variance Std.Dev.
+    Tank     (Intercept) 0.000    0.000   
+    Residual             2.971    1.724   
+    Number of obs: 47, groups:  Tank, 30
+    
+    Fixed effects:
+    Estimate Std. Error      df t value Pr(>|t|)    
+    (Intercept)                  6.5237     1.1696 43.0000   5.578  1.5e-06 ***
+    Total.Abundance             -0.4095     0.1580 43.0000  -2.591   0.0130 *  
+    TypeNative                  -2.9992     1.6446 43.0000  -1.824   0.0752 .  
+    Total.Abundance:TypeNative   0.1872     0.2230 43.0000   0.839   0.4059    
+    ---
+    Correlation of Fixed Effects:
+    (Intr) Ttl.Ab TypNtv
+    Totl.Abndnc -0.952              
+    TypeNative  -0.711  0.677       
+    Ttl.Abnd:TN  0.674 -0.709 -0.952
+    optimizer (nloptwrap) convergence code: 0 (OK)
+    boundary (singular) fit: see ?isSingular
+    
+    # Summary of Results as an ANOVA
+    
+    anova(delta.mass.tot.abundance.mod.2016)
+    Type III Analysis of Variance Table with Satterthwaites method
+    Sum Sq Mean Sq NumDF DenDF F value   Pr(>F)   
+    Total.Abundance      23.8431 23.8431     1    43  8.0264 0.006991 **
+    Type                  9.8794  9.8794     1    43  3.3258 0.075158 . 
+    Total.Abundance:Type  2.0930  2.0930     1    43  0.7046 0.405887   
     ################################################## 
     
-The ANCOVA results show a strongly significant effect of `type` on the mass change and a marginally significant effect of `abundance`. The difference in the results of the ANCOVA from the regression is that the ANCOVA is testing for the difference in means and not the difference of the slope from 0.
-    
-So, the way to interpret these results is that there is a strongly significant difference in the overall mean change in mass of the two types of crayfish (independent of the effect of abundance) and there is an overall negative effect of abundance on change in mass (independent of the effect of crayfish type). The lack of a significant interaction indicates that these results are fully independent.
+### Plot of the 2016 Experiment Change in Mass by Total Abundance
     
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
              geom_point() +
@@ -517,58 +539,11 @@ So, the way to interpret these results is that there is a strongly significant d
                method = "lm"
              ) +
              theme_classic()
-    ggsave(filename = "ind.delta.mass.by.abundance.jpg", path = "./output/plots", dpi = 300)
+    ggsave(filename = "ind_delta_mass_by_abundance_2016.jpg", path = "./output/plots", dpi = 300)
     
-![ind.delta.mass.by.abundance](../output/plots/ind.delta.mass.by.abundance.jpg)
-    
-##### ANOVA of change in mass by treatment
-    
-The other way to analyze the effect would be to treat the different abundance levels as a catagorical variable and analyze the effect on the response with a two-way ANOVA.
-    
-    anova(lm(ind.delta.mass ~ Treatment * Type, data = cray.mean, subset = Year == "2016"))
-    
-    ################################################## 
-    Analysis of Variance Table
-    
-    Response: ind.delta.mass
-    Df  Sum Sq Mean Sq F value   Pr(>F)   
-    Treatment       4  48.710 12.1776  3.9522 0.008696 **
-    Type            1  15.816 15.8158  5.1330 0.029104 * 
-    Treatment:Type  2   1.717  0.8586  0.2787 0.758286   
-    Residuals      39 120.166  3.0812 
-    
-    ################################################## 
-    
-In this case we can see a highly signficant effect of both the treatment levels (which are the different combinations of the two species abundance) and species type. Again there is no interaction effect, indicating that the impacts are completely independent.
-    
-To further identify what is happening we can do a post-hoc test to determine which of the treatment levels are different from each other. Since there is no interaction effect, I am running the post-hoc test on the ANOVA with only Treatment as the independent variable.
+![ind_delta_mass_by_abundance_2016](../output/plots/ind_delta_mass_by_abundance_2016.jpg)
 
-    summary(aov(ind.delta.mass ~ Treatment, data = cray.mean, subset = Year == "2016"))
-    TukeyHSD(aov(ind.delta.mass ~ Treatment, data = cray.mean, subset = Year == "2016"))
-    
-    ################################################## 
-                 Df Sum Sq Mean Sq F value Pr(>F)  
-    Treatment    4  48.71  12.178   3.714 0.0112 *
-    Residuals   42 137.70   3.279
-    
-    $Treatment
-    diff        lwr        upr     p adj
-    Ctl_Invasive-Ctl_Native  2.70833333 -0.2708403  5.6875070 0.0904447 *
-    Low-Ctl_Native           0.86212121 -1.7567186  3.4809610 0.8803408
-    Equal-Ctl_Native        -0.38194444 -2.9619845  2.1980956 0.9931292
-    High-Ctl_Native         -0.31513889 -2.8951789  2.2649011 0.9967234
-    Low-Ctl_Invasive        -1.84621212 -4.4650519  0.7726277 0.2795084
-    Equal-Ctl_Invasive      -3.09027778 -5.6703178 -0.5102377 0.0118326 ***
-    High-Ctl_Invasive       -3.02347222 -5.6035123 -0.4434322 0.0144379 ***
-    Equal-Low               -1.24406566 -3.3980046  0.9098733 0.4774801
-    High-Low                -1.17726010 -3.3311991  0.9766789 0.5320882
-    High-Equal               0.06680556 -2.0397883  2.1733994 0.9999842
-    
-    ################################################## 
-    
-The results of the ANOVA show that there is a significant difference between the invasive control and both the equal and high treatments. There is also a marginally significant difference between the native control and the invasive control.
-    
-In this case, the regression analysis seems to give more meaningful information. The negative effect of total abunance is clear as is the difference in the types of crayfish.
+### Plot of the 2016 Experiment Change in Mass by Treatment
     
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Treatment, color = Type)) +
              geom_point(
@@ -584,145 +559,12 @@ In this case, the regression analysis seems to give more meaningful information.
                position = position_dodge(width = 0.65)
               ) +
              theme_classic()
-    ggsave(filename = "ind.delta.mass.by.treatment.jpg", path = "./output/plots", dpi = 300)
+    ggsave(filename = "ind_delta_mass_by_treatment_2016.jpg", path = "./output/plots", dpi = 300)
     
-![ind.delta.mass.by.treatment.jpg](../output/plots/ind.delta.mass.by.treatment.jpg)
+![ind_delta_mass_by_treatment_2016.jpg](../output/plots/ind_delta_mass_by_treatment_2016.jpg)
     
-#### Effect of abundance and treatment on final harvested mass
+## Description of the 2016 Experiment Change in Mass Results
     
-As with mass change there are two ways to analyze the data: regression analysis and ANCOVA.
-
-##### Regression of final mass by abundance
-
-In this model I am using a regression of harvested mass by the inital abundance in the tank with the type of crayfish as the covariate.
-
-    summary(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
-    
-    ##################################################
-    Call:
-      lm(formula = total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, 
-         subset = Year == "2016")
-    
-    Residuals:
-      Min      1Q  Median      3Q     Max 
-    -28.918  -4.803   1.168   6.372  28.012 
-    
-    Coefficients:
-                               Estimate Std. Error t value Pr(>|t|)    
-    (Intercept)                30.02833    7.79288   3.853 0.000375 ***
-    Total.Abundance            -0.18500    1.06048  -0.174 0.862312    
-    TypeNative                 -3.93333   11.02079  -0.357 0.722872    
-    Total.Abundance:TypeNative -0.01667    1.49974  -0.011 0.991183 
-    
-    ################################################## 
-    
-The results show that there is no relationship between abundance and the final mass of the crayfish in the tank. Since the interaction is not significant, this applies independently to both species.
-    
-To investigate the effect of the species we can report the model results as an ANOVA to see the effect of the catagorical variable.
-
-    anova(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
-    
-    ################################################## 
-    Analysis of Variance Table
-    
-    Response: total.Harvested.Mass
-                          Df Sum Sq Mean Sq F value Pr(>F)
-    Total.Abundance       1    9.0   8.971  0.0665 0.7977
-    Type                  1  196.8 196.830  1.4585 0.2336
-    Total.Abundance:Type  1    0.0   0.017  0.0001 0.9912
-    Residuals            44 5937.9 134.953 
-    
-    ##################################################
-    
-In this case we can see that there is no difference in the final mass of the different types of crayfish.
-    
-    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Total.Abundance, color = Type)) +
-             geom_point() +
-             geom_smooth(
-               method = "lm"
-             ) +
-             theme_classic()
-    ggsave(filename = "total.harvested.mass.by.abundance.jpg", path = "./output/plots", dpi = 300)
-    
-![total.harvested.mass.by.abundance.jpg](../output/plots/total.harvested.mass.by.abundance.jpg)
-    
-##### ANOVA of total final mass by treatment
-    
-The second way to analyze the effect of the treatments on total final mass of crayfish is to run a 2-way ANOVA with the treatment levels.
-
-    anova(lm(total.Harvested.Mass ~ Treatment * Type, data = cray.mean, subset = Year == "2016"))
-
-    ##################################################
-    Analysis of Variance Table
-    
-    Response: total.Harvested.Mass
-                    Df  Sum Sq Mean Sq F value    Pr(>F)    
-    Treatment       4 2413.71  603.43  7.8183 9.393e-05 ***
-    Type            1    4.13    4.13  0.0536   0.81815    
-    Treatment:Type  2  638.64  319.32  4.1373   0.02327 *  
-    Residuals      40 3087.27   77.18    
-    
-    ################################################## 
-    
-The results of this analysis show that there is a highly significant effect of treatment but no effect of species (type) on the total final mass. The signficant interaction indicates that the treatment effect was no independent of species. 
-To explore this more fully, next I conduct a one-way ANOVA with post-hoc tests. I conduct separate tests for the two species because of the significant interaction.
-
-    summary(aov(total.Harvested.Mass ~ Treatment, data = cray.mean, subset = Type == "Native" & Year == "2016"))
-    
-    ##################################################
-                 Df Sum Sq Mean Sq F value Pr(>F)
-    Treatment    3   68.9   22.97   0.355  0.786
-    Residuals   20 1295.0   64.75 
-    
-    ##################################################
-    
-The results show no significant effect of the treatment on the total final mass of the Native crayfish.
-    
-    summary(aov(total.Harvested.Mass ~ Treatment, data = cray.mean, subset = Type == "Invasive" & Year == "2016"))
-    TukeyHSD(aov(total.Harvested.Mass ~ Treatment, data = cray.mean, subset = Type == "Invasive" & Year == "2016"))
-    
-    ##################################################
-    
-    Df Sum Sq Mean Sq F value   Pr(>F)    
-    Treatment    3   2791   930.2   10.38 0.000248 ***
-    Residuals   20   1792    89.6  
-    
-    Tukey multiple comparisons of means
-    95% family-wise confidence level
-    
-    Fit: aov(formula = total.Harvested.Mass ~ Treatment, data = cray.mean, subset = Type == "Invasive" & Year == "2016")
-    
-    $Treatment
-    diff        lwr         upr     p adj
-    Low-Ctl_Invasive   -28.233333 -43.530756 -12.9359103 0.0002548 ***
-    Equal-Ctl_Invasive -15.783333 -31.080756  -0.4859103 0.0416372 *
-    High-Ctl_Invasive   -5.383333 -20.680756   9.9140897 0.7594810
-    Equal-Low           12.450000  -2.847423  27.7474230 0.1369486
-    High-Low            22.850000   7.552577  38.1474230 0.0023957 *
-    High-Equal          10.400000  -4.897423  25.6974230 0.2584053
-    
-    ################################################## 
-    
-For the Invasive crayfish there was a significant effect of treatment on the total final mass and the post-hoc test shows that the differences are between the control and the low and equal, and between the low and high.
-    
-    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = total.Harvested.Mass, x = Treatment, color = Type)) +
-             geom_point(
-               position = position_jitterdodge(
-                 dodge.width = 0.65,
-                 jitter.width = 0.15
-               )
-               ) +
-             stat_summary(
-               fun = mean,
-               fun.min = function(x) mean(x) - sd(x),
-               fun.max = function(x) mean(x) + sd(x),
-               position = position_dodge(width = 0.65)
-              ) +
-             theme_classic()
-    ggsave(filename = "total.harvested.mass.by.treatment.jpg", path = "./output/plots", dpi = 300)
-    
-![total.harvested.mass.by.treatment.jpg](../output/plots/total.harvested.mass.by.treatment.jpg)
-
     
 #### Survival 
 #### The effect of total crayfish abundance at the beginning of the exp on survival
