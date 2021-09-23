@@ -566,49 +566,85 @@ A mean (+/- 1 SD) proportion of 0.944 (+/- 0.135) of the invasive crayfish survi
     
 In the 2016 experiment there was a significant negative effect of total abundance on the estimated change in the mass of an individual crayfish (p = 0.0130). The regression shows that there is a loss of 0.4095 g of mass change for each crayfish added to total abundance. The non-significant interaction (p = 0.4059) indicates that the effect of total abundance on the estimated change in mass of an individual crayfish was the same for both the invasive and native crayfish.
 
-The mean (+/- 1 SD) estimated change in mass of an individual invasive crayfish was 
-#### Survival 
-#### The effect of total crayfish abundance at the beginning of the exp on survival
-    
-##### Regression of mass change by total abundance 
+The mean (+/- 1 SD) estimated change in mass of an individual invasive crayfish was 3.64 (+/- 2.36) g and the mean estimated change in mass of an individual native crayfish was 1.97 (+/- 1.16) g but this difference was not significant at an alpha = 0.05 (p = 0.0752).
 
-    summary(lm(prop.surv ~ Total.Abundance * Type, data = cray.N, subset = Year == "2016"))
+## Survival (2016 Experiment)
+
+The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
+
+    (survival.tot.abundance.mod.2016 <- lmer(prop.surv ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.N, subset = Year == "2016"))
     
-    ##################################################    
-    Call:
-      lm(formula = prop.surv ~ Total.Abundance * Type, data = cray.N, 
-         subset = Year == "2016")
+    summary(survival.tot.abundance.mod.2016)
+    anova(survival.tot.abundance.mod.2016)
+   
+    ################################################## 
+    # Model Details
     
-    Residuals:
-      Min       1Q   Median       3Q      Max 
-    -0.81944 -0.07500 -0.02778  0.17917  0.20139 
+    (survival.tot.abundance.mod.2016 <- lmer(prop.surv ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.N, subset = Year == "2016"))
+    boundary (singular) fit: see ?isSingular
+    Linear mixed model fit by REML ['lmerModLmerTest']
+    Formula: prop.surv ~ 1 + Total.Abundance * Type + (1 | Tank)
+    Data: cray.N
+    Subset: Year == "2016"
+    REML criterion at convergence: 12.0477
+    Random effects:
+      Groups   Name        Std.Dev.
+    Tank     (Intercept) 0.0000  
+    Residual             0.2315  
+    Number of obs: 48, groups:  Tank, 30
+    Fixed Effects:
+      (Intercept)             Total.Abundance                  TypeNative  
+    0.75694                     0.01042                     0.08056  
+    Total.Abundance:TypeNative  
+    -0.01250  
+    optimizer (nloptwrap) convergence code: 0 (OK) ; 0 optimizer warnings; 1 lme4 warnings 
     
-    Coefficients:
-                                Estimate Std. Error t value Pr(>|t|)    
-    (Intercept)                 0.75694    0.15531   4.874 1.46e-05 ***
-    Total.Abundance             0.01042    0.02114   0.493    0.625    
-    TypeNative                  0.08056    0.21964   0.367    0.716    
-    Total.Abundance:TypeNative -0.01250    0.02989  -0.418    0.678    
+    # Summary of Results as a Regression
     
-    Residual standard error: 0.2315 on 44 degrees of freedom
-    Multiple R-squared:  0.005951,	Adjusted R-squared:  -0.06182 
-    F-statistic: 0.08781 on 3 and 44 DF,  p-value: 0.9664
+    summary(survival.tot.abundance.mod.2016)
+    Linear mixed model fit by REML. t-tests use Satterthwaites method ['lmerModLmerTest']
+    Formula: prop.surv ~ 1 + Total.Abundance * Type + (1 | Tank)
+    Data: cray.N
+    Subset: Year == "2016"
+    
+    REML criterion at convergence: 12
+    
+    Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+    -3.5393 -0.3239 -0.1200  0.7739  0.8698 
+    
+    Random effects:
+    Groups   Name        Variance Std.Dev.
+    Tank     (Intercept) 0.0000   0.0000  
+    Residual             0.0536   0.2315  
+    Number of obs: 48, groups:  Tank, 30
+    
+    Fixed effects:
+    Estimate Std. Error       df t value Pr(>|t|)    
+    (Intercept)                 0.75694    0.15531 44.00000   4.874 1.46e-05 ***
+    Total.Abundance             0.01042    0.02114 44.00000   0.493    0.625    
+    TypeNative                  0.08056    0.21964 44.00000   0.367    0.716    
+    Total.Abundance:TypeNative -0.01250    0.02989 44.00000  -0.418    0.678    
+    
+    Correlation of Fixed Effects:
+    (Intr) Ttl.Ab TypNtv
+    Totl.Abndnc -0.953              
+    TypeNative  -0.707  0.674       
+    Ttl.Abnd:TN  0.674 -0.707 -0.953
+    optimizer (nloptwrap) convergence code: 0 (OK)
+    boundary (singular) fit: see ?isSingular
+    
+    # Summary of the Results as an ANOVA
+    
+    Type III Analysis of Variance Table with Satterthwaites method
+                        Sum Sq   Mean Sq NumDF DenDF F value Pr(>F)
+    Total.Abundance      0.0041667 0.0041667     1    44  0.0777 0.7817
+    Type                 0.0072102 0.0072102     1    44  0.1345 0.7156
+    Total.Abundance:Type 0.0093750 0.0093750     1    44  0.1749 0.6778
+    
     ################################################## 
     
-    anova(lm(prop.surv ~ Total.Abundance * Type, data = cray.N, subset = Year == "2016"))
-    
-    ##################################################
-    Analysis of Variance Table
-    
-    Response: prop.surv
-                          Df  Sum Sq  Mean Sq F value Pr(>F)
-    Total.Abundance       1 0.00417 0.004167  0.0777 0.7817
-    Type                  1 0.00058 0.000579  0.0108 0.9177
-    Total.Abundance:Type  1 0.00937 0.009375  0.1749 0.6778
-    Residuals            44 2.35856 0.053604      
-    ################################################## 
-    
-There was no effect of the total abundance of crayfish in the tank (at the beginning of the exp) on the survival of the crayfish during the 2016 experiment.
+#### Plot of the 2016 Experiment Survival by Total Abundance
     
     ggplot(subset(cray.N, Year == "2016"), mapping = aes(y = prop.surv, x = Total.Abundance, color = Type)) +
              geom_jitter(
@@ -621,24 +657,7 @@ There was no effect of the total abundance of crayfish in the tank (at the begin
     
 ![prop.surv.by.abundance.2016](../output/plots/prop.surv.by.abundance.2016.jpg)
     
-##### ANOVA of survival by treatment
-    
-The other way to analyze the effect would be to treat the different abundance levels as a catagorical variable and analyze the effect on the response with a two-way ANOVA.
-    
-    anova(lm(prop.surv ~ Treatment * Type, data = cray.N, subset = Year == "2016"))
-    
-    ################################################## 
-    Analysis of Variance Table
-    
-    Response: prop.surv
-                    Df  Sum Sq  Mean Sq F value Pr(>F)
-    Treatment       4 0.18403 0.046007  0.8512 0.5014
-    Type            1 0.01235 0.012346  0.2284 0.6353
-    Treatment:Type  2 0.01427 0.007137  0.1320 0.8767
-    Residuals      40 2.16204 0.054051     
-    ################################################## 
-    
-This analysis also shows no effect of the number of crayfish at the beginning of the experiment on survival. 
+#### Plot of the 2016 Experiment Survival by Treatment
     
     ggplot(subset(cray.N, Year == "2016"), mapping = aes(y = prop.surv, x = Treatment, color = Type)) +
              geom_point(
@@ -658,196 +677,5 @@ This analysis also shows no effect of the number of crayfish at the beginning of
     
 ![prop.surv.by.treatment.2016.jpg](../output/plots/prop.surv.by.treatment.2016.jpg)
     
+## Description of the 2016 Experiment Survival Results
     
-##################################################    
-# OLD ANALYSIS BELOW DO NOT USE
-##################################################    
-## Analysis of Tank Mass Change
-
-## Import Data
-
-    cray.2016 <- read.table("./data/crayfish_growth_surv.csv", header = T, sep = ",")
-    
-## Create Variables
-    
-    Sp.Abundance <- c(rep(4, 24), rep(4, 12), rep(6, 6), rep(2, 6))
-    Total.Abundance <- c(rep(8, 6), rep(10, 6), rep(6, 6), rep(4, 6), rep(4, 6), rep(8, 6), rep(10, 6), rep(6, 6))
-    Final.Sp.Abundance <- Sp.Abundance * (cray$Survival / 100)
-    Final.Total.Abundance <- rep(Final.Sp.Abundance[cray$Species == "Native"] + Final.Sp.Abundance[cray$Species == "Invasive"], 2)
-    Final.Invasive.Abundance <- c((Final.Total.Abundance[cray$Species == "Native"] - Final.Sp.Abundance[cray$Species == "Native"]), (Final.Total.Abundance[cray$Species == "Invasive"] - Final.Sp.Abundance[cray$Species == "Invasive"]))
-    Invasive.Abundance <- c(rep(4, 6), rep(6, 6), rep(2, 6), rep(0, 6), rep(4, 6), rep(4, 6), rep(6, 6), rep(2, 6))
-    
-## Add Created Variables to the data.frame
-    
-    cray <- data.frame(cray, Sp.Abundance, Total.Abundance, Final.Sp.Abundance, Final.Total.Abundance, Invasive.Abundance, Final.Invasive.Abundance)
-    
-    
-### Variable Descriptions    
-    
-* Species = the designation of native or invasive crayfish, where 'Native' = _Cambarus_ _sp C_ and 'Invasive' = _Faxonius virilis_.
-
-* Density = the treatment designation where 'control' = 4 individuals of either the native or the invasive species alone, 'low' = 4 individuals of the native and 2 individuals of the invasive, 'equal' = 4 individuals of both the native and the invasive species, and 'high' = 4 individuals of the native species and 6 individuals of the invasive species.
-    
-* MassChange = the average change in mass of all of the crayfish of a group (native or invasive) over the course of the experiment (g). Negative numbers indicate an average loss of mass.
-    
-* LogMassChange = the log (base 10) of MassChange
-    
-* Survival = the percent of the original number of individuals that were alive a the end of the experiment.
-    
-* Sp.Abundance = the number of each crayfish of a given species in a treatment at the beginning of the experiment.
-
-* Total.Abundance = the total number of crayfish in a treatment at the beginnig of the experiment.
-    
-* Final.Sp.Abundance = the number of crayfish of a given species in a treatment at the end of the experiment.
-
-* Final.Total.Abundance = the number of crayfish in a treatment at the end of the experiment.
-
-* Invasive.Abundance = the number of 'Invasive' crayfish in the a treatment at the beginning of the experiment. 
-
-* Final.Invasive.Abundance = the number of 'Invasive' crayfish in the a treatment at the end of the experiment. 
-
-## 2016 Experiment        
-### Survival
-    
-    cray %>%
-      group_by(Species, Density) %>%
-        summarize(mean = mean(Survival), sd = sd(Survival), min = min(Survival), max = max(Survival))
-
-    ##################################################     
-    # Summary of the percent crayfish survied to the end of the experiment by species and treatment
-    
-    `summarise()` has grouped output by 'Species'. You can override using the `.groups` argument.
-    # A tibble: 8 x 6
-    # Groups:   Species [2]
-    Species  Density  mean    sd   min   max
-    <chr>    <chr>   <dbl> <dbl> <dbl> <dbl>
-    1 Invasive control  83.3  12.9  75     100
-    2 Invasive equal    87.5  13.7  75     100
-    3 Invasive high     86.1  12.5  66.7   100
-    4 Invasive low      75    41.8   0     100
-    5 Native   control  91.7  12.9  75     100
-    6 Native   equal    79.2  29.2  25     100
-    7 Native   high     87.5  20.9  50     100
-    8 Native   low      70.8  24.6  25     100
-    
-    ################################################## 
-    
-### Analysis of Survival
-    
-    summary(lm(Survival ~ Total.Abundance * Species, data = cray))
-    
-    ################################################## 
-    Call:
-lm(formula = Survival ~ Total.Abundance * Species, data = cray)
-
-Residuals:
-   Min     1Q Median     3Q    Max 
--81.94  -7.50  -2.78  17.92  20.14 
-
-Coefficients:
-                              Estimate Std. Error t value Pr(>|t|)    
-(Intercept)                     75.695     15.531   4.874 1.46e-05 ***
-Total.Abundance                  1.042      2.114   0.493    0.625    
-SpeciesNative                    8.055     21.964   0.367    0.716    
-Total.Abundance:SpeciesNative   -1.250      2.989  -0.418    0.678   
-
-    ##################################################
-
-    summary(aov(Survival ~ Density * Species, data = cray))
-## Mass Change Analysis
-### Comparison of the treatment groups on the change in mass
-    
-    anova(lm(MassChange ~ Density * Species, data = cray))
-   
-    ##################################################
-    # 2-way ANOVA of the change in mass by treatment and species
-    
-    Analysis of Variance Table
-    
-    Response: MassChange
-    Df  Sum Sq Mean Sq F value  Pr(>F)  
-    Density          3  23.948  7.9826  1.3711 0.26546  
-    Species          1  17.062 17.0623  2.9306 0.09466 .
-    Density:Species  3  23.291  7.7637  1.3335 0.27703  
-    Residuals       40 232.883  5.8221       
-    
-    ################################################## 
-    
-    mass_by_treat <-
-    ggplot(cray, mapping = aes(y = MassChange, x = Density)) +
-      facet_wrap(
-        ~Species
-        ) +
-      geom_jitter(
-        width = 0.1,
-        col = 8
-      ) +
-      stat_summary(
-        fun = mean,
-        fun.min = function(x) mean(x) - sd(x),
-        fun.max = function(x) mean(x) + sd(x)
-      ) +
-      theme_classic()
-    
-    ggexport(mass_by_treat, width = 7, height = 7, filename = "./output/plots/mass_by_treat.pdf")
-    
-![Plot of mass change by treatment](https://github.com/KennyPeanuts/crayfish_leaf_decom/blob/master/lab_notebook/output/plots/mass_by_treat.pdf)
-    
-The analysis by treatment group shows no effect of the treatment group and only a marginally significant effect of species.
-
-    cray %>%
-      group_by(Species) %>%
-        summarize(mean = mean(MassChange), sd = sd(MassChange), min = min(MassChange), max = max(MassChange))
-    
-    ##################################################
-    # Summary of mass change by species
-    
-    # A tibble: 2 x 5
-    Species   mean    sd   min   max
-    <chr>    <dbl> <dbl> <dbl> <dbl>
-    1 Invasive  3.16  3.29 -7.85 10.6 
-    2 Native    1.97  1.16 -1.8   3.75 
-    
-    ################################################## 
-    
-Given that the number of crayfish in the tanks could be considered a continuous variable, it may make more sense to think of mass change as a function of total crayfish in the tank.
-    
-    
-    ggplot(cray, mapping = aes(y = MassChange, x = Total.Abundance, color = Species)) +
-      geom_point() +
-      geom_smooth(
-        method = "lm"
-      ) +
-      theme_classic()
-    
-    ggplot(cray, mapping = aes(y = LogMassChange, x = Final.Total.Abundance, color = Species)) +
-      geom_point() +
-      geom_smooth(
-        method = "lm"
-      ) +
-      theme_classic()
-    
-    ggplot(cray, mapping = aes(y = MassChange, x = Final.Invasive.Abundance, color = Species)) +
-      geom_point() +
-      geom_smooth(
-        method = "lm"
-      ) +
-      theme_classic()
-    
-    ggplot(cray, mapping = aes(y = LogMassChange, x = Total.Abundance, color = Species)) +
-      geom_point() +
-      geom_smooth(
-        method = "lm"
-      ) +
-      theme_classic()
-    
-    ggplot(cray, mapping = aes(y = LogMassChange, x = Invasive.Abundance, color = Species)) +
-      geom_point() +
-      geom_smooth(
-        method = "lm"
-      ) +
-      theme_classic()
-    
-    summary(lm(MassChange ~ Total.Abundance * Species, data = cray))
-    summary(lm(MassChange ~ Invasive.Abundance * Species, data = cray))
-     
