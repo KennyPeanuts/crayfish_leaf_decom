@@ -237,7 +237,7 @@ Because both types of crayfish were "subsampled" from the same tank. Tank is the
 
 ## Mass (2015 Experiment)
 
-The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
+The model uses the estimated change in the mass of a single crayfish (`ind.delta.mass`) as the response and `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
 
     (delta.mass.tot.abundance.mod.2015 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2015"))
     
@@ -346,7 +346,7 @@ The mean (+/- 1 SD) estimated change in mass of a single invasive crayfish was 2
     
 ## Survival (2015 Experiment)
 
-The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
+The model uses the proportion of crayfish that survive to the end of the experiment (`prop.surv`) and `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
 
     (survival.tot.abundance.mod.2015 <- lmer(prop.surv ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.N, subset = Year == "2015"))
     
@@ -460,6 +460,8 @@ A mean (+/- 1 SD) proportion of 0.944 (+/- 0.135) of the invasive crayfish survi
     
 ## Mass (2016 Experiment)
 
+The model uses the estimated change in the mass of a single crayfish (`ind.delta.mass`) as the response and `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
+
     (delta.mass.tot.abundance.mod.2016 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2016"))
     
     summary(delta.mass.tot.abundance.mod.2016)
@@ -570,7 +572,7 @@ The mean (+/- 1 SD) estimated change in mass of an individual invasive crayfish 
 
 ## Survival (2016 Experiment)
 
-The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
+The model uses the proportion of crayfish that survive to the end of the experiment (`prop.surv`) and `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
 
     (survival.tot.abundance.mod.2016 <- lmer(prop.surv ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.N, subset = Year == "2016"))
     
@@ -679,3 +681,6 @@ The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as t
     
 ## Description of the 2016 Experiment Survival Results
     
+There was no effect of total abundance on the proportion of crayfish that survived to the end of the experiment in 2016 (p = 0.625) and the non-significant interaction (p = 0.678) indicates that there is not evidence that abundance is affecting the native and invasive crayfish differently.
+
+The mean (+/- 1 SD) proportion of invasive crayfish that survived to the end of the experiment was 0.830 (+/- 0.227) which was nearly identical to the proportion of 0.823 (+/- 0.227) for the native crayfish that survived to the end of the experiment. There was no significant difference between the proportion of invasive and native crayfish that survived to the end of the experiment (p = 0.716).
