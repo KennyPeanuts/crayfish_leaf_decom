@@ -456,7 +456,9 @@ The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as t
     
 ## Description of the 2015 Experiment Survival Results
     
+In the 2015 experiment there was no effect of the total abundance of crayfish on the proportion of crayfish that survived to the end of the experiment (p = 0.7524). The non-significan interaction effect (p = 0.2960) indicates that there was no difference in the effect of the total abundance of crayfish on the proportion survivied between the types of crayfish.
 
+A mean (+/- 1 SD) proportion of 0.944 (+/- 0.135) of the invasive crayfish survived to the end of the experiment and this was not significantly different from the mean proportion of 0.760 (+/- 0.387) native crayfish that survived to the end of the experiment.
     
 #### 2016 Experiment 
 #### Mass
