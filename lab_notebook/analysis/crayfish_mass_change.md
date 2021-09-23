@@ -346,49 +346,82 @@ In the 2015 experiment there was no significant effect of the total abundance of
 
 The mean (+/- 1 SD) estimated change in mass of a single invasive crayfish was 2.99 (+/- 2.35) g, while the mean estimated change in mass of a single native crayfish was only 0.05 (+/- 1.18) g. However the difference was not significant (p = 0.4192) so we do not have evidence that the invasive grew more than the native in the 2015 experiment.
     
-
 #### Survival 
-#### The effect of total crayfish abundance at the beginning of the exp on survival
-    
-##### Regression of mass change by total abundance 
 
-    summary(lm(prop.surv ~ Total.Abundance * Type, data = cray.N, subset = Year == "2015"))
+The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
+
+    (survival.tot.abundance.mod.2015 <- lmer(prop.surv ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.N, subset = Year == "2015"))
     
-    ##################################################    
-    Call:
-      lm(formula = prop.surv ~ Total.Abundance * Type, data = cray.N, 
-         subset = Year == "2015")
+    summary(survival.tot.abundance.mod.2015)
+    anova(survival.tot.abundance.mod.2015)
     
-    Residuals:
-      Min       1Q   Median       3Q      Max 
-    -0.58333 -0.14062  0.06250  0.08333  0.41667 
+    ################################################## 
+    # Model Details
+    (survival.tot.abundance.mod.2015 <- lmer(prop.surv ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.N, subset = Year == "2015"))
+    boundary (singular) fit: see ?isSingular
+    Linear mixed model fit by REML ['lmerModLmerTest']
+    Formula: prop.surv ~ 1 + Total.Abundance * Type + (1 | Tank)
+    Data: cray.N
+    Subset: Year == "2015"
+    REML criterion at convergence: 12.5125
+    Random effects:
+      Groups   Name        Std.Dev.
+    Tank     (Intercept) 0.0000  
+    Residual             0.2967  
+    Number of obs: 14, groups:  Tank, 10
+    Fixed Effects:
+      (Intercept)             Total.Abundance                  TypeNative  
+    1.08333                    -0.02778                     0.56250  
+    Total.Abundance:TypeNative  
+    -0.14931  
+    optimizer (nloptwrap) convergence code: 0 (OK) ; 0 optimizer warnings; 1 lme4 warnings 
+    # Summary of Results as a Regression Analysis
     
-    Coefficients:
-                                Estimate   Std. Error t value Pr(>|t|)  
-    (Intercept)                 1.08333    0.44502   2.434   0.0352 *
-    Total.Abundance            -0.02778    0.08565  -0.324   0.7524  
-    TypeNative                  0.56250    0.69578   0.808   0.4376  
-    Total.Abundance:TypeNative -0.14931    0.13542  -1.103   0.2960  
+    summary(survival.tot.abundance.mod.2015)
+    Linear mixed model fit by REML. t-tests use Satterthwaites method ['lmerModLmerTest']
+    Formula: prop.surv ~ 1 + Total.Abundance * Type + (1 | Tank)
+    Data: cray.N
+    Subset: Year == "2015"
+    
+    REML criterion at convergence: 12.5
+    
+    Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+    -1.9662 -0.4740  0.2107  0.2809  1.4044 
+    
+    Random effects:
+    Groups   Name        Variance Std.Dev.
+    Tank     (Intercept) 0.00000  0.0000  
+    Residual             0.08802  0.2967  
+    Number of obs: 14, groups:  Tank, 10
+    
+    Fixed effects:
+    Estimate Std. Error       df t value Pr(>|t|)  
+    (Intercept)                 1.08333    0.44502 10.00000   2.434   0.0352 *
+    Total.Abundance            -0.02778    0.08565 10.00000  -0.324   0.7524  
+    TypeNative                  0.56250    0.69578 10.00000   0.808   0.4376  
+    Total.Abundance:TypeNative -0.14931    0.13542 10.00000  -1.103   0.2960  
     ---
-    Residual standard error: 0.2967 on 10 degrees of freedom
-    Multiple R-squared:  0.2994,	Adjusted R-squared:  0.08928 
-    F-statistic: 1.425 on 3 and 10 DF,  p-value: 0.2928
+    
+    Correlation of Fixed Effects:
+    (Intr) Ttl.Ab TypNtv
+    Totl.Abndnc -0.962              
+    TypeNative  -0.640  0.615       
+    Ttl.Abnd:TN  0.609 -0.632 -0.973
+    optimizer (nloptwrap) convergence code: 0 (OK)
+    boundary (singular) fit: see ?isSingular
+    
+    # Summary of Results as an ANOVA Analysis
+    
+    anova(survival.tot.abundance.mod.2015)
+    Type III Analysis of Variance Table with Satterthwaites method
+    Sum Sq  Mean Sq NumDF DenDF F value Pr(>F)
+    Total.Abundance      0.201447 0.201447     1    10  2.2886 0.1613
+    Type                 0.057528 0.057528     1    10  0.6536 0.4376
+    Total.Abundance:Type 0.107002 0.107002     1    10  1.2156 0.2960
     ################################################## 
     
-    anova(lm(prop.surv ~ Total.Abundance * Type, data = cray.N, subset = Year == "2015"))
-    
-    ##################################################
-    Analysis of Variance Table
-    
-    Response: prop.surv
-    Df  Sum Sq  Mean Sq F value Pr(>F)
-    Total.Abundance       1 0.15312 0.153125  1.7396 0.2166
-    Type                  1 0.11611 0.116113  1.3192 0.2775
-    Total.Abundance:Type  1 0.10700 0.107002  1.2156 0.2960
-    Residuals            10 0.88021 0.088021  
-    ################################################## 
-    
-There was no effect of the total abundance of crayfish in the tank (at the beginning of the exp) on the survival of the crayfish during the 2015 experiment.
+#### Plot of 2015 Experiment Proportion Surviving by Total Abundance
     
     ggplot(subset(cray.N, Year == "2015"), mapping = aes(y = prop.surv, x = Total.Abundance, color = Type)) +
              geom_jitter(
@@ -401,23 +434,7 @@ There was no effect of the total abundance of crayfish in the tank (at the begin
     
 ![prop.surv.by.abundanceprop.surv.2015](../output/plots/prop.surv.by.abundance.2015.jpg)
     
-##### ANOVA of survival by treatment
-    
-The other way to analyze the effect would be to treat the different abundance levels as a catagorical variable and analyze the effect on the response with a two-way ANOVA.
-    
-    anova(lm(prop.surv ~ Treatment * Type, data = cray.N, subset = Year == "2015"))
-    
-    ################################################## 
-    Analysis of Variance Table
-    
-    Response: prop.surv
-    Df  Sum Sq  Mean Sq F value Pr(>F)
-    Treatment  2 0.15402 0.077009  0.8749 0.4465
-    Type       1 0.22222 0.222222  2.5247 0.1432
-    Residuals 10 0.88021 0.088021  
-    ################################################## 
-    
-This analysis also shows no effect of the number of crayfish at the beginning of the experiment on survival. There is some non-homogenitiy of variance in this test but it seems unlikely this will affect the interpretation. 
+#### Plot of 2015 Experiment Proportion Surviving by Treatment
     
     ggplot(subset(cray.N, Year == "2015"), mapping = aes(y = prop.surv, x = Treatment, color = Type)) +
              geom_point(
@@ -436,6 +453,10 @@ This analysis also shows no effect of the number of crayfish at the beginning of
     ggsave(filename = "prop.surv.by.treatment.2015.jpg", path = "./output/plots", dpi = 300)
     
 ![prop.surv.by.treatment.2015.jpg](../output/plots/prop.surv.by.treatment.2015.jpg)
+    
+## Description of the 2015 Experiment Survival Results
+    
+
     
 #### 2016 Experiment 
 #### Mass
