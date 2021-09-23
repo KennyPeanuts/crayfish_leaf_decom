@@ -178,17 +178,16 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
     
 
     ################################################## 
-    `summarise()` has grouped output by 'Year'. You can override using the `.groups` argument.
     # A tibble: 4 x 7
     # Groups:   Year [2]
-    Year Type     mean.harvested sd.harvested min.harvested max.harvested     N
-    <int> <chr>             <dbl>        <dbl>         <dbl>         <dbl> <int>
-    1  2015 Invasive         2.99           2.35         0.400          6.73     6
-    2  2015 Native           0.0464         1.18        -2.37           1.17     8
-    3  2016 Invasive         3.64           2.36        -1.05          10.6     24
-    4  2016 Native           1.97           1.16        -1.8            3.75    24
+    Year Type    mean.ind.delta.ma… sd.ind.delta.mass min.ind.delta.m… max.ind.delta.m…     N
+    <int> <chr>                <dbl>             <dbl>            <dbl>            <dbl> <int>
+    1  2015 Invasi…             2.99                2.35            0.400             6.73     6
+    2  2015 Native              0.0464              1.18           -2.37              1.17     8
+    3  2016 Invasi…             3.64                2.36           -1.05             10.6     24
+    4  2016 Native              1.97                1.16           -1.8               3.75    24
     > 
-     ################################################## 
+    ################################################## 
     
     
 #### Survival
@@ -565,7 +564,9 @@ A mean (+/- 1 SD) proportion of 0.944 (+/- 0.135) of the invasive crayfish survi
     
 ## Description of the 2016 Experiment Change in Mass Results
     
-    
+In the 2016 experiment there was a significant negative effect of total abundance on the estimated change in the mass of an individual crayfish (p = 0.0130). The regression shows that there is a loss of 0.4095 g of mass change for each crayfish added to total abundance. The non-significant interaction (p = 0.4059) indicates that the effect of total abundance on the estimated change in mass of an individual crayfish was the same for both the invasive and native crayfish.
+
+The mean (+/- 1 SD) estimated change in mass of an individual invasive crayfish was 
 #### Survival 
 #### The effect of total crayfish abundance at the beginning of the exp on survival
     
