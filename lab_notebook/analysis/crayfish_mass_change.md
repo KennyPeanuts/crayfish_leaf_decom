@@ -168,7 +168,26 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
     4  2016 Native             7.43         1.48          2.7           9.78    24 
     
     # NOTE: NA`s were removed 
+    ##################################################
+    
+    cray.mean %>%
+      group_by(Year, Type) %>%
+      summarize(mean.harvested = mean(ind.delta.mass, na.rm = T), sd.harvested = sd(ind.delta.mass, na.rm = T), min.harvested = min(ind.delta.mass, na.rm = T), max.harvested = max(ind.delta.mass, na.rm = T), N = length(ind.delta.mass)) 
+    
+
     ################################################## 
+    `summarise()` has grouped output by 'Year'. You can override using the `.groups` argument.
+    # A tibble: 4 x 7
+    # Groups:   Year [2]
+    Year Type     mean.harvested sd.harvested min.harvested max.harvested     N
+    <int> <chr>             <dbl>        <dbl>         <dbl>         <dbl> <int>
+    1  2015 Invasive         2.99           2.35         0.400          6.73     6
+    2  2015 Native           0.0464         1.18        -2.37           1.17     8
+    3  2016 Invasive         3.64           2.36        -1.05          10.6     24
+    4  2016 Native           1.97           1.16        -1.8            3.75    24
+    > 
+     ################################################## 
+    
     
 #### Survival
 
@@ -219,10 +238,10 @@ Because both types of crayfish were "subsampled" from the same tank. Tank is the
 ##### Mass
     
 
-    (delta.mass.tot.abundance.mod <- lmer(ind.delta.mass ~ (1|Tank) + Total.Abundance * Type, data = cray.mean, subset = Year == "2016"))
+    (delta.mass.tot.abundance.mod.2015 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2015"))
     
-    summary(delta.mass.tot.abundance.mod)
-    anova(delta.mass.tot.abundance.mod)
+    summary(delta.mass.tot.abundance.mod.2015)
+    anova(delta.mass.tot.abundance.mod.2015)
 
     
 ***************************************************************************    
