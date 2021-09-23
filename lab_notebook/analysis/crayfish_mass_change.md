@@ -170,9 +170,11 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
     # NOTE: NA`s were removed 
     ##################################################
     
+#### Individual Change in Mass
+    
     cray.mean %>%
       group_by(Year, Type) %>%
-      summarize(mean.harvested = mean(ind.delta.mass, na.rm = T), sd.harvested = sd(ind.delta.mass, na.rm = T), min.harvested = min(ind.delta.mass, na.rm = T), max.harvested = max(ind.delta.mass, na.rm = T), N = length(ind.delta.mass)) 
+      summarize(mean.ind.delta.mass = mean(ind.delta.mass, na.rm = T), sd.ind.delta.mass = sd(ind.delta.mass, na.rm = T), min.ind.delta.mass = min(ind.delta.mass, na.rm = T), max.ind.delta.mass = max(ind.delta.mass, na.rm = T), N = length(ind.delta.mass)) 
     
 
     ################################################## 
@@ -340,96 +342,10 @@ The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as t
     
 ### Description of the 2015 Experiment Change in Mass Results
     
+In the 2015 experiment there was no significant effect of the total abundance of crayfish in the tank at the end of the experiment on the estimated change in mass of an individual crayfish (p = 0.1724). The effect of total abundance was determined for the grand mean of all crayfish but the lack of a significant interaction (p = 0.9533) indicates that the two species did not differ in their response to the total abundance of crayfish.
 
+The mean (+/- 1 SD) estimated change in mass of a single invasive crayfish was 2.99 (+/- 2.35) g, while the mean estimated change in mass of a single native crayfish was only 0.05 (+/- 1.18) g. However the difference was not significant (p = 0.4192) so we do not have evidence that the invasive grew more than the native in the 2015 experiment.
     
-#### Effect of abundance and treatment on final harvested mass
-    
-As with mass change there are two ways to analyze the data: regression analysis and ANCOVA.
-
-##### Regression of final mass by abundance
-
-In this model I am using a regression of harvested mass by the inital abundance in the tank with the type of crayfish as the covariate.
-
-    summary(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2015"))
-    
-    ##################################################
-    Call:
-      lm(formula = total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, 
-         subset = Year == "2015")
-    
-    Residuals:
-      Min     1Q Median     3Q    Max 
-    -12.97  -6.45   1.80   6.30  15.12 
-    
-    Coefficients:
-      Estimate Std. Error t value Pr(>|t|)  
-    (Intercept)                   5.700     14.103   0.404   0.6946  
-    Total.Abundance               4.133      2.714   1.523   0.1588  
-    TypeNative                   39.150     22.050   1.776   0.1062  
-    Total.Abundance:TypeNative   -9.446      4.291  -2.201   0.0523 .
-    ---
-    Residual standard error: 9.402 on 10 degrees of freedom
-    Multiple R-squared:  0.4254,	Adjusted R-squared:  0.2531 
-    F-statistic: 2.468 on 3 and 10 DF,  p-value: 0.122
-    
-    ################################################## 
-    
-    anova(lm(total.Harvested.Mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2015"))
-    
-    ################################################## 
-    Analysis of Variance Table
-    
-    Response: total.Harvested.Mass
-    Df Sum Sq Mean Sq F value  Pr(>F)  
-    Total.Abundance       1   2.52    2.52  0.0285 0.86928  
-    Type                  1 223.79  223.79  2.5316 0.14267  
-    Total.Abundance:Type  1 428.27  428.27  4.8447 0.05235 .
-    Residuals            10 884.01   88.40 
-    ##################################################
-    
-    ggplot(subset(cray.mean, Year == "2015"), mapping = aes(y = total.Harvested.Mass, x = Total.Abundance, color = Type)) +
-             geom_point() +
-             geom_smooth(
-               method = "lm"
-             ) +
-             theme_classic()
-    ggsave(filename = "total.harvested.mass.by.abundance.2015.jpg", path = "./output/plots", dpi = 300)
-    
-![total.harvested.mass.by.abundance.2015.jpg](../output/plots/total.harvested.mass.by.abundance.2015.jpg)
-    
-##### ANOVA of total final mass by treatment
-    
-The second way to analyze the effect of the treatments on total final mass of crayfish is to run a 2-way ANOVA with the treatment levels.
-
-    anova(lm(total.Harvested.Mass ~ Treatment * Type, data = cray.mean, subset = Year == "2015"))
-
-    ##################################################
-    Analysis of Variance Table
-    
-    Response: total.Harvested.Mass
-    Df Sum Sq Mean Sq F value Pr(>F)  
-    Treatment  2  40.34   20.17  0.2281 0.8000  
-    Type       1 614.25  614.25  6.9485 0.0249 *
-    Residuals 10 884.01   88.40 
-    ################################################## 
-    
-    ggplot(subset(cray.mean, Year == "2015"), mapping = aes(y = total.Harvested.Mass, x = Treatment, color = Type)) +
-             geom_point(
-               position = position_jitterdodge(
-                 dodge.width = 0.65,
-                 jitter.width = 0.15
-               )
-               ) +
-             stat_summary(
-               fun = mean,
-               fun.min = function(x) mean(x) - sd(x),
-               fun.max = function(x) mean(x) + sd(x),
-               position = position_dodge(width = 0.65)
-              ) +
-             theme_classic()
-    ggsave(filename = "total.harvested.mass.by.treatment.2015.jpg", path = "./output/plots", dpi = 300)
-    
-![total.harvested.mass.by.treatment.2015.jpg](../output/plots/total.harvested.mass.by.treatment.jpg)
 
 #### Survival 
 #### The effect of total crayfish abundance at the beginning of the exp on survival
