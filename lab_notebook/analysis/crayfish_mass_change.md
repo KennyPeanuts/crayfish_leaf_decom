@@ -237,7 +237,7 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 Because both types of crayfish were "subsampled" from the same tank. Tank is the experimental unit and we need to use a linear mixed model to analyze the data.
 
 ### 2015 Experiment
-#### Mass
+## Mass (2015 Experiment)
 
 The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
 
@@ -346,7 +346,7 @@ In the 2015 experiment there was no significant effect of the total abundance of
 
 The mean (+/- 1 SD) estimated change in mass of a single invasive crayfish was 2.99 (+/- 2.35) g, while the mean estimated change in mass of a single native crayfish was only 0.05 (+/- 1.18) g. However the difference was not significant (p = 0.4192) so we do not have evidence that the invasive grew more than the native in the 2015 experiment.
     
-#### Survival 
+## Survival (2015 Experiment)
 
 The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
 
