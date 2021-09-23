@@ -230,69 +230,83 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
     11  2016 Native   High                 3.5       0.837           2           4     6
     ################################################## 
     
-### Statisitical Tests
+## Statisitical Tests
     
 Because both types of crayfish were "subsampled" from the same tank. Tank is the experimental unit and we need to use a linear mixed model to analyze the data.
 
-#### 2015 Experiment
-##### Mass
-    
+### 2015 Experiment
+#### Mass
+
+The model uses `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
 
     (delta.mass.tot.abundance.mod.2015 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2015"))
     
     summary(delta.mass.tot.abundance.mod.2015)
     anova(delta.mass.tot.abundance.mod.2015)
 
+    ################################################## 
+    # Model Details
+    > (delta.mass.tot.abundance.mod.2015 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2015"))
+    Linear mixed model fit by REML ['lmerModLmerTest']
+    Formula: ind.delta.mass ~ 1 + Total.Abundance * Type + (1 | Tank)
+    Data: cray.mean
+    Subset: Year == "2015"
+    REML criterion at convergence: 41.6386
+    Random effects:
+      Groups   Name        Std.Dev.
+    Tank     (Intercept) 1.3565  
+    Residual             0.9577  
+    Number of obs: 13, groups:  Tank, 10
+    Fixed Effects:
+      (Intercept)             Total.Abundance                  TypeNative  
+    6.59167                    -0.71944                    -3.15301  
+    Total.Abundance:TypeNative  
+    0.04051  
     
-***************************************************************************    
-# All of the analyses below are based on simple linear models and they are pseudoreplicated
-      
-#### 2015 Experiment
-##### Mass
-
-#### The effect of total crayfish abundance at the beginning of the exp on individual crayfish change in mass.
+    # Sumary of results as a regression analysis
     
-~~Based on the data there are two ways to analyze the results. One approach would be to treat the number of crayfish in the treatments as a continuous variable and analyze the data as an regression with `abundance` and `type` as a covariate. ~~
-
-
-##### Regression of mass change by total abundance 
-
-    summary(lm(ind.delta.mass ~ total.abundance * type, data = cray.mean, subset = year == "2015"))
+    > summary(delta.mass.tot.abundance.mod.2015)
+    Linear mixed model fit by REML. t-tests use Satterthwaites method ['lmerModLmerTest']
+    Formula: ind.delta.mass ~ 1 + Total.Abundance * Type + (1 | Tank)
+    Data: cray.mean
+    Subset: Year == "2015"
     
-    ##################################################    
-    all:
-      lm(formula = ind.delta.mass ~ Total.Abundance * Type, data = cray.mean, 
-         subset = Year == "2015")
+    REML criterion at convergence: 41.6
     
-    Residuals:
-      Min      1Q  Median      3Q     Max 
-    -2.3000 -1.2750  0.1938  0.9917  2.3000 
+    Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+    -0.8827 -0.3583 -0.1122  0.3444  0.9887 
     
-    Coefficients:
-                               Estimate Std. Error t value Pr(>|t|)  
-    (Intercept)                 6.59167    2.52294   2.613   0.0281 *
-    Total.Abundance            -0.71944    0.48554  -1.482   0.1726  
-    TypeNative                 -2.71181    4.06232  -0.668   0.5212  
-    Total.Abundance:TypeNative -0.06979    0.80518  -0.087   0.9328  
+    Random effects:
+    Groups   Name        Variance Std.Dev.
+    Tank     (Intercept) 1.8402   1.3565  
+    Residual             0.9172   0.9577  
+    Number of obs: 13, groups:  Tank, 10
+    
+    Fixed effects:
+    Estimate Std. Error       df t value Pr(>|t|)  
+    (Intercept)                 6.59167    2.49084  7.88010   2.646   0.0298 *
+    Total.Abundance            -0.71944    0.47936  7.88010  -1.501   0.1724  
+    TypeNative                 -3.15301    3.71962  8.73557  -0.848   0.4192  
+    Total.Abundance:TypeNative  0.04051    0.67304  8.91100   0.060   0.9533  
     ---
-    Residual standard error: 1.682 on 9 degrees of freedom
-    (1 observation deleted due to missingness)
-    Multiple R-squared:  0.6023,	Adjusted R-squared:  0.4697 
-    F-statistic: 4.543 on 3 and 9 DF,  p-value: 0.03349
+    
+    Correlation of Fixed Effects:
+    (Intr) Ttl.Ab TypNtv
+    Totl.Abndnc -0.962              
+    TypeNative  -0.570  0.472       
+    Ttl.Abnd:TN  0.548 -0.475 -0.984
+    
+    # Summary of results as an ANOVA 
+    > anova(delta.mass.tot.abundance.mod.2015)
+    Type III Analysis of Variance Table with Satterthwaites method
+    Sum Sq Mean Sq NumDF  DenDF F value Pr(>F)
+    Total.Abundance      2.36101 2.36101     1 7.0898  2.5741 0.1521
+    Type                 0.65907 0.65907     1 8.7356  0.7185 0.4192
+    Total.Abundance:Type 0.00332 0.00332     1 8.9110  0.0036 0.9533
     ################################################## 
     
-    anova(lm(ind.delta.mass ~ Total.Abundance * Type, data = cray.mean, subset = Year == "2015"))
-    
-    ##################################################
-    Analysis of Variance Table
-    
-    Response: ind.delta.mass
-    Df  Sum Sq Mean Sq F value   Pr(>F)   
-    Total.Abundance       1  8.5028  8.5028  3.0056 0.117010   
-    Type                  1 30.0364 30.0364 10.6173 0.009864 **
-    Total.Abundance:Type  1  0.0213  0.0213  0.0075 0.932825   
-    Residuals             9 25.4609  2.8290              
-    ################################################## 
+#### Plot of the 2015 Experiment Change in Mass by Total Abundance
     
     ggplot(subset(cray.mean, Year == "2015"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
              geom_point() +
@@ -300,25 +314,11 @@ Because both types of crayfish were "subsampled" from the same tank. Tank is the
                method = "lm"
              ) +
              theme_classic()
-    ggsave(filename = "ind.delta.mass.by.abundance.jpg", path = "./output/plots", dpi = 300)
+    ggsave(filename = "ind_delta_mass_by_abundance_2015.jpg", path = "./output/plots", dpi = 300)
     
-![ind.delta.mass.by.abundance](../output/plots/ind.delta.mass.by.abundance.jpg)
+![ind_delta_mass_by_abundance_2015](../output/plots/ind.delta_mass_by_abundance_2015.jpg)
     
-##### ANOVA of change in mass by treatment
-    
-The other way to analyze the effect would be to treat the different abundance levels as a catagorical variable and analyze the effect on the response with a two-way ANOVA.
-    
-    anova(lm(ind.delta.mass ~ Treatment * Type, data = cray.mean, subset = Year == "2015"))
-    
-    ################################################## 
-    Analysis of Variance Table
-    
-    Response: ind.delta.mass
-    Df Sum Sq Mean Sq F value  Pr(>F)  
-    Treatment  2 21.760  10.880  3.8459 0.06206 .
-    Type       1 16.801  16.801  5.9387 0.03755 *
-    Residuals  9 25.461   2.829 
-    ################################################## 
+##### Plot of the 2015 Experiment Change in Mass by Treatment
     
     ggplot(subset(cray.mean, Year == "2015"), mapping = aes(y = ind.delta.mass, x = Treatment, color = Type)) +
              geom_point(
@@ -334,9 +334,13 @@ The other way to analyze the effect would be to treat the different abundance le
                position = position_dodge(width = 0.65)
               ) +
              theme_classic()
-    ggsave(filename = "ind.delta.mass.by.treatment.2015.jpg", path = "./output/plots", dpi = 300)
+    ggsave(filename = "ind_delta_mass_by_treatment_2015.jpg", path = "./output/plots", dpi = 300)
     
-![ind.delta.mass.by.treatment.2015.jpg](../output/plots/ind.delta.mass.by.treatment.jpg)
+![ind_delta_mass_by_treatment_2015.jpg](../output/plots/ind.delta_mass_by_treatment_2015.jpg)
+    
+### Description of the 2015 Experiment Change in Mass Results
+    
+
     
 #### Effect of abundance and treatment on final harvested mass
     
