@@ -309,9 +309,12 @@ The model uses the estimated change in the mass of a single crayfish (`ind.delta
 #### Plot of the 2015 Experiment Change in Mass by Total Abundance
     
     ggplot(subset(cray.mean, Year == "2015"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
-             geom_jitter(
-             	  width = 0.1
-             	) +
+    	       geom_point(
+    	       	position = position_jitterdodge(
+    	       		dodge.width = 0.1,
+    	       		jitter.width = 0.2
+    	       	)
+    	       	)+
              geom_smooth(
                method = "lm"
              ) +
@@ -424,9 +427,12 @@ The model uses the proportion of crayfish that survive to the end of the experim
 #### Plot of 2015 Experiment Proportion Surviving by Total Abundance
     
     ggplot(subset(cray.N, Year == "2015"), mapping = aes(y = prop.surv, x = Total.Abundance, color = Type)) +
-             geom_jitter(
-               width = 0.1
-             	) +
+    	       geom_point(
+    	       	position = position_jitterdodge(
+    	       		dodge.width = 0.1,
+    	       		jitter.width = 0.2
+    	       	)
+    	       	)+
              geom_smooth(
                method = "lm"
              ) +
@@ -538,9 +544,12 @@ The model uses the estimated change in the mass of a single crayfish (`ind.delta
 ### Plot of the 2016 Experiment Change in Mass by Total Abundance
     
     ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
-             geom_jitter(
-             	 width = 0.1
-             	) +
+    	       geom_point(
+    	       	position = position_jitterdodge(
+    	       		dodge.width = 0.1,
+    	       		jitter.width = 0.2
+    	       	)
+    	       	)+
              geom_smooth(
                method = "lm"
              ) +
@@ -654,8 +663,12 @@ The model uses the proportion of crayfish that survive to the end of the experim
 #### Plot of the 2016 Experiment Survival by Total Abundance
     
     ggplot(subset(cray.N, Year == "2016"), mapping = aes(y = prop.surv, x = Total.Abundance, color = Type)) +
-             geom_jitter(
-               width = 0.1) +
+    	       geom_point(
+    	       	position = position_jitterdodge(
+    	       		dodge.width = 0.1,
+    	       		jitter.width = 0.3
+    	       	)
+    	       	)+
              geom_smooth(
                method = "lm"
              ) +
