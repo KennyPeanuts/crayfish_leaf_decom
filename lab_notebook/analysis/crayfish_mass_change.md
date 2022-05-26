@@ -10,6 +10,7 @@
 * File Modified 2021-08-26 - KF - completed the calculated survival of each species for each exp based on the raw data and added summaries of all the mass and survival data.
 * File Modified 2021-09-02 - KF - I observed that the df were too great on the tests and realized that we were treating the different type of crayfish as independent samples when they are not. 
 * File Modified 2021-09-15 - KF - added code to complete a linear mixed model test with tank as the random variable.
+* File Modified 2022-05-24 - KF - clarified the calculation of the estimate for change in individual crayfish mass.
 
 ### Description
 
