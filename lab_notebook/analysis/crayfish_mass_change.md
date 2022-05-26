@@ -10,7 +10,7 @@
 * File Modified 2021-08-26 - KF - completed the calculated survival of each species for each exp based on the raw data and added summaries of all the mass and survival data.
 * File Modified 2021-09-02 - KF - I observed that the df were too great on the tests and realized that we were treating the different type of crayfish as independent samples when they are not. 
 * File Modified 2021-09-15 - KF - added code to complete a linear mixed model test with tank as the random variable.
-* File Modified 2022-05-24 - KF - clarified the calculation of the estimate for change in individual crayfish mass.
+* File Modified 2022-05-24 - KF - clarified the calculation of the estimate for change in individual crayfish mass. I reconceptualized this as per capita mass change to make it easier to explain in the results.
 
 ### Description
 
@@ -27,13 +27,17 @@ This code describes the analysis of the growth and survival data from the experi
 
 ### Description
 
-Initially the change in mass was measured as the final mass of the *tank* minus the initial mass of the *tank*. This measured the change in total crayfish mass in the tank and any dead crayfish were not incuded in the final mass (because they has been eaten). The results of this analysis can be seen below in [Analysis of Tank Mass Change](#analysis-of-tank-mass-change). As a result of this way of calculating mass change, tanks that had crayfish deaths could have negative growth.  This way of calculating mass change seemed to conflate the effects of individual crayfish growth and the total mass that a tank could support.
+Initially the change in mass was measured as the final mass of the *tank* minus the initial mass of the *tank*. This measured the change in total crayfish mass in the tank and any dead crayfish were not incuded in the final mass (because they has been eaten). The results of this analysis can be seen below in [Analysis of Tank Mass Change](#analysis-of-tank-mass-change). As a result of this way of calculating mass change, tanks that had crayfish deaths could have negative growth.  This way of calculating mass change seemed to conflate the effects of individual crayfish growth and survival.
 
-To better distingish between patterns in these two components of the ecology, we are analyzing them separately as the estimated change in mass of an individual crayfish and the total crayfish mass in the tank at the end of the experiment.
+To better distingish between patterns in these two components of the ecology, we are analyzing growth as per capita growth and suvival separately. To calculate the per capita growth for a tank, we took the mean initial mass of the tank, which is an estimate of the per capita mass of the crayfish in the tank (total mass / number of crayfish) and subtracted the mean mass (i.e., per capita mass) at the end of the incubation period. This generates a single per capita growth (i.e., change in mass) for each tank.
 
 ### Import Data
 
-    cray.raw <- read.table("./data/crayfish_mass_raw.csv", header = T, sep = ",")
+    cray.raw <- read.table(
+    	"./data/crayfish_mass_raw.csv", 
+    	header = T, 
+    	sep = ","
+    	)
     
 ## Analysis of Experiment
     
@@ -43,25 +47,40 @@ To better distingish between patterns in these two components of the ecology, we
 
 This code calculates the mean stocked mass and harvested mass of all the crayfish in each tank and produces a new data.frame with the values. The code also calculates the total mass of each species of crayfish at the end of the experiment.
     
-    mean.mass <- cray.raw %>%
+    mean.mass <- 
+    	cray.raw %>%
       group_by(Year, Type, Tank) %>%
-        summarize(mean.Stocked.Mass = mean(Stocked_Mass, na.rm = T), sd.Stocked.Mass = sd(Stocked_Mass), mean.Harvested.Mass = mean(Harvested_Mass, na.rm = T), sd.Harvested.Mass = sd(Harvested_Mass), total.Harvested.Mass = sum(Harvested_Mass, na.rm = T))
+        summarize(
+        	mean.Stocked.Mass = mean(Stocked_Mass, na.rm = T), 
+        	sd.Stocked.Mass = sd(Stocked_Mass), 
+        	mean.Harvested.Mass = mean(Harvested_Mass, na.rm = T), 
+        	sd.Harvested.Mass = sd(Harvested_Mass), 
+        	total.Harvested.Mass = sum(Harvested_Mass, na.rm = T)
+        	)
     
 #### Create a data.frame with the crayfish abundance of each tank not replicated for the number of crayfish
 
 This code produces a data.frame with a single abundance value for each tank by using `unique` to select only a single abundance value from the replicate crayfish values.
 
-    tank.abundance <- cray.raw %>%
+    tank.abundance <- 
+    	cray.raw %>%
       group_by(Year, Type, Tank) %>%
-      summarize(Abundance = unique(Abundance), Total.Abundance = unique(Total_Abundance), Invasive.Abundance = unique(Invasive_Abundance))
+      summarize(
+      	Abundance = unique(Abundance), 
+      	Total.Abundance = unique(Total_Abundance), 
+      	Invasive.Abundance = unique(Invasive_Abundance)
+      	)
 
 #### Create a data.frame with the treatment designation of each tank not replicated for the number of crayfish
 
 This code produces a data.frame with a single treatment value for each tank by using `unique` to select only a single abundance value from the replicate crayfish values.
 
-    tank.treatment <- cray.raw %>%
+    tank.treatment <- 
+    	cray.raw %>%
       group_by(Year, Type, Tank) %>%
-      summarize(Treatment = unique(Treatment))
+      summarize(
+      	Treatment = unique(Treatment)
+      	)
     
 #### Merge the mean.mass data.frame with the cray.raw data frame
     
@@ -78,7 +97,10 @@ This creates an object that contains the number of crayfish at the beginning of 
     cray.N <- 
       cray.raw %>%
       group_by(Year, Type, Tank) %>%
-      summarize(N.initial = length(which(!is.na(Stocked_Mass))), N.final = length(which(!is.na(Harvested_Mass))))
+      summarize(
+      	N.initial = length(which(!is.na(Stocked_Mass))), 
+      	N.final = length(which(!is.na(Harvested_Mass)))
+      	)
     
 ### Calculate the proportion survived
 
@@ -100,13 +122,14 @@ This code calculates the proportion of the inital crayfish that remain in the ta
     
 #### Calculate the estimated change in mass of an individual crayfish for each species.
     
-This code subtracts the estmated stocked mass from the estimated harvested mass of a single crayfish in each tank.
+This code subtracts the per capita stocked mass from the per capita harvested mass in each tank to generate the per capita change in mass for each tank.
 
-    ind.delta.mass <- cray.mean$mean.Harvested.Mass - cray.mean$mean.Stocked.Mass
+    per.capita.delta.mass <- 
+    	cray.mean$mean.Harvested.Mass - cray.mean$mean.Stocked.Mass
     
 ### Create data.frame for analyis
     
-    cray.mean <- data.frame(cray.mean, ind.delta.mass)
+    cray.mean <- data.frame(cray.mean, per.capita.delta.mass)
     
 #### Reorder the treatment levels in Treatment to reflect the logical order
     
@@ -128,7 +151,7 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 * Total.Abundance = the total number of crayfish in each tank (native + invasive) stocked into each tank at the beginning of the experiment.
 * Invasive.Abundance = the number of invasive crayfish stocked into each tank at the beginning of the experiment.
 * Treatment = the treatment level identifier, where "Ctl_Invasive" indicates a tank with only invasive crayfish, "Ctl_Native" indicates a tank with only native crayfish, "Equal" indicates a tank with equal numbers of invasive and native crayfish, "Low" indicates a tank with more native than invasive crayfish, and "High" indicates a tank with more invasive than native crayfish.
-* ind.delta.mass = the estimated change in mass of a crayfish in a tank over the course of the experiment measured as the mean harvested mass minus the mean stocked mass. (g)
+* per.capita.delta.mass = the per capita change in mass estimated change in mass for a tank over the course of the experiment measured as the mean (i.e., per capita) harvested mass minus the mean (i.e., per capita) stocked mass. (g)
 * N.initial = the number of crayfish of that type that were stocked into the tank at the beginnig of the experiment.
 * N. final = the number of crayfish of that type that were harvested from the tank at the end of the experiment.
 * prop.surv = the proportion of the stocked crayfish of that type ('N.initial') that were recovered at the end of the experiment.
@@ -139,7 +162,13 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 
     cray.mean %>%
       group_by(Year, Type) %>%
-        summarize(mean.stocked = mean(mean.Stocked.Mass), sd.stocked = sd(mean.Stocked.Mass), min.stocked = min(mean.Stocked.Mass), max.stocked = max(mean.Stocked.Mass), N = length(mean.Stocked.Mass))
+        summarize(
+        	mean.stocked = mean(mean.Stocked.Mass), 
+        	sd.stocked = sd(mean.Stocked.Mass), 
+        	min.stocked = min(mean.Stocked.Mass), 
+        	max.stocked = max(mean.Stocked.Mass), 
+        	N = length(mean.Stocked.Mass)
+        	)
     
     ##################################################
     # A tibble: 4 x 7
@@ -156,7 +185,13 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 
     cray.mean %>%
       group_by(Year, Type) %>%
-        summarize(mean.harvested = mean(mean.Harvested.Mass, na.rm = T), sd.harvested = sd(mean.Harvested.Mass, na.rm = T), min.harvested = min(mean.Harvested.Mass, na.rm = T), max.harvested = max(mean.Harvested.Mass, na.rm = T), N = length(mean.Harvested.Mass))
+        summarize(
+        	mean.harvested = mean(mean.Harvested.Mass, na.rm = T), 
+        	sd.harvested = sd(mean.Harvested.Mass, na.rm = T), 
+        	min.harvested = min(mean.Harvested.Mass, na.rm = T), 
+        	max.harvested = max(mean.Harvested.Mass, na.rm = T), 
+        	N = length(mean.Harvested.Mass)
+        	)
     
     ##################################################
     # A tibble: 4 x 7
@@ -171,23 +206,29 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
     # NOTE: NA`s were removed 
     ##################################################
     
-#### Individual Change in Mass
+#### Per capita Change in Mass
     
     cray.mean %>%
       group_by(Year, Type) %>%
-      summarize(mean.ind.delta.mass = mean(ind.delta.mass, na.rm = T), sd.ind.delta.mass = sd(ind.delta.mass, na.rm = T), min.ind.delta.mass = min(ind.delta.mass, na.rm = T), max.ind.delta.mass = max(ind.delta.mass, na.rm = T), N = length(ind.delta.mass)) 
+      summarize(
+      	mean.per.capita.delta.mass = mean(per.capita.delta.mass, na.rm = T), 
+      	sd.per.capita.delta.mass = sd(per.capita.delta.mass, na.rm = T), 
+      	min.per.capita.delta.mass = min(per.capita.delta.mass, na.rm = T), 
+      	max.per.capita.delta.mass = max(per.capita.delta.mass, na.rm = T), 
+      	N = length(per.capita.delta.mass)
+      	) 
     
 
     ################################################## 
-    # A tibble: 4 x 7
-    # Groups:   Year [2]
-    Year Type    mean.ind.delta.ma… sd.ind.delta.mass min.ind.delta.m… max.ind.delta.m…     N
-    <int> <chr>                <dbl>             <dbl>            <dbl>            <dbl> <int>
-    1  2015 Invasi…             2.99                2.35            0.400             6.73     6
-    2  2015 Native              0.0464              1.18           -2.37              1.17     8
-    3  2016 Invasi…             3.64                2.36           -1.05             10.6     24
-    4  2016 Native              1.97                1.16           -1.8               3.75    24
-    > 
+    # A tibble: 4 × 7
+# Groups:   Year [2]
+   Year Type     mean.per.capita… sd.per.capita.d… min.per.capita.… max.per.capita.…
+  <int> <chr>               <dbl>            <dbl>            <dbl>            <dbl>
+1  2015 Invasive           2.99               2.35            0.400             6.73
+2  2015 Native             0.0464             1.18           -2.37              1.17
+3  2016 Invasive           3.64               2.36           -1.05             10.6 
+4  2016 Native             1.97               1.16           -1.8               3.75
+# … with 1 more variable: N <int>
     ################################################## 
     
     
@@ -195,7 +236,13 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 
     cray.N %>%
       group_by(Year, Type) %>%
-        summarize(mean.prop.surv = mean(prop.surv, na.rm = T), sd.prop.surv = sd(prop.surv, na.rm = T), min.prop.surv = min(prop.surv, na.rm = T), max.prop.surv = max(prop.surv, na.rm = T), N = length(prop.surv))
+        summarize(
+        	mean.prop.surv = mean(prop.surv, na.rm = T), 
+        	sd.prop.surv = sd(prop.surv, na.rm = T), 
+        	min.prop.surv = min(prop.surv, na.rm = T), 
+        	max.prop.surv = max(prop.surv, na.rm = T), 
+        	N = length(prop.surv)
+        	)
     
     ##################################################
     # A tibble: 4 x 7
@@ -212,7 +259,13 @@ NOTE: These variable descriptions are for both the 'cray.N' and the 'cray.mean' 
 
     cray.N %>%
       group_by(Year, Type, Treatment) %>%
-        summarize(mean.N.final = mean(N.final, na.rm = T), sd.N.final = sd(N.final, na.rm = T), min.N.final = min(N.final, na.rm = T), max.N.final = max(N.final, na.rm = T), N = length(N.final))
+        summarize(
+        	mean.N.final = mean(N.final, na.rm = T), 
+        	sd.N.final = sd(N.final, na.rm = T), 
+        	min.N.final = min(N.final, na.rm = T), 
+        	max.N.final = max(N.final, na.rm = T), 
+        	N = length(N.final)
+        	)
     
     ##################################################
     # A tibble: 12 x 8
@@ -238,31 +291,36 @@ Because both types of crayfish were "subsampled" from the same tank. Tank is the
 
 ## Mass (2015 Experiment)
 
-The model uses the estimated change in the mass of a single crayfish (`ind.delta.mass`) as the response and `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
+The model uses the estimated change in per capita mass (`per.capita.delta.mass`) as the response and `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
 
-    (delta.mass.tot.abundance.mod.2015 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2015"))
+    (delta.mass.tot.abundance.mod.2015 <- 
+    		lmer(
+    			per.capita.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank), 
+    			data = cray.mean, 
+    			subset = Year == "2015"
+    			)
+    	)
     
     summary(delta.mass.tot.abundance.mod.2015)
     anova(delta.mass.tot.abundance.mod.2015)
 
     ################################################## 
     # Model Details
-    > (delta.mass.tot.abundance.mod.2015 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2015"))
     Linear mixed model fit by REML ['lmerModLmerTest']
-    Formula: ind.delta.mass ~ 1 + Total.Abundance * Type + (1 | Tank)
+    Formula: per.capita.delta.mass ~ 1 + Total.Abundance * Type + (1 | Tank)
     Data: cray.mean
     Subset: Year == "2015"
     REML criterion at convergence: 41.6386
     Random effects:
-      Groups   Name        Std.Dev.
+    Groups   Name        Std.Dev.
     Tank     (Intercept) 1.3565  
     Residual             0.9577  
     Number of obs: 13, groups:  Tank, 10
     Fixed Effects:
-      (Intercept)             Total.Abundance                  TypeNative  
-    6.59167                    -0.71944                    -3.15301  
-    Total.Abundance:TypeNative  
-    0.04051  
+               (Intercept)             Total.Abundance                  TypeNative  
+                   6.59167                    -0.71944                    -3.15301  
+                   Total.Abundance:TypeNative  
+                   0.04051 
     
     # Sumary of results as a regression analysis
     
@@ -309,7 +367,12 @@ The model uses the estimated change in the mass of a single crayfish (`ind.delta
     
 #### Plot of the 2015 Experiment Change in Mass by Total Abundance
     
-    ggplot(subset(cray.mean, Year == "2015"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
+    ggplot(
+    	subset(
+    		cray.mean, Year == "2015"
+    		), 
+    	mapping = aes(y = per.capita.delta.mass, x = Total.Abundance, color = Type)
+    	) +
     	       geom_hline(
     	       	yintercept = 0,
     	       	linetype = "dashed"
@@ -324,7 +387,12 @@ The model uses the estimated change in the mass of a single crayfish (`ind.delta
                method = "lm"
              ) +
              theme_classic()
-    ggsave(filename = "ind_delta_mass_by_abundance_2015.jpg", path = "./output/plots", dpi = 300)
+    
+    ggsave(
+    	filename = "ind_delta_mass_by_abundance_2015.jpg", 
+    	path = "./output/plots", 
+    	dpi = 300
+    	)
     
 ![ind_delta_mass_by_abundance_2015](../output/plots/ind_delta_mass_by_abundance_2015.jpg)
     
