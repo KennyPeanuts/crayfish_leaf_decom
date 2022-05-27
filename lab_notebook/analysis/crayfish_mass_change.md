@@ -371,54 +371,92 @@ The model uses the estimated change in per capita mass (`per.capita.delta.mass`)
     	subset(
     		cray.mean, Year == "2015"
     		), 
-    	mapping = aes(y = per.capita.delta.mass, x = Total.Abundance, color = Type)
+    	mapping = aes(
+    		y = per.capita.delta.mass,
+    		x = Total.Abundance, 
+    		shape = Type)
     	) +
-    	       geom_hline(
-    	       	yintercept = 0,
-    	       	linetype = "dashed"
-    	       ) +
-    	       geom_point(
-    	       	position = position_jitterdodge(
-    	       		dodge.width = 0.1,
-    	       		jitter.width = 0.2
-    	       	)
-    	       	)+
-             geom_smooth(
-               method = "lm"
-             ) +
-             theme_classic()
+    	   geom_hline(
+    	     yintercept = 0,
+    	     linetype = "dashed"
+    	    ) +
+    	    geom_point(
+    	     position = position_jitterdodge(
+    	      dodge.width = 0.1,
+    	      jitter.width = 0.2,
+    	       ),
+    	     size = 2.5
+    	     )+
+           geom_smooth(
+            method = "lm",
+           	color = "gray45"
+           ) +
+    	     xlab(
+    	     	"Total Number of Crayfish in the Tank"
+    	     )+
+    	     ylab(
+    	     	"Per capita change in mass (g)"
+    	     )+
+    	scale_shape_manual(
+    		values = c(19, 1)
+    	)+
+       theme_classic()
     
     ggsave(
-    	filename = "ind_delta_mass_by_abundance_2015.jpg", 
+    	filename = "per.capita.delta.mass.2015.jpg", 
     	path = "./output/plots", 
     	dpi = 300
     	)
     
-![ind_delta_mass_by_abundance_2015](../output/plots/ind_delta_mass_by_abundance_2015.jpg)
+![per.capita_delta_mass_by_abundance_2015](../output/plots/ind_delta_mass_by_abundance_2015.jpg)
     
-##### Plot of the 2015 Experiment Change in Mass by Treatment
-    
-    ggplot(subset(cray.mean, Year == "2015"), mapping = aes(y = ind.delta.mass, x = Treatment, color = Type)) +
+	    ggplot(subset(
+	    	cray.mean, Year == "2015"
+	    	), 
+	    	mapping = aes(
+	    		y = per.capita.delta.mass, 
+	    		x = Treatment, 
+	    		shape = Type)) +
              geom_point(
                position = position_jitterdodge(
                  dodge.width = 0.65,
                  jitter.width = 0.15
-               )
+               ),
+             	size = 3
                ) +
              stat_summary(
                fun = mean,
                fun.min = function(x) mean(x) - sd(x),
                fun.max = function(x) mean(x) + sd(x),
-               position = position_dodge(width = 0.65)
+               position = position_dodge(width = 0.65),
+             	color = "gray45"
               ) +
+    	   geom_hline(
+    	     yintercept = 0,
+    	     linetype = "dashed"
+    	    ) +
+    	scale_shape_manual(
+    		values = c(19, 1)
+    	)+
+	    	xlab(
+	    		"Treatment"
+	    	)+
+	    	ylab(
+	    		"Per capita change in mass (g)"
+	    	)+
              theme_classic()
-    ggsave(filename = "ind_delta_mass_by_treatment_2015.jpg", path = "./output/plots", dpi = 300)
+	    
+    ggsave(
+    	filename = "per.capita_delta_mass_by_treatment_2015.jpg", 
+    	path = "./output/plots", 
+    	dpi = 300
+    	)
     
-![ind_delta_mass_by_treatment_2015.jpg](../output/plots/ind_delta_mass_by_treatment_2015.jpg)
+![per_capita_delta_mass_by_treatment_2015.jpg](../output/plots/per_capita_delta_mass_by_treatment_2015.jpg)
     
 ### Description of the 2015 Experiment Change in Mass Results
     
-In the 2015 experiment there was no significant effect of the total abundance of crayfish in the tank at the end of the experiment on the estimated change in mass of an individual crayfish (p = 0.1724). The effect of total abundance was determined for the grand mean of all crayfish but the lack of a significant interaction (p = 0.9533) indicates that the two species did not differ in their response to the total abundance of crayfish.
+In the 2015 experiment there was no significant effect of the total abundance of crayfish in the tank at the end of the experiment on the per capita change in crayfish mass (p = 0.1724). The effect of total abundance was determined for the grand mean of all crayfish but the lack of a significant interaction (p = 0.9533) indicates that the two species did not differ in their response to the total abundance of crayfish.
 
 The mean (+/- 1 SD) estimated change in mass of a single invasive crayfish was 2.99 (+/- 2.35) g, while the mean estimated change in mass of a single native crayfish was only 0.05 (+/- 1.18) g. However the difference was not significant (p = 0.4192) so we do not have evidence that the invasive grew more than the native in the 2015 experiment.
     
