@@ -454,7 +454,7 @@ The model uses the estimated change in per capita mass (`per.capita.delta.mass`)
     	dpi = 300
     	)
     
-![per_capita_delta_mass_by_treatment_2015.jpg](../output/plots/per_capita_delta_mass_by_treatment_2015.jpg)
+[per_capita_delta_mass_by_treatment_2015.jpg](../output/plots/per_capita_delta_mass_by_treatment_2015.jpg)
     
 ### Description of the 2015 Experiment Change in Mass Results
     
