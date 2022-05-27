@@ -405,7 +405,7 @@ The model uses the estimated change in per capita mass (`per.capita.delta.mass`)
        theme_classic()
     
     ggsave(
-    	filename = "per_capita_delta_mass_2015.jpg", 
+    	filename = "per_capita_delta_mass_by_abundance_2015.jpg", 
     	path = "./output/plots", 
     	dpi = 300
     	)
