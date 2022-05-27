@@ -374,7 +374,9 @@ The model uses the estimated change in per capita mass (`per.capita.delta.mass`)
     	mapping = aes(
     		y = per.capita.delta.mass,
     		x = Total.Abundance, 
-    		shape = Type)
+    		shape = Type,
+    		linetype = Type
+    		)
     	) +
     	   geom_hline(
     	     yintercept = 0,
@@ -458,13 +460,19 @@ The model uses the estimated change in per capita mass (`per.capita.delta.mass`)
     
 In the 2015 experiment there was no significant effect of the total abundance of crayfish in the tank at the end of the experiment on the per capita change in crayfish mass (p = 0.1724). The effect of total abundance was determined for the grand mean of all crayfish but the lack of a significant interaction (p = 0.9533) indicates that the two species did not differ in their response to the total abundance of crayfish.
 
-The mean (+/- 1 SD) estimated change in mass of a single invasive crayfish was 2.99 (+/- 2.35) g, while the mean estimated change in mass of a single native crayfish was only 0.05 (+/- 1.18) g. However the difference was not significant (p = 0.4192) so we do not have evidence that the invasive grew more than the native in the 2015 experiment.
+The mean (+/- 1 SD) per capita change in the invasive crayfish mass was 2.99 (+/- 2.35) g, while the mean per capita change in the native crayfish mass was only 0.05 (+/- 1.18) g. However this difference was not significant (p = 0.4192) so we do not have evidence that the invasive grew more than the native in the 2015 experiment.
     
 ## Survival (2015 Experiment)
 
 The model uses the proportion of crayfish that survive to the end of the experiment (`prop.surv`) and `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
 
-    (survival.tot.abundance.mod.2015 <- lmer(prop.surv ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.N, subset = Year == "2015"))
+    (survival.tot.abundance.mod.2015 <- 
+    		lmer(
+    			prop.surv ~ 1 + Total.Abundance * Type + (1|Tank),
+    			data = cray.N, 
+    			subset = Year == "2015"
+    			)
+    	)
     
     summary(survival.tot.abundance.mod.2015)
     anova(survival.tot.abundance.mod.2015)
@@ -489,6 +497,7 @@ The model uses the proportion of crayfish that survive to the end of the experim
     Total.Abundance:TypeNative  
     -0.14931  
     optimizer (nloptwrap) convergence code: 0 (OK) ; 0 optimizer warnings; 1 lme4 warnings 
+    
     # Summary of Results as a Regression Analysis
     
     summary(survival.tot.abundance.mod.2015)
@@ -537,21 +546,41 @@ The model uses the proportion of crayfish that survive to the end of the experim
     
 #### Plot of 2015 Experiment Proportion Surviving by Total Abundance
     
-    ggplot(subset(cray.N, Year == "2015"), mapping = aes(y = prop.surv, x = Total.Abundance, color = Type)) +
+    ggplot(
+    	subset(cray.N, Year == "2015"),
+    	mapping = aes(
+    		y = (prop.surv * 100),
+    		x = Total.Abundance, 
+    		shape = Type,
+    		linetype = Type
+    		)
+    	) +
     	       geom_hline(
     	       	yintercept = 0,
     	       	linetype = "dashed"
     	       ) +
     	       geom_point(
     	       	position = position_jitterdodge(
-    	       		dodge.width = 0.1,
-    	       		jitter.width = 0.2
-    	       	)
+    	       		dodge.width = 0.6,
+    	       		jitter.width = 0.3
+    	       	),
+    	       	size = 2.5
     	       	)+
              geom_smooth(
-               method = "lm"
+              method = "lm",
+             	color = "gray45"
              ) +
+    	scale_shape_manual(
+    		values = c(19, 1)
+    	)+
+	    	xlab(
+	    		"Total Number of Crayfish in the Tank"
+	    	)+
+	    	ylab(
+	    		"Percent Crayfish Survival"
+	    	)+
              theme_classic()
+    
     ggsave(filename = "prop.surv.by.abundance.2015.jpg", path = "./output/plots", dpi = 300)
     
 ![prop.surv.by.abundanceprop.surv.2015](../output/plots/prop.surv.by.abundance.2015.jpg)
@@ -584,9 +613,15 @@ A mean (+/- 1 SD) proportion of 0.944 (+/- 0.135) of the invasive crayfish survi
     
 ## Mass (2016 Experiment)
 
-The model uses the estimated change in the mass of a single crayfish (`ind.delta.mass`) as the response and `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error ie estimated.
+The model uses the per capita change in crayfish mass (`per.capita.delta.mass`) from the 2016 experiment as the response and `Total.Abundance` and `Type` as the fixed effects and `Tank` as the random effect on which the error is estimated.
 
-    (delta.mass.tot.abundance.mod.2016 <- lmer(ind.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank) , data = cray.mean, subset = Year == "2016"))
+    (delta.mass.tot.abundance.mod.2016 <- 
+    		lmer(
+    			per.capita.delta.mass ~ 1 + Total.Abundance * Type + (1|Tank), 
+    			data = cray.mean, 
+    			subset = Year == "2016"
+    			)
+    	)
     
     summary(delta.mass.tot.abundance.mod.2016)
     anova(delta.mass.tot.abundance.mod.2016)
@@ -658,7 +693,15 @@ The model uses the estimated change in the mass of a single crayfish (`ind.delta
     
 ### Plot of the 2016 Experiment Change in Mass by Total Abundance
     
-    ggplot(subset(cray.mean, Year == "2016"), mapping = aes(y = ind.delta.mass, x = Total.Abundance, color = Type)) +
+    ggplot(
+    	subset(cray.mean, Year == "2016"), 
+    	mapping = aes(
+    		y = per.capita.delta.mass, 
+    		x = Total.Abundance, 
+    		shape = Type,
+    		linetype = Type
+    		)
+    	) +
     	       geom_hline(
     	       	yintercept = 0,
     	       	linetype = "dashed"
@@ -667,15 +710,27 @@ The model uses the estimated change in the mass of a single crayfish (`ind.delta
     	       	position = position_jitterdodge(
     	       		dodge.width = 0.1,
     	       		jitter.width = 0.2
-    	       	)
+    	       	),
+    	       	size = 2.5
     	       	)+
              geom_smooth(
-               method = "lm"
+               method = "lm",
+             	color = "gray45"
              ) +
-             theme_classic()
-    ggsave(filename = "ind_delta_mass_by_abundance_2016.jpg", path = "./output/plots", dpi = 300)
+    	scale_shape_manual(
+    		values = c(19, 1)
+    	)+
+	    	xlab(
+	    		"Total Number of Crayfish in a Tank"
+	    	)+
+	    	ylab(
+	    		"Per capita change in mass (g)"
+	    	)+
+        theme_classic()
     
-![ind_delta_mass_by_abundance_2016](../output/plots/ind_delta_mass_by_abundance_2016.jpg)
+    ggsave(filename = "per_capita_delta_mass_by_abundance_2016.jpg", path = "./output/plots", dpi = 300)
+    
+![per_capita__delta_mass_by_abundance_2016](../output/plots/per_capita_delta_mass_by_abundance_2016.jpg)
 
 ### Plot of the 2016 Experiment Change in Mass by Treatment
     
