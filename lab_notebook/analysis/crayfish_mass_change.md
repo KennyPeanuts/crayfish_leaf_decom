@@ -405,12 +405,12 @@ The model uses the estimated change in per capita mass (`per.capita.delta.mass`)
        theme_classic()
     
     ggsave(
-    	filename = "per.capita.delta.mass.2015.jpg", 
+    	filename = "per_capita_delta_mass_2015.jpg", 
     	path = "./output/plots", 
     	dpi = 300
     	)
     
-![per.capita_delta_mass_by_abundance_2015](../output/plots/ind_delta_mass_by_abundance_2015.jpg)
+![per_capita_delta_mass_by_abundance_2015](../output/plots/per_capita_delta_mass_by_abundance_2015.jpg)
     
 	    ggplot(subset(
 	    	cray.mean, Year == "2015"
@@ -449,7 +449,7 @@ The model uses the estimated change in per capita mass (`per.capita.delta.mass`)
              theme_classic()
 	    
     ggsave(
-    	filename = "per.capita_delta_mass_by_treatment_2015.jpg", 
+    	filename = "per_capita_delta_mass_by_treatment_2015.jpg", 
     	path = "./output/plots", 
     	dpi = 300
     	)
@@ -581,9 +581,9 @@ The model uses the proportion of crayfish that survive to the end of the experim
 	    	)+
              theme_classic()
     
-    ggsave(filename = "prop.surv.by.abundance.2015.jpg", path = "./output/plots", dpi = 300)
+    ggsave(filename = "prop_surv_by_abundance_2015.jpg", path = "./output/plots", dpi = 300)
     
-![prop.surv.by.abundanceprop.surv.2015](../output/plots/prop.surv.by.abundance.2015.jpg)
+![prop_surv_by_abundance_2015](../output/plots/prop_surv_by_abundance_2015.jpg)
     
 #### Plot of 2015 Experiment Proportion Surviving by Treatment
     
@@ -603,7 +603,7 @@ The model uses the proportion of crayfish that survive to the end of the experim
              theme_classic()
     ggsave(filename = "prop.surv.by.treatment.2015.jpg", path = "./output/plots", dpi = 300)
     
-![prop.surv.by.treatment.2015.jpg](../output/plots/prop.surv.by.treatment.2015.jpg)
+[prop.surv.by.treatment.2015.jpg](../output/plots/prop.surv.by.treatment.2015.jpg)
     
 ## Description of the 2015 Experiment Survival Results
     
